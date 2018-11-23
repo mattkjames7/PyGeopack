@@ -5,6 +5,9 @@ import os
 class CustomInstallCommand(install):
 	"""Customized setuptools install command will hopefully decompress the data file and make the C++/Fortran code"""
 	def run(self):
+		#go ahead with install
+		install.run(self)
+		
 		#store the current working directory
 		CWD = os.getcwd()
 		
@@ -19,10 +22,9 @@ class CustomInstallCommand(install):
 		os.system('7z x -y TSdata.bin.tar.7z')
 		os.system('tar -xf TSdata.bin.tar')
 		
-		#continue with normal installation
-		print('PyGeopack: Continuing installation')
+		#revert to original working directory
+		print('PyGeopack: reverting to original working directory')
 		os.chdir(CWD)		
-		install.run(self)
 
 
 
