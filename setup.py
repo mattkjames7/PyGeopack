@@ -46,7 +46,6 @@ setuptools.setup(
     ],
     install_requires=[
 		'numpy',
-		'scipy',
 	],
 	include_package_data=True,
 	cmdclass = { 'install':CustomInstallCommand },
