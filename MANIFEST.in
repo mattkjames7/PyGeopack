@@ -1,0 +1,5 @@
+include PyGeopack/__data/libgeopack/*.c
+include PyGeopack/__data/libgeopack/*.f
+include PyGeopack/__data/libgeopack/*.h
+include PyGeopack/__data/libgeopack/makefile
+include PyGeopack/__data/libgeopack/data/TSdata.bin.tar.7z
