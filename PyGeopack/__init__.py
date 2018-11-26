@@ -1,3 +1,6 @@
+from ._CheckFirstImport import _CheckFirstImport
+_CheckFirstImport()
+
 from .FreeTSData import FreeTSData
 from .GSEtoSMUT import GSEtoSMUT
 from .GSEtoGSMUT import GSEtoGSMUT

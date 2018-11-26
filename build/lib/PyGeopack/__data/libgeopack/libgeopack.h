@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "DateTimeTools.h"
+#include <math.h>
 
 typedef struct {
 	int n;
