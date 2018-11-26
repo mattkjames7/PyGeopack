@@ -27,4 +27,7 @@ def _CheckFirstImport():
 		os.chdir(os.path.dirname(__file__)+"/__data/libgeopack/data")
 		os.system(sudo+'7z x -y TSdata.bin.tar.7z')
 		os.system(sudo+'tar -xf TSdata.bin.tar')
+		os.system(sudo+'rm -v TSdata.bin.tar.7z')
+		os.system(sudo+'rm -v TSdata.bin.tar')
+
 		os.chdir(CWD)		
