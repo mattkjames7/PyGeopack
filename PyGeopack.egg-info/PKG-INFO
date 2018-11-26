@@ -1,6 +1,10 @@
 Metadata-Version: 2.1
 Name: PyGeopack
+<<<<<<< HEAD
 Version: 0.0.4
+=======
+Version: 0.0.1
+>>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 Summary: Geopack08 wrapper for Python
 Home-page: https://github.com/mattkjames7/PyGeopack
 Author: Matthew Knight James

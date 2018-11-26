@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 from ._CheckFirstImport import _CheckFirstImport
 _CheckFirstImport()
 
+=======
+>>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 from .FreeTSData import FreeTSData
 from .GSEtoSMUT import GSEtoSMUT
 from .GSEtoGSMUT import GSEtoGSMUT

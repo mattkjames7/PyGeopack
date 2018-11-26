@@ -1,6 +1,7 @@
 import numpy as np
 import ctypes as ct
 import os
+<<<<<<< HEAD
 import platform
 
 Arch = platform.architecture()[0]
@@ -11,6 +12,10 @@ elif Arch == '32bit':
 else:
 	print('Architecture ({:s}) not found'.format(Arch))
 
+=======
+
+libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopack/libgeopack.so")
+>>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 
 _CGSEtoGSMUT = libgeopack.GSEtoGSMUT
 _CGSEtoGSMUT.argtypes = [np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), ct.c_int, ct.c_int, ct.c_float, np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")]

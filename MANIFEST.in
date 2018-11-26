@@ -2,5 +2,8 @@ include PyGeopack/__data/libgeopack/*.c
 include PyGeopack/__data/libgeopack/*.f
 include PyGeopack/__data/libgeopack/*.h
 include PyGeopack/__data/libgeopack/makefile
+<<<<<<< HEAD
 include PyGeopack/__data/libgeopack/*.so
+=======
+>>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 include PyGeopack/__data/libgeopack/data/TSdata.bin.tar.7z
