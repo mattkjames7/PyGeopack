@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PyGeopack",
-    version="0.0.5",
+    version="0.0.6",
     author="Matthew Knight James",
     author_email="mattkjames7@gmail.com",
     description="Geopack08 wrapper for Python",
