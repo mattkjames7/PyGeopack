@@ -72,13 +72,13 @@ class TraceField(object):
 
 		self.n = _n
 		if _n == 1 and FlattenSingleTraces:
-			self.x = _Xout
-			self.y = _Yout
-			self.z = _Zout
-			self.Bx = _Bx
-			self.By = _By
-			self.Bz = _Bz
 			self.nstep = _nstep[0]
+			self.x = (_Xout.reshape((_n,MaxLen)))[0,:self.nstep]
+			self.y = (_Yout.reshape((_n,MaxLen)))[0,:self.nstep]
+			self.z = (_Zout.reshape((_n,MaxLen)))[0,:self.nstep]
+			self.Bx = (_Bx.reshape((_n,MaxLen)))[0,:self.nstep]
+			self.By = (_By.reshape((_n,MaxLen)))[0,:self.nstep]
+			self.Bz = (_Bz.reshape((_n,MaxLen)))[0,:self.nstep]
 			self.GlatN = _GlatN[0]
 			self.GlatS = _GlatS[0]
 			self.MlatN = _MlatN[0]

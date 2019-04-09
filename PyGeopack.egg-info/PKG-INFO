@@ -1,10 +1,6 @@
 Metadata-Version: 2.1
 Name: PyGeopack
-<<<<<<< HEAD
-Version: 0.0.4
-=======
-Version: 0.0.1
->>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
+Version: 0.0.7
 Summary: Geopack08 wrapper for Python
 Home-page: https://github.com/mattkjames7/PyGeopack
 Author: Matthew Knight James
@@ -13,6 +9,6 @@ License: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
+Classifier: Operating System :: POSIX
 Description-Content-Type: text/markdown

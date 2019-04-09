@@ -20,10 +20,7 @@ PyGeopack/SMtoGSMUT.py
 PyGeopack/SetCustParam.py
 PyGeopack/TraceField.py
 PyGeopack/_CFunctions.py
-<<<<<<< HEAD
 PyGeopack/_CheckFirstImport.py
-=======
->>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 PyGeopack/__del__.py
 PyGeopack/__init__.py
 PyGeopack.egg-info/PKG-INFO
@@ -46,10 +43,7 @@ PyGeopack/__data/libgeopack/TraceRoutines.h
 PyGeopack/__data/libgeopack/geopack2008_rcf.f
 PyGeopack/__data/libgeopack/libgeopack.c
 PyGeopack/__data/libgeopack/libgeopack.h
-<<<<<<< HEAD
 PyGeopack/__data/libgeopack/libgeopack32.so
 PyGeopack/__data/libgeopack/libgeopack64.so
-=======
->>>>>>> 85c321a3369f989a84f0ba181b6b994e9560b0c4
 PyGeopack/__data/libgeopack/makefile
 PyGeopack/__data/libgeopack/data/TSdata.bin.tar.7z
