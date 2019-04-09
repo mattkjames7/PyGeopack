@@ -5,6 +5,8 @@
 #include <math.h>
 #include "ModelField.h"
 #include "libgeopack.h"
+#include <stdbool.h>
+
 #endif
 
 //CtypeStart
@@ -27,3 +29,9 @@ void TraceFootprints(float *x, float *y, float *z, int nstep, float xfn, float y
 void ReverseElements(float *x, int n);
 void TraceFieldLine(float x0, float y0, float z0, int iopt, float *parmod, ModelFuncPtr ModelFunc,float alt, int MaxLen, float DSMax, float *xfn, float *yfn, float *zfn, float *xfs, float *yfs, float *zfs, float *x, float *y, float *z, int *nstep);
 void ConvertTraceCoords(int nstep, int CoordOut, float *x, float *y, float *z, float *Bx, float *By, float *Bz);
+
+void TraceFieldTimeSeries(float *Xin, float *Yin, float *Zin, int n, int *Date, float *ut, const char *Model, int CoordIn, int CoordOut, 
+				float alt, int MaxLen, float DSMax, float *Xout, float *Yout, float *Zout,
+				float *Bx, float *By, float *Bz, int *nstep, float *GlatN, float *GlatS, float *MlatN, float *MlatS,
+				float *GlonN, float *GlonS, float *MlonN, float *MlonS,float *GltN, float *GltS, float *MltN,
+				float *MltS, float *Lshell, float *MltE, float *FlLen, bool Verbose);

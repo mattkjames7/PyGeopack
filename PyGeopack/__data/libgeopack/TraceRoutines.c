@@ -198,6 +198,114 @@ void TraceField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, c
 
 }
 
+void TraceFieldTimeSeries(float *Xin, float *Yin, float *Zin, int n, int *Date, float *ut, const char *Model, int CoordIn, int CoordOut, 
+				float alt, int MaxLen, float DSMax, float *Xout, float *Yout, float *Zout,
+				float *Bx, float *By, float *Bz, int *nstep, float *GlatN, float *GlatS, float *MlatN, float *MlatS,
+				float *GlonN, float *GlonS, float *MlonN, float *MlonS,float *GltN, float *GltS, float *MltN,
+				float *MltS, float *Lshell, float *MltE, float *FlLen, bool Verbose) {
+	
+	int dirp = 1, dirn = -1;
+	/*Check that TSData has been loaded*/
+	if (TSData.n == 0) {
+		LoadTSData();
+	} 
+	
+	/* move all of the declarations here, before the loop*/
+	int Year, DayNo, Hr, Mn, Sc, i;
+	ModelFuncPtr ModelFunc;
+	float xfn,yfn,zfn,xfs,yfs,zfs;
+	int iopt;
+	float parmod[10], tilt, Vx, Vy, Vz;
+	float X[n], Y[n], Z[n];
+	bool update;
+	
+	/*get model function and parmod*/
+	if ((strcmp(Model,"T89") == 0) || (strcmp(Model,"T89c") == 0)){
+		ModelFunc = &t89c_;
+	} else if ((strcmp(Model,"T96") == 0) || (strcmp(Model,"T96c") == 0)) {
+		ModelFunc = &t96_;
+	} else if ((strcmp(Model,"T01") == 0) || (strcmp(Model,"T01c") == 0)) {
+		ModelFunc = &t01_01_;
+	} else if ((strcmp(Model,"TS05") == 0) || (strcmp(Model,"TS05c") == 0)) {
+		ModelFunc = &t04_s_;
+	} else if (strcmp(Model,"IGRF") == 0) {
+		ModelFunc = &DummyFunc;
+	} else { 
+		printf("Model %s not found\n",Model);
+		return;
+	}
+		
+	for (i=0;i<n;i++) {
+		if (Verbose) {
+			printf("\rTracing field line %d of %d (%6.2f)%%",i+1,n,((float) (i+1)*100.0)/n);
+		}
+		/*convert date into Year and DayNo*/
+		DateToYearDayNo(Date[i],&Year,&DayNo);
+		
+		/*convert decimal UT to Hr, Mn, Sc*/
+		DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+	
+		update = false;
+		if (i == 0) {
+			update = true;
+		} else if ((Date[i] != Date[i-1]) || (ut[i] != ut[i-1])) {
+			update = true;
+		}
+		
+		if (update) {
+			/*get params and recalc08*/
+			GetModelParams(Date[i],ut[i],Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
+			recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+		}
+		/*Convert input coordinates to GSM*/
+		
+		
+		switch (CoordIn) {
+			case 1:
+				/*GSE in*/
+				gswgse_08_(&X[i],&Y[i],&Z[i],&Xin[i],&Yin[i],&Zin[i],&dirn);
+				break;
+			case 2:
+				/*GSM in*/
+				X[i] = Xin[i];
+				Y[i] = Yin[i];
+				Z[i] = Zin[i];
+				break;
+			case 3:
+				/*SM in*/
+				smgsw_08_(&Xin[i],&Yin[i],&Zin[i],&X[i],&Y[i],&Z[i],&dirp);
+				break;
+			default:
+				printf("Input coordinate type not recognised\n");
+				return;	
+				break;	
+		}
+		if (Verbose) {
+			printf("\n");
+		}
+
+		/* perform trace */
+		TraceFieldLine(X[i],Y[i],Z[i],iopt,parmod,ModelFunc,alt,MaxLen,DSMax,&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&nstep[i]);
+		
+		/*get B vectors along trace*/
+		ModelField(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],Date[i],ut[i],Model,2,2,&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
+		
+		/* find trace footprints */
+		TraceFootprints(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&MltN[i],&MlatN[i],&MlonN[i],&GltN[i],&GlatN[i],&GlonN[i],
+						&MltS[i],&MlatS[i],&MlonS[i],&GltS[i],&GlatS[i],&GlonS[i],&Lshell[i],&MltE[i],&FlLen[i],MaxLen);
+						
+	}
+	
+	/*Convert everything to the desired output coords*/
+	for (i=0;i<n;i++) {
+		ConvertTraceCoords(nstep[i],CoordOut,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
+	}
+	
+
+	
+
+}
+
 void ConvertTraceCoords(int nstep, int CoordOut, float *x, float *y, float *z, float *Bx, float *By, float *Bz) {
 	int dirp = 1, dirn = -1, i;
 	float xtmp, ytmp, ztmp;

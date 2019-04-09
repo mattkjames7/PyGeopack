@@ -15,7 +15,7 @@ from .SetCustParam import SetCustParam
 from .GSMtoSMUT import GSMtoSMUT
 from .GetModelParams import GetModelParams
 from .MAGtoGEOUT import MAGtoGEOUT
-from .TraceField import TraceField
+from .TraceField import TraceField,TraceFieldTimeSeries
 from .SMtoGSMUT import SMtoGSMUT
 from .GSMtoGSEUT import GSMtoGSEUT
 from .GEOtoMAGUT import GEOtoMAGUT
