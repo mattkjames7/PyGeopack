@@ -39,3 +39,26 @@ export GEOPACK_PATH=/path/to/geopack/data
 ```
 where both of those directories must be writable by the current user, 
 unless the data already exist in them.
+
+Then simply install using pip3:
+
+```
+pip3 install PyGeopack --user
+```
+
+or by downloading the latest release on GitHub and running:
+
+```
+pip3 install PyGeopack-0.0.9-py3-none-any.whl --user
+```
+
+## Post-install
+
+After installation, the PyGeopack module will attempt to locate the 
+OMNI data required for the models. If these data exist already in
+`$GEOPACK_PATH` then it will load into memory. If they don't exist, then
+the user will be prompted for authorisation to download the data, to 
+allow the data download, press 'y', otherwise press 'n'. The data 
+download and conversion may take a little while.
+
+
