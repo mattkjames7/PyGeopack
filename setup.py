@@ -22,6 +22,10 @@ setuptools.setup(
     ],
     install_requires=[
 		'numpy',
+		'PyFileIO',
+		'RecarrayTools',
+		'DateTimeTools',
+		'kpindex'
 	],
 	include_package_data=True,
 )
