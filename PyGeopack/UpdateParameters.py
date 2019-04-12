@@ -6,8 +6,9 @@ import PyFileIO as pf
 from ._ReadTab import _ReadTab
 import RecarrayTools as RT
 import os
+import numpy as np
 
-def UpdateParameters():
+def UpdateParameters(Overwrite=False):
 	'''
 	This program will download and convert all of the model parameters
 	required from Tsyganenko's own website along with the Kp index data.
@@ -22,7 +23,7 @@ def UpdateParameters():
 	
 	
 	#Download Tsyganenko data
-	_DownloadTS05Data()
+	_DownloadTS05Data(Overwrite)
 	
 	#Download Kp Index data
 	kp.UpdateLocalData()
@@ -38,8 +39,10 @@ def UpdateParameters():
 	#read in Tsyganenko tab files
 	tabs = []
 	for i in range(0,nf):
+		print('\rReading Year {:04d}'.format(Years[i]),end='')
 		tabs.append(_ReadTab(Years[i]))
-		
+	print()
+	
 	#combine to one recarray
 	print('Combining Yearly Data...') 
 	n = 0
@@ -56,11 +59,11 @@ def UpdateParameters():
 	udate = np.unique(data.Date)
 	nu = np.size(udate)
 	for i in range(0,nu):
-		print('\rFinding Kp Index {:6.2f}%'.format(100.0*(i+1)/nu))
+		print('\rFinding Kp Index {:6.2f}%'.format(100.0*(i+1)/nu),end='')
 		use = np.where(data.Date == udate[i])[0]
 		k = kp.GetKp(udate[i])
 		if k.size > 0:
-			kind = np.int32(data.ut/3.0)
+			kind = np.int32(data.ut[use]/3.0)
 			data.Kp[use] = k.Kp[kind]
 		else:
 			data.Kp[use] = 1
@@ -90,5 +93,5 @@ def UpdateParameters():
 	print()
 	
 	#save the data
-	fname = Globals.Datapath+'TSdata.bin'
+	fname = Globals.DataPath+'TSdata.bin'
 	RT.SaveRecarray(data,fname)

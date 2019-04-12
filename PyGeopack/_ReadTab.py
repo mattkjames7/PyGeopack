@@ -2,6 +2,7 @@ import PyFileIO as pf
 from . import Globals
 import os
 import DateTimeTools as TT
+import numpy as np
 
 def _ReadTab(Year):
 	'''
@@ -17,7 +18,8 @@ def _ReadTab(Year):
 			('Den','float32'),('Temp','float32'),('SymH','float32'),('IMFFlag','int32'),('ISWFlag','int32'),
 			('Tilt','float32'),('Pdyn','float32'),('W1','float32'),('W2','float32'),('W3','float32'),
 			('W4','float32'),('W5','float32'),('W6','float32')]
-			
+	
+	fname = Globals.DataPath+'tab/{:04d}.tab'.format(Year)		
 	data = pf.ReadASCIIData(fname,Header=False,dtype=dtype_in)
 	
 			

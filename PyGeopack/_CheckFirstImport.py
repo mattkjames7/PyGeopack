@@ -3,6 +3,7 @@ import numpy as np
 from . import Globals
 from ._CFunctions import _CInit
 from .UpdateParameters import UpdateParameters
+import ctypes as ct
 
 def _CheckFirstImport():
 	#check if we need root or not!
@@ -33,7 +34,7 @@ def _CheckFirstImport():
 	if not os.path.isfile(Globals.DataFile):
 		ipt = ''
 		while not ipt.lower() in ['y','n']:
-			ipt = input('Data file does not exits, download data (this may take a little while)? (y/n)')
+			ipt = input('Data file does not exist, download data (this may take a little while)? (y/n)')
 		if ipt.lower() == 'y':
 			UpdateParameters()
 	
