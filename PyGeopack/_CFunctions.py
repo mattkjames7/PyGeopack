@@ -2,14 +2,11 @@ import numpy as np
 import ctypes as ct
 import os
 import platform
+from . import Globals
 
 Arch = platform.architecture()[0]
-if Arch == '64bit':
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopack/libgeopack64.so")
-elif Arch == '32bit':
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopack/libgeopack32.so")
-else:
-	print('Architecture ({:s}) not found'.format(Arch))
+libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopack/libgeopack.so")
+
 
 _CGSEtoGSMUT = libgeopack.GSEtoGSMUT
 _CGSEtoGSMUT.argtypes = [np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), ct.c_int, ct.c_int, ct.c_float, np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")]
@@ -86,6 +83,6 @@ _CTraceField.restype = None
 
 _CInit = libgeopack.Init
 _CInit.argtypes = [ct.c_char_p]
-DataFile = os.path.dirname(__file__)+"/__data/libgeopack/data/TSdata.bin"
+DataFile = Globals.DataPath+"TSdata.bin"
 DataFile = ct.c_char_p(DataFile.encode('utf-8'))
 _CInit(DataFile)

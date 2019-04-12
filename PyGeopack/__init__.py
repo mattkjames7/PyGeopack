@@ -21,3 +21,4 @@ from .SMtoGSMUT import SMtoGSMUT
 from .GSMtoGSEUT import GSMtoGSEUT
 from .GEOtoMAGUT import GEOtoMAGUT
 from .__del__ import __del__
+from .UpdateParameters import UpdateParameters
