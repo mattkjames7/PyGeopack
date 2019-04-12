@@ -83,6 +83,4 @@ _CTraceField.restype = None
 
 _CInit = libgeopack.Init
 _CInit.argtypes = [ct.c_char_p]
-DataFile = Globals.DataPath+"TSdata.bin"
-DataFile = ct.c_char_p(DataFile.encode('utf-8'))
-_CInit(DataFile)
+

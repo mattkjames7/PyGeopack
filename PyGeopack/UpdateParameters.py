@@ -5,6 +5,7 @@ from ._DownloadTS05Data import _DownloadTS05Data
 import PyFileIO as pf
 from ._ReadTab import _ReadTab
 import RecarrayTools as RT
+import os
 
 def UpdateParameters():
 	'''
@@ -27,7 +28,10 @@ def UpdateParameters():
 	kp.UpdateLocalData()
 	
 	#list the files
-	files = os.listdir(Globals.DataPath+'tab/')
+	tabdir = Globals.DataPath+'tab/'
+	if not os.path.isdir(tabdir):
+		os.system('mkdir -pv '+tabdir)
+	files = os.listdir(tabdir)
 	nf = np.size(files)
 	Years = 1995 + np.arange(nf)
 	

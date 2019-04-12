@@ -1,6 +1,8 @@
 import os
 import numpy as np
 from . import Globals
+from ._CFunctions import _CInit
+from .UpdateParameters import UpdateParameters
 
 def _CheckFirstImport():
 	#check if we need root or not!
@@ -26,7 +28,21 @@ def _CheckFirstImport():
 		print('The $GEOPACK_PATH variable has not been set, this module will not function correctly without it')
 		
 
-		
+	#check for the data file
+	Globals.DataFile = Globals.DataPath + 'TSdata.bin'
+	if not os.path.isfile(Globals.DataFile):
+		ipt = ''
+		while not ipt.lower() in ['y','n']:
+			ipt = input('Data file does not exits, download data (this may take a little while)? (y/n)')
+		if ipt.lower() == 'y':
+			UpdateParameters()
+	
+	#load the data
+	if os.path.isfile(Globals.DataFile):
+		DataFileCT = ct.c_char_p(Globals.DataFile.encode('utf-8'))
+		_CInit(DataFileCT)
+	else:
+		print('Data file not found!!!! Thing may not work at all...')
 #	DataFile = os.path.dirname(__file__)+"/__data/libgeopack/data/TSdata.bin"
 #	if not os.path.isfile(DataFile):
 #		print("data file has not been extracted yet - extracting!")
