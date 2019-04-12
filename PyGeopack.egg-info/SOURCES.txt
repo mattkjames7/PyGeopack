@@ -9,6 +9,7 @@ PyGeopack/GSEtoSMUT.py
 PyGeopack/GSMtoGSEUT.py
 PyGeopack/GSMtoSMUT.py
 PyGeopack/GetModelParams.py
+PyGeopack/Globals.py
 PyGeopack/LoadTSData.py
 PyGeopack/MAGtoGEOUT.py
 PyGeopack/MAGtoGSEUT.py
@@ -19,8 +20,11 @@ PyGeopack/SMtoGSEUT.py
 PyGeopack/SMtoGSMUT.py
 PyGeopack/SetCustParam.py
 PyGeopack/TraceField.py
+PyGeopack/UpdateParameters.py
 PyGeopack/_CFunctions.py
 PyGeopack/_CheckFirstImport.py
+PyGeopack/_DownloadTS05Data.py
+PyGeopack/_ReadTab.py
 PyGeopack/__del__.py
 PyGeopack/__init__.py
 PyGeopack.egg-info/PKG-INFO
@@ -43,7 +47,5 @@ PyGeopack/__data/libgeopack/TraceRoutines.h
 PyGeopack/__data/libgeopack/geopack2008_rcf.f
 PyGeopack/__data/libgeopack/libgeopack.c
 PyGeopack/__data/libgeopack/libgeopack.h
-PyGeopack/__data/libgeopack/libgeopack32.so
-PyGeopack/__data/libgeopack/libgeopack64.so
 PyGeopack/__data/libgeopack/makefile
 PyGeopack/__data/libgeopack/data/TSdata.bin.tar.7z
