@@ -48,4 +48,3 @@ PyGeopack/__data/libgeopack/geopack2008_rcf.f
 PyGeopack/__data/libgeopack/libgeopack.c
 PyGeopack/__data/libgeopack/libgeopack.h
 PyGeopack/__data/libgeopack/makefile
-PyGeopack/__data/libgeopack/data/TSdata.bin.tar.7z
