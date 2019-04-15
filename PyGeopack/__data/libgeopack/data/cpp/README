@@ -1,0 +1,5 @@
+This folder will hopefully contain a working C++ based version of 
+Geopack. The file igrf12coeffs.txt is from 
+https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/igrf12coeffs.txt
+and will be used to obtain the latest of the IGRF model field
+parameters (not included in the original geopack 08).
