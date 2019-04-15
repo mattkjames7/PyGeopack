@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from . import Globals
-from ._CFunctions import _CInit
 from .UpdateParameters import UpdateParameters
 import ctypes as ct
 
@@ -39,6 +38,8 @@ def _CheckFirstImport():
 			UpdateParameters()
 	
 	#load the data
+	from ._CFunctions import _CInit
+
 	if os.path.isfile(Globals.DataFile):
 		DataFileCT = ct.c_char_p(Globals.DataFile.encode('utf-8'))
 		_CInit(DataFileCT)
