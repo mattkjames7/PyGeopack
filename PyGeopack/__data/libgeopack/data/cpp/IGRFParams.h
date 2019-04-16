@@ -9,6 +9,7 @@ typedef struct IGRFParam {
 	int Year;
 	double g[105];
 	double h[105];
+	double rec[105];
 	int n[105];
 	int m[105];
 } IGRFP;

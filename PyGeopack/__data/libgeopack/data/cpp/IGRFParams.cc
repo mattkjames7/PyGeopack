@@ -64,7 +64,7 @@ void SetIGRFParams(int Year, int DayNo) {
 	 * */
 	 
 	float f0, f1;
-	int i, i0, i1;
+	int i, j, i0, i1;
 	 
 	if (Year < 1900) {
 		/* before 1900 we shall use the IGRF data from 1900*/
@@ -82,17 +82,33 @@ void SetIGRFParams(int Year, int DayNo) {
 		f1 = (((float) Year) + ((float) (DayNo-1))/365.25 - IGRFParams[i0].Year)/5;
 		f0 = 1.0 - f1;
 		for (i=0;i<105;i++) {
-			 IGRFCurr.n[i] = IGRFParams[0].n[i];
-			 IGRFCurr.m[i] = IGRFParams[0].m[i];
-			 IGRFCurr.g[i] = IGRFParams[0].g[i];
-			 IGRFCurr.h[i] = IGRFParams[0].h[i];
+			 IGRFCurr.n[i] = IGRFParams[i0].n[i];
+			 IGRFCurr.m[i] = IGRFParams[i0].m[i];
+			 IGRFCurr.g[i] = IGRFParams[i0].g[i]*f0 + IGRFParams[i1].g[i]*f1;
+			 IGRFCurr.h[i] = IGRFParams[i0].h[i]*f0 + IGRFParams[i1].h[i]*f1;
 		}		 
 	} else {
 		/*after 2015, extrapolate using secular variation*/
-		
+		i0 = 23;
+		i1 = 24;
+		f1 = (((float) Year) + ((float) (DayNo-1))/365.25 - IGRFParams[i0].Year);
+		for (i=0;i<105;i++) {
+			 IGRFCurr.n[i] = IGRFParams[i0].n[i];
+			 IGRFCurr.m[i] = IGRFParams[i0].m[i];
+			 IGRFCurr.g[i] = IGRFParams[i0].g[i] + IGRFParams[i1].g[i]*f1;
+			 IGRFCurr.h[i] = IGRFParams[i0].h[i] + IGRFParams[i1].h[i]*f1;
+		}		
 	}
-		  
-	 
-	 
 	
+	/*calculate the recursion relation coefficients*/
+	int n2;
+	int mn;
+	for (i=1;i<=14;i++) {
+		n2 = 2*i - 1;
+		n2 = n2*(n2-2);
+		for (j=1;j<=i;j++) {
+			mn = i*(i-1)/2 + j;
+			IGRFCurr.rec[mn] = ((float) ((i-j)*(i+j-2)))/((float) n2);
+		}
+	}
 }
