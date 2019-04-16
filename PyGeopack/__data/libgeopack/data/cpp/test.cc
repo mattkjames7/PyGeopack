@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "IGRFParams.h"
+#include "libgeopack.h"
 using namespace std;
 extern IGRFP IGRFParams[25];
 

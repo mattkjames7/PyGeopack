@@ -108,7 +108,30 @@ void SetIGRFParams(int Year, int DayNo) {
 		n2 = n2*(n2-2);
 		for (j=1;j<=i;j++) {
 			mn = i*(i-1)/2 + j;
-			IGRFCurr.rec[mn] = ((float) ((i-j)*(i+j-2)))/((float) n2);
+			IGRFCurr.rec[mn - 1] = ((float) ((i-j)*(i+j-2)))/((float) n2);
 		}
 	}
+	
+	/*multiply the g and h coefficients by the Schmidt normalization factors*/
+	double s = 1.0, p, aa;
+	int mnn;
+	for (i=2;i<=14;i++) {
+		mn = i*(i-1)/2 + 1;
+		s = s*((double) (2*i-3))/((double) (i-1));
+		IGRFCurr.g[mn-1] *= s;
+		IGRFCurr.h[mn-1] *= s;
+		p = s;
+		for (j=2;j<=i;j++) {
+			if (j == 2) {
+				aa = 2.0;
+			} else {
+				aa = 1.0;
+			}
+			p = p*sqrt(aa*((double) (i-j+1))/((double) (i+j-2)));
+			mnn = mn + j -1;
+			IGRFCurr.g[mnn-1] *= p;
+			IGRFCurr.h[mnn-1] *= p;
+		}
+	}
+	
 }
