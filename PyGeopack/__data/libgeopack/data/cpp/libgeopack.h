@@ -127,7 +127,7 @@ extern char DataFile[256];
 
 void LoadTSData();
 void FreeTSData();
-void SetCustParam(int iopt, float *parmod, float tilt, float Vx, float Vy, float Vz);
+void SetCustParam(int iopt, double *parmod, float tilt, float Vx, float Vy, float Vz);
 void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, float *tilt, float *Vx, float *Vy, float *Vz);
 void Init(const char *filename);
 
