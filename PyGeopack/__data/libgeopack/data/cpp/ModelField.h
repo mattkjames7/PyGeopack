@@ -4,6 +4,8 @@
 #include <math.h>
 #include "libgeopack.h"
 #include "T96.h"
+#include "ConvCoords.h"
+#include "IGRF.h"
 #endif
 
 

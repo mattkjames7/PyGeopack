@@ -110,7 +110,7 @@ typedef struct {
 	float Vx, Vy, Vz;
 } CustParam;
 
-CustParam CustP;
+extern CustParam CustP;
 
 /* define the magnetic field functions typedef so we can pass them to the geopack routines*/
 
@@ -120,7 +120,7 @@ typedef void (*InternalFuncPtr) (double,double,double,double*,double*,double*);
 
 extern const float Re;
 
-char DataFile[256];
+extern char DataFile[256];
 
 #endif
 

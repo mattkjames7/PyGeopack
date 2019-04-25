@@ -53,10 +53,10 @@ void Recalc(int Year, int DayNo, int Hour, int Min, int Sec, double Vx, double V
 	
 	/*calculating the GEI components of X = EXGSW - directed into the SW flow */
 	double V, Dx1, Dx2, Dx3;
-	V = sqrt(pow(VGSEX,2.0) + pow(VGSEY,2.0) + pow(VGSEZ,2.0));
-	Dx1 = -VGSEX/V;
-	Dx2 = -VGSEY/V;
-	Dx3 = -VGSEZ/V;
+	V = sqrt(pow(Vx,2.0) + pow(Vy,2.0) + pow(Vz,2.0));
+	Dx1 = -Vx/V;
+	Dx2 = -Vy/V;
+	Dx3 = -Vz/V;
 	
 	/*above is in GSE, now to convert to GEI*/
 	double x1, x2, x3;

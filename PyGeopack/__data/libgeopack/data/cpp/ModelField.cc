@@ -36,9 +36,10 @@ void ModelField(double *Xin, double *Yin, double *Zin, int n, int Date, double u
 	/*get params and recalc08*/
 
 	int iopt;
-	double parmod[10], tilt, Vx, Vy, Vz;
+	double parmod[10];
+	float tilt, Vx, Vy, Vz;
 	GetModelParams(Date,ut,Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
-	Recalc(Year,DayNo,Hr,Mn,Sc,Vx,Vy,Vz)
+	Recalc(Year,DayNo,Hr,Mn,Sc,(double) Vx,(double) Vy,(double) Vz);
 
 	/*Convert input coordinates to GSM*/
 	double X[n],Y[n],Z[n];
@@ -74,7 +75,7 @@ void ModelField(double *Xin, double *Yin, double *Zin, int n, int Date, double u
 	double intx, inty, intz, extx, exty, extz;
 	for (i=0;i<n;i++) {
 		IGRF_GSW(X[i],Y[i],Z[i],&intx,&inty,&intz);
-		ModelFunc(iopt,parmod,tilt,X[i],Y[i],Z[i],&extx,&exty,&extz);
+		ModelFunc(iopt,parmod,(double) tilt,X[i],Y[i],Z[i],&extx,&exty,&extz);
 		Bxgsm[i] = intx + extx;
 		Bygsm[i] = inty + exty;
 		Bzgsm[i] = intz + extz;

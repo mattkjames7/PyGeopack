@@ -1,9 +1,9 @@
 #include "Step.h"
 
-void Step(float *X, float *Y, float *Z, float *Ds, float DsMax, float ErrIn, float *Iopt, float *ParMod, ExFun ExName, InFun InName) {
+void Step(double *X, double *Y, double *Z, double *Ds, double DsMax, double ErrIn, int Iopt, double *ParMod, ModelFuncPtr ExName, InternalFuncPtr InName){
 	/* Makes a step in the direction of the magnetic field*/
 	
-	float R11, R12, R13, R21, R22, R23, R31, R32, R33, R41, R42, R43, R51, R52, R53, ErrCur;
+	double R11, R12, R13, R21, R22, R23, R31, R32, R33, R41, R42, R43, R51, R52, R53, ErrCur;
 
 	
 

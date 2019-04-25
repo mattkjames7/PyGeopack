@@ -1,6 +1,6 @@
 #include "Trace.h"
 
-void Trace(double XI, double YI, double ZI, double Dir, double DsMax, double Err, double Rlim, double R0, double *Iopt, double *ParMod, ExFun ExName, InFun InName, double *XF, double *YF, double *ZF, double *XX, double *YY, double *ZZ, int *L, int LMax) {
+void Trace(double XI, double YI, double ZI, double Dir, double DsMax, double Err, double Rlim, double R0, int Iopt, double *ParMod, ModelFuncPtr ExName, InternalFuncPtr InName, double *XF, double *YF, double *ZF, double *XX, double *YY, double *ZZ, int *L, int LMax) {
 	int NRev = 0;
 	double Ds, X, Y, Z, R1, R2, R3, AD, RR, RYZ, XR, YR, ZR, AL, FC, DRP, R, DR;
 	*L = 0;

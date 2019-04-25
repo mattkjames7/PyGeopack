@@ -5,5 +5,5 @@
 #include <math.h>
 #include "libgeopack.h"
 
-void RHand(double X, double Y, double Z, double *R1, double *R2, double *R3, double *Iopt, double *ParMod, ExFun ExName, InFun InName);
+void RHand(double X, double Y, double Z, double *R1, double *R2, double *R3, int Iopt, double *ParMod, ModelFuncPtr ExName, InternalFuncPtr InName);
 #endif

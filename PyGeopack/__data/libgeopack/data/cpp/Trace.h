@@ -7,5 +7,5 @@
 #include "RHand.h"
 #include "Step.h"
 
-void Trace(double XI, double YI, double ZI, double Dir, double DsMax, double Err, double Rlim, double R0, double *Iopt, double *ParMod, ExFun ExName, InFun InName, double *XF, double *YF, double *ZF, double *XX, double *YY, double *ZZ, int *L, int LMax);
+void Trace(double XI, double YI, double ZI, double Dir, double DsMax, double Err, double Rlim, double R0, int Iopt, double *ParMod, ModelFuncPtr ExName, InternalFuncPtr InName, double *XF, double *YF, double *ZF, double *XX, double *YY, double *ZZ, int *L, int LMax);
 #endif
