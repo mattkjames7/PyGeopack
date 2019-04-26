@@ -3,7 +3,7 @@
 #include <math.h>
 #include "T96.h"
 
-RhDr rhdr ={9.0,4.0};
+RhDr rhdr = {9.0,4.0};
 Dx1 dx1 = {-0.16,0.08,0.4};
 LoopDip1 loopdip1 = {1.00891,2.28397,-5.60831,1.86106,7.83281,1.12541,0.945719};
 Coord11 coord11 = {{-11.0,-7.0,-7.0,-3.0,-3.0,1.0,1.0,1.0,5.0,5.0,9.0,9.0},{2.0,0.0,4.0,2.0,6.0,0.0,4.0,8.0,2.0,6.0,0.0,4.0}};
@@ -102,18 +102,26 @@ void T96(int Iopt, double *ParMod, double Ps, double x, double y, double z, doub
 		RIMFy = RIMFyS*ct + RIMFzS*st;
 		RIMFz = RIMFzS*ct - RIMFyS*st;
 		
-		Fx = CFx*Xappa + RCampl*BxRC + Tampl2*BxT2 + Tampl3*BxT3 + B1ampl*R1x + B2ampl*R2x + RIMFampl*RIMFx;
-		Fy = CFy*Xappa + RCampl*ByRC + Tampl2*ByT2 + Tampl3*ByT3 + B1ampl*R1y + B2ampl*R2y + RIMFampl*RIMFy;
-		Fz = CFz*Xappa + RCampl*BzRC + Tampl2*BzT2 + Tampl3*BzT3 + B1ampl*R1z + B2ampl*R2z + RIMFampl*RIMFz;
-//		printf("C components\n");
-//		printf("CF: %13.10f %13.10f %13.10f\n",CFx,CFy,CFz);
-//		printf("RC: %13.10f %13.10f %13.10f\n",BxRC,ByRC,BzRC);
-//		printf("T2: %13.10f %13.10f %13.10f\n",BxT2,ByT2,BzT2);
-//		printf("T3: %13.10f %13.10f %13.10f\n",BxT3,ByT3,BzT3);
-//		printf("R1: %13.10f %13.10f %13.10f\n",R1x,R1y,R1z);//has error
-//		printf("R2: %13.10f %13.10f %13.10f\n",R2x,R2y,R2z);//fixed
-//		printf("IMF: %13.10f %13.10f %13.10f\n",RIMFx,RIMFyS,RIMFzS); 
-//		printf("F: %13.10f %13.10f %13.10f\n",Fx,Fy,Fz);
+		Fx = CFx*Xappa3 + RCampl*BxRC + Tampl2*BxT2 + Tampl3*BxT3 + B1ampl*R1x + B2ampl*R2x + RIMFampl*RIMFx;
+		Fy = CFy*Xappa3 + RCampl*ByRC + Tampl2*ByT2 + Tampl3*ByT3 + B1ampl*R1y + B2ampl*R2y + RIMFampl*RIMFy;
+		Fz = CFz*Xappa3 + RCampl*BzRC + Tampl2*BzT2 + Tampl3*BzT3 + B1ampl*R1z + B2ampl*R2z + RIMFampl*RIMFz;
+/*		printf("C components\n");
+		printf("CF: %10.5f %10.5f %10.5f\n",CFx,CFy,CFz);
+		printf("RC: %10.5f %10.5f %10.5f\n",BxRC,ByRC,BzRC);
+		printf("T2: %10.5f %10.5f %10.5f\n",BxT2,ByT2,BzT2);
+		printf("T3: %10.5f %10.5f %10.5f\n",BxT3,ByT3,BzT3);
+		printf("R1: %10.5f %10.5f %10.5f\n",R1x,R1y,R1z);//has error
+		printf("R2: %10.5f %10.5f %10.5f\n",R2x,R2y,R2z);//fixed
+		printf("IMF: %10.5f %10.5f %10.5f\n",RIMFx,RIMFyS,RIMFzS); 
+		printf("F: %10.5f %10.5f %10.5f\n",Fx,Fy,Fz);
+		
+		printf("Xappa:     %10.5f\n",Xappa);
+		printf("RCampl:    %10.5f\n",RCampl);
+		printf("Tampl2:    %10.5f\n",Tampl2);
+		printf("Tampl3:    %10.5f\n",Tampl3);
+		printf("B1ampl:    %10.5f\n",B1ampl);
+		printf("B2ampl:    %10.5f\n",B2ampl);
+		printf("RIMFampl:  %10.5f\n",RIMFampl);*/
 		if (Sigma < (S0-Dsig)) {
 			*Bx = Fx;
 			*By = Fy;
@@ -141,8 +149,8 @@ void DipShld(double Ps, double x, double y, double z, double *Bx, double *By, do
 	double A1[] = {0.24777,-27.003,-0.46815,7.0637,-1.5918,-0.90317E-01,57.522,13.757,2.0100,10.458,4.5798,2.1695};
 	double A2[] = {-0.65385,-18.061,-0.40457,-5.0995,1.2846,0.78231E-01,39.592,13.291,1.9970,10.062,4.5140,2.1558};
 	double cps, sps, Hx, Hy, Hz, Fx, Fy, Fz;
-	cps = cosf(Ps);
-	sps = sinf(Ps);
+	cps = cos(Ps);
+	sps = sin(Ps);
 	
 	CylHarm(A1,x,y,z,&Hx,&Hy,&Hz);
 	CylHar1(A2,x,y,z,&Fx,&Fy,&Fz);
@@ -155,7 +163,7 @@ void DipShld(double Ps, double x, double y, double z, double *Bx, double *By, do
 void CylHarm(double *A, double x, double y, double z, double *Bx, double *By, double *Bz) {
 	double Rho, SinFi, CosFi, SinFi2, Si2Co2, Dzeta, Xj0, Xj1, Xexp, Xksi, Brho, Bphi;
 	int i;
-	Rho = sqrtf(y*y + z*z);
+	Rho = sqrt(y*y + z*z);
 	if (Rho < 1e-8) {
 		SinFi = 1.0;
 		CosFi = 0.0;
@@ -175,7 +183,7 @@ void CylHarm(double *A, double x, double y, double z, double *Bx, double *By, do
 		Dzeta = Rho/A[i+6];
 		Xj0 = Bes(Dzeta,0);
 		Xj1 = Bes(Dzeta,1);
-		Xexp = expf(x/A[i+6]);
+		Xexp = exp(x/A[i+6]);
 		*Bx = *Bx - A[i]*Xj1*Xexp*SinFi;
 		*By = *By + A[i]*(2.0*Xj1/Dzeta - Xj0)*Xexp*SinFi*CosFi;
 		*Bz = *Bz + A[i]*(Xj1/Dzeta*Si2Co2 - Xj0*SinFi2)*Xexp;
@@ -186,7 +194,7 @@ void CylHarm(double *A, double x, double y, double z, double *Bx, double *By, do
 		Xksi = x/A[i+6];
 		Xj0 = Bes(Dzeta,0);
 		Xj1 = Bes(Dzeta,1);
-		Xexp = expf(Xksi);
+		Xexp = exp(Xksi);
 		Brho = (Xksi*Xj0 - (Dzeta*Dzeta + Xksi - 1.0)*Xj1/Dzeta)*Xexp*SinFi; 
 		Bphi = (Xj0 + Xj1/Dzeta * (Xksi-1.0))*Xexp*CosFi;
 		*Bx = *Bx + A[i]*(Dzeta*Xj0 + Xksi*Xj1)*Xexp*SinFi;
@@ -198,7 +206,7 @@ void CylHarm(double *A, double x, double y, double z, double *Bx, double *By, do
 void CylHar1(double *A, double x, double y, double z, double *Bx, double *By, double *Bz) {
 	double Rho, SinFi, CosFi, SinFi2, Si2Co2, Dzeta, Xj0, Xj1, Xexp, Xksi, Brho, Bphi;
 	int i;
-	Rho = sqrtf(y*y + z*z);
+	Rho = sqrt(y*y + z*z);
 	if (Rho < 1e-8) {
 		SinFi = 1.0;
 		CosFi = 0.0;
@@ -217,7 +225,7 @@ void CylHar1(double *A, double x, double y, double z, double *Bx, double *By, do
 		Xksi = x/A[i+6];
 		Xj0 = Bes(Dzeta,0);
 		Xj1 = Bes(Dzeta,1);
-		Xexp = expf(Xksi);
+		Xexp = exp(Xksi);
 		Brho = Xj1*Xexp;
 		*Bx = *Bx - A[i]*Xj0*Xexp;
 		*By = *By + A[i]*Brho*CosFi;
@@ -229,7 +237,7 @@ void CylHar1(double *A, double x, double y, double z, double *Bx, double *By, do
 		Xksi = x/A[i+6];
 		Xj0 = Bes(Dzeta,0);
 		Xj1 = Bes(Dzeta,1);
-		Xexp = expf(Xksi);
+		Xexp = exp(Xksi);
 		Brho = (Dzeta*Xj0 + Xksi*Xj1)*Xexp; 
 		*Bx = *Bx + A[i]*(Dzeta*Xj1 - Xj0*(Xksi+1.0))*Xexp;
 		*By = *By + A[i]*Brho*CosFi;
@@ -308,14 +316,14 @@ double Bes(double x, int k) {
 
 double Bes0(double x) {
 	if (fabs(x) < 3.0) {
-		double X32 = powf((x/3.0),2.0);
+		double X32 = pow((x/3.0),2.0);
 		return 1.0-X32*(2.2499997-X32*(1.26562080-X32*(0.31638660-X32*(0.04444790-X32*(0.00394440-X32*0.000210)))));
 	} else {
 		double XD3, F0, T0;
 		XD3 = 3.0/x;
 		F0=0.797884560-XD3*(0.000000770+XD3*(0.005527400+XD3*(0.000095120-XD3*(0.001372370-XD3*(0.000728050-XD3*0.000144760)))));
         T0=x-0.785398160-XD3*(0.041663970+XD3*(0.000039540-XD3*(0.002625730-XD3*(0.000541250+XD3*(0.000293330-XD3*0.000135580)))));
-        return F0/sqrtf(x)*cosf(T0);		
+        return F0/sqrt(x)*cos(T0);		
 	}
 }
 
@@ -329,7 +337,7 @@ double Bes1(double x) {
 		XD3 = 3.0/x;
         F1=0.797884560+XD3*(0.000001560+XD3*(0.016596670+XD3*(0.000171050-XD3*(0.002495110-XD3*(0.001136530-XD3*0.000200330)))));
         T1=x-2.356194490+XD3*(0.124996120+XD3*(0.00005650-XD3*(0.006378790-XD3*(0.00074348+XD3*(0.00079824-XD3*0.000291660)))));
-        return F1/sqrtf(x)*cosf(T1);		
+        return F1/sqrt(x)*cos(T1);		
 	}	
 }
 
@@ -357,13 +365,13 @@ void Intercon(double x, double y, double z, double *Bx, double *By, double *Bz) 
 	*Bz = 0.0;
 	
 	for (i=0;i<3;i++) {
-		cypi = cosf(y*rp[i]);
-		sypi = sinf(y*rp[i]);
+		cypi = cos(y*rp[i]);
+		sypi = sin(y*rp[i]);
 		for (j=0;j<3;j++) {
-			szrk = sinf(z*rr[j]);
-			czrk = cosf(z*rr[j]);
-			sqpr = sqrtf(rp[i]*rp[i] + rr[j]*rr[j]);
-			epr = expf(x*sqpr);
+			szrk = sin(z*rr[j]);
+			czrk = cos(z*rr[j]);
+			sqpr = sqrt(rp[i]*rp[i] + rr[j]*rr[j]);
+			epr = exp(x*sqpr);
 			Hx = -sqpr*epr*cypi*szrk;
 			Hy = rp[i]*epr*sypi*szrk;
 			Hz = -rr[j]*epr*cypi*czrk;
@@ -403,24 +411,24 @@ void TailRC96(double SPS, double x, double y, double z, double *BxRC, double *By
 	Deltady = 10.0;
 	
 	Dr2 = Dr*Dr;
-	C11 = sqrtf(powf(1.0+Rh,2.0) + Dr2);
-	C12 = sqrtf(powf(1.0-Rh,2.0) + Dr2);
+	C11 = sqrt(pow(1.0+Rh,2.0) + Dr2);
+	C12 = sqrt(pow(1.0-Rh,2.0) + Dr2);
 	C1 = C11 - C12;
 	SPSC1 = SPS/C1;
 	warp.rps = 0.5*(C11+C12)*SPS;
 	
 	R = sqrt(x*x + y*y + z*z);
-	Sq1 = sqrtf(powf(R + Rh,2.0) + Dr2);
-	Sq2 = sqrtf(powf(R - Rh,2.0) + Dr2);
+	Sq1 = sqrt(pow(R + Rh,2.0) + Dr2);
+	Sq2 = sqrt(pow(R - Rh,2.0) + Dr2);
 	C = Sq1 - Sq2;
 	Cs = (R+Rh)/Sq1 - (R-Rh)/Sq2;
 	warp.spss = SPSC1/R*C;
-	warp.cpss = sqrtf(1.0- powf(warp.spss,2.0));
-	warp.dpsrr = SPS/(R*R)*(Cs*R-C)/sqrt(powf(R*C1,2.0) - powf(C*SPS,2.0));
+	warp.cpss = sqrt(1.0- pow(warp.spss,2.0));
+	warp.dpsrr = SPS/(R*R)*(Cs*R-C)/sqrt(pow(R*C1,2.0) - pow(C*SPS,2.0));
 	
-	Wfac = y/(powf(y,4.0)+1.0e4);
-	W = Wfac*powf(y,3.0);
-	Ws = 4.0e4*y*powf(Wfac,2.0);
+	Wfac = y/(pow(y,4.0)+1.0e4);
+	W = Wfac*pow(y,3.0);
+	Ws = 4.0e4*y*pow(Wfac,2.0);
 	warp.warp = G*SPS*W;
 	warp.xs = x*warp.cpss - z*warp.spss;
 	warp.zsww = z*warp.cpss + x*warp.spss;
@@ -433,10 +441,10 @@ void TailRC96(double SPS, double x, double y, double z, double *BxRC, double *By
 	warp.dzsy = warp.xs*y*warp.dpsrr + G*SPS*Ws;
 	warp.dzsz = warp.cpss + warp.xs*z*warp.dpsrr;
 	
-	warp.d = D0 + Deltady*powf(y/20.0,2.0);
+	warp.d = D0 + Deltady*pow(y/20.0,2.0);
 	Dddy = Deltady*y*0.005;
 	
-	warp.dzetas = sqrtf(warp.zs*warp.zs + warp.d*warp.d);
+	warp.dzetas = sqrt(warp.zs*warp.zs + warp.d*warp.d);
 	
 	warp.ddzetadx = warp.zs * warp.dzsx/warp.dzetas;
 	warp.ddzetady = (warp.zs*warp.dzsy + warp.d*Dddy)/warp.dzetas;
@@ -482,11 +490,11 @@ void RingCurr96(double x, double y, double z, double *Bx, double *By, double *Bz
 	
 	dzsy = warp.xs*y*warp.dpsrr;
 	Xxd = x-Xd;
-	Fdx = 0.5*(1.0+Xxd/sqrtf(Xxd*Xxd + Xldx*Xldx));
-	dddx = Deltadx*0.5*Xldx*Xldx/powf(sqrtf(Xxd*Xxd + Xldx*Xldx),3.0);
+	Fdx = 0.5*(1.0+Xxd/sqrt(Xxd*Xxd + Xldx*Xldx));
+	dddx = Deltadx*0.5*Xldx*Xldx/pow(sqrt(Xxd*Xxd + Xldx*Xldx),3.0);
 	D = D0 + Deltadx*Fdx;
-	dzetas = sqrtf(powf(warp.zsww,2.0) + D*D);
-	Rhos = sqrtf(warp.xs*warp.xs + y*y);
+	dzetas = sqrt(pow(warp.zsww,2.0) + D*D);
+	Rhos = sqrt(warp.xs*warp.xs + y*y);
 	
 	ddzetadx = (warp.zsww*warp.dzsx + D*dddx)/dzetas;
 	ddzetady = warp.zsww*dzsy/dzetas;
@@ -494,7 +502,7 @@ void RingCurr96(double x, double y, double z, double *Bx, double *By, double *Bz
 	
 	if (Rhos < 1.0e-5) {
 		drhosdx = 0.0;
-		drhosdy = y/fabsf(y);
+		drhosdy = y/fabs(y);
 		drhosdz = 0.0;
 	} else {
 		drhosdx = warp.xs*warp.dxsx/Rhos;
@@ -508,8 +516,8 @@ void RingCurr96(double x, double y, double z, double *Bx, double *By, double *Bz
 	
 	for (i=0;i<2;i++) {
 		Bi = Beta[i];
-		S1 = sqrtf(powf(dzetas+Bi,2.0) + powf(Rhos+Bi,2.0));
-		S2 = sqrtf(powf(dzetas+Bi,2.0) + powf(Rhos-Bi,2.0));
+		S1 = sqrt(pow(dzetas+Bi,2.0) + pow(Rhos+Bi,2.0));
+		S2 = sqrt(pow(dzetas+Bi,2.0) + pow(Rhos-Bi,2.0));
 		dS1ddz = (dzetas+Bi)/S1;
 		dS2ddz = (dzetas+Bi)/S2;
 		dS1drhos = (Rhos+Bi)/S1;
@@ -528,7 +536,7 @@ void RingCurr96(double x, double y, double z, double *Bx, double *By, double *Bz
 		S1tS2 = S1*S2;
 		S1pS2 = S1+S2;
 		S1pS2sq = S1pS2*S1pS2;
-		Fac1 = sqrtf(S1pS2sq - powf(2.0*Bi,2.0));
+		Fac1 = sqrt(S1pS2sq - pow(2.0*Bi,2.0));
 		As = Fac1/(S1tS2*S1pS2sq);
 		Term1 = 1.0/(S1tS2*S1pS2*Fac1);
 		Fac2 = As/S1pS2sq;
@@ -558,10 +566,10 @@ void TailDisk(double x, double y, double z, double *Bx, double *By, double *Bz) 
 	int i;
 	
 	Xshift = 4.5;
-	Rhos = sqrtf(powf((warp.xs-Xshift),2.0) + y*y);
+	Rhos = sqrt(pow((warp.xs-Xshift),2.0) + y*y);
 	if (Rhos < 1.0e-5) {
 		drhosdx = 0.0;
-		drhosdy = y/fabsf(y);
+		drhosdy = y/fabs(y);
 		drhosdz = 0.0;
 	} else {
 		drhosdx = (warp.xs-Xshift)*warp.dxsx/Rhos;
@@ -574,8 +582,8 @@ void TailDisk(double x, double y, double z, double *Bx, double *By, double *Bz) 
 	
 	for (i=0;i<4;i++) {
 		Bi = Beta[i];
-		S1 = sqrtf(powf(warp.dzetas+Bi,2.0) + powf(Rhos+Bi,2.0));
-		S2 = sqrtf(powf(warp.dzetas+Bi,2.0) + powf(Rhos-Bi,2.0));
+		S1 = sqrt(pow(warp.dzetas+Bi,2.0) + pow(Rhos+Bi,2.0));
+		S2 = sqrt(pow(warp.dzetas+Bi,2.0) + pow(Rhos-Bi,2.0));
 		dS1ddz = (warp.dzetas+Bi)/S1;
 		dS2ddz = (warp.dzetas+Bi)/S2;
 		dS1drhos = (Rhos+Bi)/S1;
@@ -592,7 +600,7 @@ void TailDisk(double x, double y, double z, double *Bx, double *By, double *Bz) 
 		S1tS2 = S1*S2;
 		S1pS2 = S1+S2;
 		S1pS2sq = S1pS2*S1pS2;
-		Fac1 = sqrtf(S1pS2sq - powf(2.0*Bi,2.0));
+		Fac1 = sqrt(S1pS2sq - pow(2.0*Bi,2.0));
 		As = Fac1/(S1tS2*S1pS2sq);
 		Term1 = 1.0/(S1tS2*S1pS2*Fac1);
 		Fac2 = As/S1pS2sq;
@@ -645,9 +653,9 @@ void Tail87(double x, double z, double *Bx, double *Bz) {
 	b20 = zs*zs + d2;
 	b2p = zp*zp + d2;
 	b2m = zm*zm + d2;
-	b = sqrtf(b20);
-	bp = sqrtf(b2p);
-	bm = sqrtf(b2m);
+	b = sqrt(b20);
+	bp = sqrt(b2p);
+	bm = sqrt(b2m);
 	xa1 = xc12+b20;
 	xap1 = xc12+b2p;
 	xam1 = xc12+b2m;
@@ -660,16 +668,16 @@ void Tail87(double x, double z, double *Bx, double *Bz) {
 	f = b20 - xc22;
 	fp = b2p - xc22;
 	fm = b2m - xc22;
-	xln1 = logf(xn21/xna);
-	xlnp1 = logf(xn21/xnap);
-	xlnm1 = logf(xn21/xnam);
+	xln1 = log(xn21/xna);
+	xlnp1 = log(xn21/xnap);
+	xlnm1 = log(xn21/xnam);
 	xln2 = xln1 + adln;
 	xlnp2 = xlnp1 + adln;
 	xlnm2 = xlnm1 + adln;
 	aln = 0.25*(xlnp1 + xlnm1 - 2.0*xln1);
-	s0 = (atanf(xnx/b) + hpi)/b;
-	s0p = (atanf(xnx/bp) + hpi)/bp;
-	s0m = (atanf(xnx/bm) + hpi)/bm;
+	s0 = (atan(xnx/b) + hpi)/b;
+	s0p = (atan(xnx/bp) + hpi)/bp;
+	s0m = (atan(xnx/bm) + hpi)/bm;
 	s1 = (xln1*0.5 + xc1*s0)/xa1;
 	s1p = (xlnp1*0.5 + xc1*s0p)/xap1;
 	s1m = (xlnm1*0.5 + xc1*s0m)/xam1;
@@ -689,7 +697,7 @@ void Tail87(double x, double z, double *Bx, double *Bz) {
 void ShlCar3x3(double *A, double x, double y, double z, double SPS, double *Bx, double *By, double *Bz) {
 	double CPS, S3PS, p, q, cypi, cyqi, sypi, syqi, r, s, szrk, czsk, czrk, szsk, sqpr, sqqs, epr, eqs;
 	double Dx, Dy, Dz;
-	CPS = sqrtf(1.0 - SPS*SPS);
+	CPS = sqrt(1.0 - SPS*SPS);
 	S3PS = 4.0*CPS*CPS - 1.0;
 	int l, m, k, i, n;
 	
@@ -702,21 +710,21 @@ void ShlCar3x3(double *A, double x, double y, double z, double SPS, double *Bx, 
 		for (i=0;i<3;i++) {
 			p = A[36+i];
 			q = A[42+i];
-			cypi = cosf(y/p);
-			sypi = sinf(y/p);
-			cyqi = cosf(y/q);
-			syqi = sinf(y/q);
+			cypi = cos(y/p);
+			sypi = sin(y/p);
+			cyqi = cos(y/q);
+			syqi = sin(y/q);
 			for (k=0;k<3;k++) {
 				r = A[39+k];
 				s = A[45+k];
-				szrk = sinf(z/r);
-				czsk = cosf(z/s);
-				czrk = cosf(z/r);
-				szsk = sinf(z/s);
-				sqpr = sqrtf(1.0/powf(p,2.0) + 1.0/powf(r,2.0));
-				sqqs = sqrtf(1.0/powf(q,2.0) + 1.0/powf(s,2.0));
-				epr = expf(x*sqpr);
-				eqs = expf(x*sqqs);
+				szrk = sin(z/r);
+				czsk = cos(z/s);
+				czrk = cos(z/r);
+				szsk = sin(z/s);
+				sqpr = sqrt(1.0/pow(p,2.0) + 1.0/pow(r,2.0));
+				sqqs = sqrt(1.0/pow(q,2.0) + 1.0/pow(s,2.0));
+				epr = exp(x*sqpr);
+				eqs = exp(x*sqqs);
 				for (n=0;n<2;n++) {
 					if (m == 0) {
 						if (n == 0) {
@@ -784,39 +792,39 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 	TnoonN = (90.0-XltDay)*M_PI/180.0;
 	TnoonS = M_PI - TnoonN;
 	DtetDN = (XltDay-XltNght)*M_PI/180.0;
-	Dr2 = powf(rhdr.Dr,2.0);
+	Dr2 = pow(rhdr.Dr,2.0);
 	
-	SPS = sinf(Ps);
+	SPS = sin(Ps);
 	R2 = x*x + y*y + z*z;
-	R = sqrtf(R2);
+	R = sqrt(R2);
 	R3 = R*R2;
 	
 	RmRh = R - rhdr.Rh;
 	RpRh = R + rhdr.Rh;
-	Sqm = sqrtf(RmRh*RmRh + Dr2);
-	Sqp = sqrtf(RpRh*RpRh + Dr2);
+	Sqm = sqrt(RmRh*RmRh + Dr2);
+	Sqp = sqrt(RpRh*RpRh + Dr2);
 	C = Sqp-Sqm;
-	Q = sqrtf(powf(rhdr.Rh+1.0,2.0)+Dr2) - sqrtf(powf(rhdr.Rh-1.0,2.0)+Dr2);
+	Q = sqrt(pow(rhdr.Rh+1.0,2.0)+Dr2) - sqrt(pow(rhdr.Rh-1.0,2.0)+Dr2);
 	Spsas = SPS/R * C/Q;
-	Cpsas = sqrtf(1.0f - powf(Spsas,2.0));
+	Cpsas = sqrt(1.0f - pow(Spsas,2.0));
 	Xas = x*Cpsas - z*Spsas;
 	Zas = x*Spsas + z*Cpsas;
 	
 	if (Xas != 0.0 || y !=0.0) {
-		Pas = atan2f(y,Xas);
+		Pas = atan2(y,Xas);
 	} else {
 		Pas = 0.0;
 	}
 	
-	Tas = atan2f(sqrt(Xas*Xas + y*y),Zas);
-	Stas = sinf(Tas);
-	F = Stas/powf((powf(Stas,6.0)*(1.0-R3)+R3),0.1666666667f);
+	Tas = atan2(sqrt(Xas*Xas + y*y),Zas);
+	Stas = sin(Tas);
+	F = Stas/pow((pow(Stas,6.0)*(1.0-R3)+R3),0.1666666667f);
 	
 	Tet0 = asin(F);
 	if (Tas > M_PI/2.0) {
 		Tet0 = M_PI-Tet0;
 	}
-	Dtet = DtetDN*powf(sinf(Pas*0.5),2.0);
+	Dtet = DtetDN*pow(sin(Pas*0.5),2.0);
 	TetR1N = TnoonN+Dtet;
 	TetR1S = TnoonS-Dtet;
 	
@@ -832,7 +840,7 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 	if (Tet0 >= (TetR1S-Dtet0) && Tet0 <= (TetR1S+Dtet0)) {
 		Loc = 4;
 	}
-	//printf("%d\n",Loc);
+
 	if (Loc == 1) {
 		Xi[0] = x;
 		Xi[1] = y;
@@ -843,7 +851,6 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 		*By = 0.0;
 		*Bz = 0.0;
 		for (i=0;i<26;i++) {
-			//printf("%d %f %f %f %f\n",i,C1[i],D1[0][i],D1[1][i],D1[2][i]);
 			*Bx = *Bx + C1[i]*D1[0][i];
 			*By = *By + C1[i]*D1[1][i];
 			*Bz = *Bz + C1[i]*D1[2][i];
@@ -869,13 +876,13 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 	if (Loc == 3) {
 		T01 = TetR1N-Dtet0;
 		T02 = TetR1N+Dtet0;
-		Sqr = sqrtf(R);
-		St01as = Sqr/powf(R3 + 1.0/powf(sinf(T01),6.0)-1.0,0.1666666667f);
-		St02as = Sqr/powf(R3 + 1.0/powf(sinf(T02),6.0)-1.0,0.1666666667f);
-		Ct01as = sqrtf(1.0 - St01as*St01as);
-		Ct02as = sqrtf(1.0 - St02as*St02as);
-		Xas1 = R*St01as*cosf(Pas);
-		Y1 = R*St01as*sinf(Pas);
+		Sqr = sqrt(R);
+		St01as = Sqr/pow(R3 + 1.0/pow(sin(T01),6.0)-1.0,0.1666666667f);
+		St02as = Sqr/pow(R3 + 1.0/pow(sin(T02),6.0)-1.0,0.1666666667f);
+		Ct01as = sqrt(1.0 - St01as*St01as);
+		Ct02as = sqrt(1.0 - St02as*St02as);
+		Xas1 = R*St01as*cos(Pas);
+		Y1 = R*St01as*sin(Pas);
 		Zas1 = R*Ct01as;
 		X1 = Xas1*Cpsas + Zas1*Spsas;
 		Z1 = -Xas1*Spsas + Zas1*Cpsas;
@@ -894,8 +901,8 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 			Bz1 = Bz1 + C1[i]*D1[2][i];
 		}
 		
-		Xas2 = R*St02as*cosf(Pas);
-		Y2 = R*St02as*sinf(Pas);
+		Xas2 = R*St02as*cos(Pas);
+		Y2 = R*St02as*sin(Pas);
 		Zas2 = R*Ct02as;
 		X2 = Xas2*Cpsas + Zas2*Spsas;
 		Z2 = -Xas2*Spsas + Zas2*Cpsas;
@@ -914,8 +921,8 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 			Bz2 = Bz2 + C2[i]*D2[2][i];
 		}		
 		
-		ss = sqrtf(powf(X2 - X1,2.0) + powf(Y2 - Y1,2.0) + powf(Z2 - Z1,2.0));
-		Ds = sqrtf(powf(x - X1,2.0) + powf(y - Y1,2.0) + powf(z - Z1,2.0));
+		ss = sqrt(pow(X2 - X1,2.0) + pow(Y2 - Y1,2.0) + pow(Z2 - Z1,2.0));
+		Ds = sqrt(pow(x - X1,2.0) + pow(y - Y1,2.0) + pow(z - Z1,2.0));
 		Frac = Ds/ss;
 		*Bx = Bx1*(1.0-Frac) + Bx2*Frac;
 		*By = By1*(1.0-Frac) + By2*Frac;
@@ -925,13 +932,13 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 	if (Loc == 4) {
 		T01 = TetR1N-Dtet0;
 		T02 = TetR1N+Dtet0;
-		Sqr = sqrtf(R);
-		St01as = Sqr/powf(R3 + 1.0/powf(sinf(T01),6.0)-1.0,0.1666666667);
-		St02as = Sqr/powf(R3 + 1.0/powf(sinf(T02),6.0)-1.0,0.1666666667);
-		Ct01as = -sqrtf(1.0 - St01as*St01as);
-		Ct02as = -sqrtf(1.0 - St02as*St02as);
-		Xas1 = R*St01as*cosf(Pas);
-		Y1 = R*St01as*sinf(Pas);
+		Sqr = sqrt(R);
+		St01as = Sqr/pow(R3 + 1.0/pow(sin(T01),6.0)-1.0,0.1666666667);
+		St02as = Sqr/pow(R3 + 1.0/pow(sin(T02),6.0)-1.0,0.1666666667);
+		Ct01as = -sqrt(1.0 - St01as*St01as);
+		Ct02as = -sqrt(1.0 - St02as*St02as);
+		Xas1 = R*St01as*cos(Pas);
+		Y1 = R*St01as*sin(Pas);
 		Zas1 = R*Ct01as;
 		X1 = Xas1*Cpsas + Zas1*Spsas;
 		Z1 = -Xas1*Spsas + Zas1*Cpsas;
@@ -950,8 +957,8 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 			Bz1 = Bz1 + C2[i]*D2[2][i];
 		}
 		
-		Xas2 = R*St02as*cosf(Pas);
-		Y2 = R*St02as*sinf(Pas);
+		Xas2 = R*St02as*cos(Pas);
+		Y2 = R*St02as*sin(Pas);
 		Zas2 = R*Ct02as;
 		X2 = Xas2*Cpsas + Zas2*Spsas;
 		Z2 = -Xas2*Spsas + Zas2*Cpsas;
@@ -970,8 +977,8 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 			Bz2 = Bz2 + C1[i]*D1[2][i];
 		}		
 		
-		ss = sqrtf(powf(X2 - X1,2.0) + powf(Y2 - Y1,2.0) + powf(Z2 - Z1,2.0));
-		Ds = sqrtf(powf(z - X1,2.0) + powf(y - Y1,2.0) + powf(z - Z1,2.0));
+		ss = sqrt(pow(X2 - X1,2.0) + pow(Y2 - Y1,2.0) + pow(Z2 - Z1,2.0));
+		Ds = sqrt(pow(z - X1,2.0) + pow(y - Y1,2.0) + pow(z - Z1,2.0));
 		Frac = Ds/ss;
 		*Bx = Bx1*(1.0-Frac) + Bx2*Frac;
 		*By = By1*(1.0-Frac) + By2*Frac;
@@ -979,6 +986,8 @@ void Birk1Tot(double Ps, double x, double y, double z, double *Bx, double *By, d
 	}	
 	
 	Birk1Shld(Ps,x,y,z,&Bsx,&Bsy,&Bsz);
+	//printf("Birk1    : %lf %lf %lf\n",*Bx,*By,*Bz);
+	//printf("Birk1Shld: %lf %lf %lf\n",Bsx,Bsy,Bsz);
 	*Bx = *Bx + Bsx;
 	*By = *By + Bsy;
 	*Bz = *Bz + Bsz;
@@ -995,20 +1004,20 @@ void DipLoop1(double *Xi, double D[3][26]) {
 	Y = Xi[1];
 	Z = Xi[2];
 	Ps = Xi[3];
-	SPS = sinf(Ps);
+	SPS = sin(Ps);
 
 	for (i=0;i<12;i++) {
-		R2=powf(coord11.xx[i]*loopdip1.DipX,2.0)+powf(coord11.yy[i]*loopdip1.DipY,2.0);
-		R=sqrtf(R2);
+		R2=pow(coord11.xx[i]*loopdip1.DipX,2.0)+pow(coord11.yy[i]*loopdip1.DipY,2.0);
+		R=sqrt(R2);
 		RMRH=R-rhdr.Rh;
 		RPRH=R+rhdr.Rh;
 		DR2=rhdr.Dr*rhdr.Dr;
-		SQM=sqrtf(RMRH*RMRH+DR2);
-		SQP=sqrtf(RPRH*RPRH+DR2);
+		SQM=sqrt(RMRH*RMRH+DR2);
+		SQP=sqrt(RPRH*RPRH+DR2);
 		C=SQP-SQM;
-		Q=sqrtf(powf(rhdr.Rh+1.0,2.0)+DR2)-sqrtf(powf(rhdr.Rh-1.0,2.0)+DR2);
+		Q=sqrt(pow(rhdr.Rh+1.0,2.0)+DR2)-sqrt(pow(rhdr.Rh-1.0,2.0)+DR2);
 		SPSAS=SPS/R*C/Q;
-		CPSAS=sqrtf(1.0-SPSAS*SPSAS);
+		CPSAS=sqrt(1.0-SPSAS*SPSAS);
 		XD= (coord11.xx[i]*loopdip1.DipX)*CPSAS;
 		YD= (coord11.yy[i]*loopdip1.DipY);
 		ZD=-(coord11.xx[i]*loopdip1.DipX)*SPSAS;
@@ -1032,17 +1041,17 @@ void DipLoop1(double *Xi, double D[3][26]) {
 		D[1][i+12]=(BY1X+BY2X)*SPS;
 		D[2][i+12]=(BZ1X+BZ2X)*SPS;
 	}
-	R2=powf((loopdip1.XCentre[0]+loopdip1.Radius[0]),2.0);
-	R=sqrtf(R2);
+	R2=pow((loopdip1.XCentre[0]+loopdip1.Radius[0]),2.0);
+	R=sqrt(R2);
 	RMRH=R-rhdr.Rh;
 	RPRH=R+rhdr.Rh;
-	DR2=powf(rhdr.Dr,2);
-	SQM=sqrtf(RMRH*RMRH+DR2);
-	SQP=sqrtf(RPRH*RPRH+DR2);
+	DR2=pow(rhdr.Dr,2);
+	SQM=sqrt(RMRH*RMRH+DR2);
+	SQP=sqrt(RPRH*RPRH+DR2);
 	C=SQP-SQM;
-	Q=sqrtf(powf(rhdr.Rh+1.0,2.0)+DR2)-sqrtf(powf(rhdr.Rh-1.0,2.0)+DR2);
+	Q=sqrt(pow(rhdr.Rh+1.0,2.0)+DR2)-sqrt(pow(rhdr.Rh-1.0,2.0)+DR2);
 	SPSAS=SPS/R*C/Q;
-	CPSAS=sqrtf(1.0-SPSAS*SPSAS);
+	CPSAS=sqrt(1.0-SPSAS*SPSAS);
 	XOCT1= X*CPSAS-Z*SPSAS;
 	YOCT1= Y;
 	ZOCT1= X*SPSAS+Z*CPSAS;
@@ -1052,17 +1061,17 @@ void DipLoop1(double *Xi, double D[3][26]) {
 	D[1][24]=BYOCT1;
 	D[2][24]=-BXOCT1*SPSAS+BZOCT1*CPSAS;
 
-	R2=powf(loopdip1.Radius[1]-loopdip1.XCentre[1],2.0);
-	R=sqrtf(R2);
+	R2=pow(loopdip1.Radius[1]-loopdip1.XCentre[1],2.0);
+	R=sqrt(R2);
 	RMRH=R-rhdr.Rh;
 	RPRH=R+rhdr.Rh;
 	DR2=rhdr.Dr*rhdr.Dr;
-	SQM=sqrtf(RMRH*RMRH+DR2);
-	SQP=sqrtf(RPRH*RPRH+DR2);
+	SQM=sqrt(RMRH*RMRH+DR2);
+	SQP=sqrt(RPRH*RPRH+DR2);
 	C=SQP-SQM;
-	Q=sqrtf(powf(rhdr.Rh+1.0,2.0)+DR2)-sqrtf(powf(rhdr.Rh-1.0,2.0)+DR2);
+	Q=sqrt(pow(rhdr.Rh+1.0,2.0)+DR2)-sqrt(pow(rhdr.Rh-1.0,2.0)+DR2);
 	SPSAS=SPS/R*C/Q;
-	CPSAS=sqrtf(1.0-SPSAS*SPSAS);
+	CPSAS=sqrt(1.0-SPSAS*SPSAS);
 	XOCT2= X*CPSAS-Z*SPSAS -loopdip1.XCentre[1];
 	YOCT2= Y;
 	ZOCT2= X*SPSAS+Z*CPSAS;
@@ -1076,14 +1085,14 @@ void Circle(double x, double y, double z, double Rl, double *Bx, double *By, dou
 	double K, Rho, Rho2, R22, R2, R12, R32, XK2, XK2S, DL, E, BRho;
 	
 	Rho2 = x*x + y*y;
-	Rho = sqrtf(Rho2);
-	R22 = z*z + powf((Rho+Rl),2.0);
-	R2 = sqrtf(R22);
+	Rho = sqrt(Rho2);
+	R22 = z*z + pow((Rho+Rl),2.0);
+	R2 = sqrt(R22);
 	R12 = R22 - 4.0*Rho*Rl;
 	R32 = 0.5*(R12+R22);
 	XK2 = 1.0 - (R12/R22);
 	XK2S = 1.0 - XK2;
-	DL = logf(1.0/XK2S);
+	DL = log(1.0/XK2S);
 	K = 1.386294361120+XK2S*(0.096663442590+XK2S*(0.03590092383+XK2S*(0.03742563713+XK2S*0.01451196212))) +DL*(0.50+XK2S*(0.124985935970+XK2S*(0.068802485760+XK2S*(0.033283553460+XK2S*0.004417870120))));
 	E = 1.0+XK2S*(0.443251414630+XK2S*(0.06260601220+XK2S*(0.047573835460+XK2S*0.017365064510))) +DL*XK2S*(0.24998368310+XK2S*(0.092001800370+XK2S*(0.040696975260+XK2S*0.005264496390)));
 	
@@ -1099,8 +1108,8 @@ void Circle(double x, double y, double z, double Rl, double *Bx, double *By, dou
 
 void CrossLP(double x, double y, double z, double *Bx, double *By, double *Bz, double Xc, double Rl, double Al) {
 	double Cal, Sal, y1, z1, y2, z2, Bx1, By1, Bz1, Bx2, By2, Bz2;
-	Cal = cosf(Al);
-	Sal = sinf(Al);
+	Cal = cos(Al);
+	Sal = sin(Al);
 	
 	y1 = y*Cal - z*Sal;
 	z1 = y*Sal + z*Cal;
@@ -1121,7 +1130,7 @@ void DipXYZ(double x, double y, double z, double *Bxx, double *Byx, double *Bzx,
 	z2 = z*z;
 	r2 = x2 + y2 + z2;
 	
-	Xmr5 = 30574.0/(r2*r2*sqrtf(r2));
+	Xmr5 = 30574.0/(r2*r2*sqrt(r2));
 	Xmr53 = 3.0*Xmr5;
 	*Bxx = Xmr5*(3.0*x2-r2);
 	*Byx = Xmr53*x*y;
@@ -1134,6 +1143,11 @@ void DipXYZ(double x, double y, double z, double *Bxx, double *Byx, double *Bzx,
 	*Bxz = *Bzx;
 	*Byz = *Bzy;
 	*Bzz = Xmr5*(3.0*z2-r2);
+	
+	//printf("DIPXYZ\n");
+	//printf("B*X %lf %lf %lf\n",*Bxx,*Byx,*Bzx);
+	//printf("B*Y %lf %lf %lf\n",*Bxy,*Byy,*Bzy);
+	//printf("B*Z %lf %lf %lf\n",*Bxz,*Byz,*Bzz);
 	
 }
 
@@ -1149,51 +1163,55 @@ void ConDip1(double *Xi, double D[3][79]) {
 	Y = Xi[1];
 	Z = Xi[2];
 	Ps = Xi[3];
-	SPS = sinf(Ps);
-	CPS = cosf(Ps);
+	SPS = sin(Ps);
+	CPS = cos(Ps);
+	//printf("Xi: %lf %lf %lf %lf %lf %lf\n",X,Y,Z,Ps,SPS,CPS);
 
+	XSM = X*CPS - Z*SPS  - dx1.dx;
+	ZSM = Z*CPS + X*SPS;
+	RO2 = XSM*XSM + Y*Y;
+	RO = sqrt(RO2);
 
-	XSM=X*CPS-Z*SPS  - dx1.dx;
-	ZSM=Z*CPS+X*SPS;
-	RO2=XSM*XSM+Y*Y;
-	RO=sqrtf(RO2);
+	CF[0] = XSM/RO;
+	SF[0] = Y/RO;
 
-	CF[0]=XSM/RO;
-	SF[0]=Y/RO;
+	CF[1] =    CF[0]*CF[0] - SF[0]*SF[0];
+	SF[1] =2.0*SF[0]*CF[0];
+	CF[2] =    CF[1]*CF[0] - SF[1]*SF[0];
+	SF[2] =    SF[1]*CF[0] + CF[1]*SF[0];
+	CF[3] =    CF[2]*CF[0] - SF[2]*SF[0];
+	SF[3] =    SF[2]*CF[0] + CF[2]*SF[0];
+	CF[4] =    CF[3]*CF[0] - SF[3]*SF[0];
+	SF[4] =    SF[3]*CF[0] + CF[3]*SF[0];
 
-	CF[1]=CF[0]*CF[0]-SF[0]*SF[0];
-	SF[1]=2.*SF[0]*CF[0];
-	CF[2]=CF[1]*CF[0]-SF[1]*SF[0];
-	SF[2]=SF[1]*CF[0]+CF[1]*SF[0];
-	CF[3]=CF[2]*CF[0]-SF[2]*SF[0];
-	SF[3]=SF[2]*CF[0]+CF[2]*SF[0];
-	CF[4]=CF[3]*CF[0]-SF[3]*SF[0];
-	SF[4]=SF[3]*CF[0]+CF[3]*SF[0];
+	//printf("CF: %lf %lf %lf %lf %lf\n",CF[0],CF[1],CF[2],CF[3],CF[4]);
+	//printf("SF: %lf %lf %lf %lf %lf\n",SF[0],SF[1],SF[2],SF[3],SF[4]);
 
-	R2=RO2+ZSM*ZSM;
-	R=sqrtf(R2);
-	C=ZSM/R;
-	S=RO/R;
-	CH=sqrtf(0.5*(1.0+C));
-	SH=sqrtf(0.5*(1.0-C));
-	TNH=SH/CH;
-	CNH=1.0/TNH;
+	R2 = RO2 + ZSM*ZSM;
+	R = sqrt(R2);
+	C = ZSM/R;
+	S = RO/R;
+	CH = sqrt(0.5*(1.0+C));
+	SH = sqrt(0.5*(1.0-C));
+	TNH = SH/CH;
+	CNH = 1.0/TNH;
 
-	for (M=0;M<5;M++) {
-		BT=(M+1)*CF[M]/(R*S)*(powf(TNH,M+1.0)+powf(CNH,M+1.0));
-		BF=-0.5*(M+1)*SF[M]/R*(powf(TNH,M)/powf(CH,2.0)-powf(CNH,M)/powf(SH,2.0));
-		BXSM=BT*C*CF[0]-BF*SF[0];
-		BY=BT*C*SF[0]+BF*CF[0];
-		BZSM=-BT*S;
+	for (M=0;M<5;M++) { //0 - 4
+		BT = (M+1)*CF[M]/(R*S)*(pow(TNH,M+1.0) + pow(CNH,M+1.0));
+		BF =-0.5*(M+1)*SF[M]/R*(pow(TNH,M)/pow(CH,2.0) - pow(CNH,M)/pow(SH,2.0));
+		BXSM = BT*C*CF[0] - BF*SF[0];
+		BY = BT*C*SF[0] + BF*CF[0];
+		BZSM = -BT*S;
 
-		D[0][M]=BXSM*CPS+BZSM*SPS;
-		D[1][M]=BY;
-		D[2][M]=-BXSM*SPS+BZSM*CPS;
+		D[0][M] = BXSM*CPS + BZSM*SPS;
+		D[1][M] = BY;
+		D[2][M] =-BXSM*SPS + BZSM*CPS;
+		//printf("D: %lf %lf %lf\n",D[0][M],D[1][M],D[2][M]); //these appear to be correct
 	}
-	XSM = X*CPS-Z*SPS;
-	ZSM = Z*CPS+X*SPS;
+	XSM = X*CPS - Z*SPS;
+	ZSM = Z*CPS + X*SPS;
 
-	for (I=0;I<9;I++) {
+	for (I=0;I<9;I++) { //5 - 31 and 32 - 58
         if (I == 2 || I == 4 || I == 5) {
 			XD = coord21.xx[I]*dx1.ScaleIn;
 			YD = coord21.yy[I]*dx1.ScaleIn;
@@ -1203,7 +1221,7 @@ void ConDip1(double *Xi, double D[3][79]) {
 		}
 
 		ZD =  coord21.zz[I];
-
+		//printf("I: %d %lf %lf %lf\n",I+1,XD,YD,ZD); //these seem right
 		DipXYZ(XSM-XD,Y-YD,ZSM-ZD,&BX1X,&BY1X,&BZ1X,&BX1Y,&BY1Y,&BZ1Y,&BX1Z,&BY1Z,&BZ1Z);
 		DipXYZ(XSM-XD,Y+YD,ZSM-ZD,&BX2X,&BY2X,&BZ2X,&BX2Y,&BY2Y,&BZ2Y,&BX2Z,&BY2Z,&BZ2Z);
 		DipXYZ(XSM-XD,Y-YD,ZSM+ZD,&BX3X,&BY3X,&BZ3X,&BX3Y,&BY3Y,&BZ3Y,&BX3Z,&BY3Z,&BZ3Z);
@@ -1212,6 +1230,8 @@ void ConDip1(double *Xi, double D[3][79]) {
 		IX=(I+1)*3+3;
 		IY=IX+1;
 		IZ=IY+1;
+	
+	//	printf("I   : %d %d %d %d\n",I+1,IX,IY,IZ); //same
 
 		D[0][IX-1]=(BX1X+BX2X-BX3X-BX4X)*CPS+(BZ1X+BZ2X-BZ3X-BZ4X)*SPS;
 		D[1][IX-1]= BY1X+BY2X-BY3X-BY4X;
@@ -1229,6 +1249,8 @@ void ConDip1(double *Xi, double D[3][79]) {
 		IY=IY+27;
 		IZ=IZ+27;
 
+	//	printf("I+27: %d %d %d %d\n",I+1,IX,IY,IZ); //same
+
 		D[0][IX-1]=SPS*((BX1X+BX2X+BX3X+BX4X)*CPS+(BZ1X+BZ2X+BZ3X+BZ4X)*SPS);
 		D[1][IX-1]=SPS*(BY1X+BY2X+BY3X+BY4X);
 		D[2][IX-1]=SPS*((BZ1X+BZ2X+BZ3X+BZ4X)*CPS-(BX1X+BX2X+BX3X+BX4X)*SPS);
@@ -1242,12 +1264,15 @@ void ConDip1(double *Xi, double D[3][79]) {
 		D[2][IZ-1]=SPS*((BZ1Z+BZ2Z-BZ3Z-BZ4Z)*CPS-(BX1Z+BX2Z-BX3Z-BX4Z)*SPS);
 	}
 
-	for (I=0;I<5;I++) {
-		ZD=coord21.zz[I+9];
+	for (I=0;I<5;I++) { // 59 - 78
+		ZD = coord21.zz[I+9];
 		DipXYZ(XSM,Y,ZSM-ZD,&BX1X,&BY1X,&BZ1X,&BX1Y,&BY1Y,&BZ1Y,&BX1Z,&BY1Z,&BZ1Z);
 		DipXYZ(XSM,Y,ZSM+ZD,&BX2X,&BY2X,&BZ2X,&BX2Y,&BY2Y,&BZ2Y,&BX2Z,&BY2Z,&BZ2Z);
-		IX=58+(I+1)*2;
-		IZ=IX+1;
+		//printf("Pos: %d %lf %lf %lf %lf\n",I+1,XSM,Y,ZSM,ZD); //same
+		//printf("Pos : %d\n",I+1);
+		IX = 58 + (I+1)*2;
+		IZ = IX + 1;
+		//printf("I   : %d %d %d\n",I+1,IX,IZ);//same
 		D[0][IX-1]=(BX1X-BX2X)*CPS+(BZ1X-BZ2X)*SPS;
 		D[1][IX-1]=BY1X-BY2X;
 		D[2][IX-1]=(BZ1X-BZ2X)*CPS-(BX1X-BX2X)*SPS;
@@ -1256,8 +1281,9 @@ void ConDip1(double *Xi, double D[3][79]) {
 		D[1][IZ-1]=BY1Z+BY2Z;
 		D[2][IZ-1]=(BZ1Z+BZ2Z)*CPS-(BX1Z+BX2Z)*SPS;
 
-		IX=IX+10;
-		IZ=IZ+10;
+		IX = IX + 10;
+		IZ = IZ + 10;
+		//printf("I+10: %d %d %d\n",I+1,IX,IZ);//same
 		D[0][IX-1]=SPS*((BX1X+BX2X)*CPS+(BZ1X+BZ2X)*SPS);
 		D[1][IX-1]=SPS*(BY1X+BY2X);
 		D[2][IX-1]=SPS*((BZ1X+BZ2X)*CPS-(BX1X+BX2X)*SPS);
@@ -1266,6 +1292,9 @@ void ConDip1(double *Xi, double D[3][79]) {
 		D[1][IZ-1]=SPS*(BY1Z-BY2Z);
 		D[2][IZ-1]=SPS*((BZ1Z-BZ2Z)*CPS-(BX1Z-BX2Z)*SPS);	
 	}
+	/*for (I=0;I<79;I++) {
+		printf("I,D: %2d %9.4lf %9.4lf %9.4lf\n",I,D[0][I],D[1][I],D[2][I]);
+	}*/
 }
 
 void Birk1Shld(double ps, double x, double y, double z, double *Bx, double *By, double *Bz) {
@@ -1299,8 +1328,8 @@ void Birk1Shld(double ps, double x, double y, double z, double *Bx, double *By, 
 	*By = 0.0;
 	*Bz = 0.0;
 	
-	CPS = cosf(ps);
-	SPS = sinf(ps);
+	CPS = cos(ps);
+	SPS = sin(ps);
 	S3PS = 4.0*CPS*CPS-1.0;
 	
 	for (i=0;i<4;i++) {
@@ -1313,19 +1342,19 @@ void Birk1Shld(double ps, double x, double y, double z, double *Bx, double *By, 
 	l = 0;
 	for (m=0;m<2;m++) {
 		for (i=0;i<4;i++) {
-			CYPI=cosf(y*RP[i]);
-			CYQI=cosf(y*RQ[i]);
-			SYPI=sinf(y*RP[i]);
-			SYQI=sinf(y*RQ[i]);			
+			CYPI=cos(y*RP[i]);
+			CYQI=cos(y*RQ[i]);
+			SYPI=sin(y*RP[i]);
+			SYQI=sin(y*RQ[i]);			
 			for (k=0;k<4;k++) {
-				SZRK=sinf(z*RR[k]);
-				CZSK=cosf(z*RS[k]);
-				CZRK=cosf(z*RR[k]);
-				SZSK=sinf(z*RS[k]);
-				SQPR=sqrtf(powf(RP[i],2.0)+powf(RR[k],2.0));
-				SQQS=sqrtf(powf(RQ[i],2.0)+powf(RS[k],2.0));
-				EPR=expf(x*SQPR);
-				EQS=expf(x*SQQS);
+				SZRK=sin(z*RR[k]);
+				CZSK=cos(z*RS[k]);
+				CZRK=cos(z*RR[k]);
+				SZSK=sin(z*RS[k]);
+				SQPR=sqrt(pow(RP[i],2.0)+pow(RR[k],2.0));
+				SQQS=sqrt(pow(RQ[i],2.0)+pow(RS[k],2.0));
+				EPR=exp(x*SQPR);
+				EQS=exp(x*SQQS);
 				for (n=0;n<2;n++) {
 					if (m == 0) {
 						if (n == 0) {
@@ -1387,26 +1416,26 @@ void Birk2Shl(double x, double y, double z, double ps, double *Bx, double *By, d
 	*By = 0.0;
 	*Bz = 0.0;
 	
-	CPS = cosf(ps);
-	SPS = sinf(ps);
+	CPS = cos(ps);
+	SPS = sin(ps);
 	S3PS = 4.0*CPS*CPS-1.0;
 	
 	l = 0;
 	for (m=0;m<2;m++) {
 		for (i=0;i<2;i++) {
-			CYPI=cosf(y/P[i]);
-			CYQI=cosf(y/Q[i]);
-			SYPI=sinf(y/P[i]);
-			SYQI=sinf(y/Q[i]);			
+			CYPI=cos(y/P[i]);
+			CYQI=cos(y/Q[i]);
+			SYPI=sin(y/P[i]);
+			SYQI=sin(y/Q[i]);			
 			for (k=0;k<2;k++) {
-				SZRK=sinf(z/R[k]);
-				CZSK=cosf(z/S[k]);
-				CZRK=cosf(z/R[k]);
-				SZSK=sinf(z/S[k]);
-				SQPR=sqrtf(1.0/powf(P[i],2.0)+1.0/powf(R[k],2.0));
-				SQQS=sqrtf(1.0/powf(Q[i],2.0)+1.0/powf(S[k],2.0));
-				EPR=expf(x*SQPR);
-				EQS=expf(x*SQQS);
+				SZRK=sin(z/R[k]);
+				CZSK=cos(z/S[k]);
+				CZRK=cos(z/R[k]);
+				SZSK=sin(z/S[k]);
+				SQPR=sqrt(1.0/pow(P[i],2.0)+1.0/pow(R[k],2.0));
+				SQQS=sqrt(1.0/pow(Q[i],2.0)+1.0/pow(S[k],2.0));
+				EPR=exp(x*SQPR);
+				EQS=exp(x*SQQS);
 				for (n=0;n<2;n++) {
 					if (m == 0) {
 						if (n == 0) {
@@ -1443,8 +1472,8 @@ void R2_Birk(double x, double y, double z, double ps, double *Bx, double *By, do
 	double PSI, CPS, SPS, DELARG=0.03, DELARG1=0.015, XSM, ZSM, XKS;
 	double BXSM, BZSM, BXSM1, BY1, BZSM1, BXSM2, BY2, BZSM2, F2, F1;
 	PSI=ps;
-	CPS=cosf(ps);
-	SPS=sinf(ps);
+	CPS=cos(ps);
+	SPS=sin(ps);
 
 	XSM=x*CPS-z*SPS;
 	ZSM=z*CPS+x*SPS;
@@ -1528,7 +1557,7 @@ void BConic(double x, double y, double z, double *CBx, double *CBy, double *CBz,
 	int M;
 	
 	RO2=x*x+y*y;
-	RO=sqrtf(RO2);
+	RO=sqrt(RO2);
 
 	CF=x/RO;
 	SF=y/RO;
@@ -1536,11 +1565,11 @@ void BConic(double x, double y, double z, double *CBx, double *CBy, double *CBz,
 	SFM1=0.0;
 
 	R2=RO2+z*z;
-	R=sqrtf(R2);
+	R=sqrt(R2);
 	C=z/R;
 	S=RO/R;
-	CH=sqrtf(0.50*(1.0+C));
-	SH=sqrtf(0.50*(1.0-C));
+	CH=sqrt(0.50*(1.0+C));
+	SH=sqrt(0.50*(1.0-C));
 	TNHM1=1.0;
 	CNHM1=1.0;
 	TNH=SH/CH;
@@ -1554,7 +1583,7 @@ void BConic(double x, double y, double z, double *CBx, double *CBy, double *CBz,
         TNHM=TNHM1*TNH;
         CNHM=CNHM1*CNH;
 		BT=(M+1)*CFM/(R*S)*(TNHM+CNHM);
-		BF=-0.5*(M+1)*SFM/R*(TNHM1/powf(CH,2.0)-CNHM1/powf(SH,2.0));
+		BF=-0.5*(M+1)*SFM/R*(TNHM1/pow(CH,2.0)-CNHM1/pow(SH,2.0));
 		TNHM1=TNHM;
 		CNHM1=CNHM;
 		CBx[M]=BT*C*CF-BF*SF;
@@ -1569,15 +1598,15 @@ void DipDistR(double x, double y, double z, double *Bx, double *By, double *Bz, 
 	X2=x*x;
 	RHO2=X2+y*y;
 	R2=RHO2+z*z;
-	R3=R2*sqrtf(R2);
+	R3=R2*sqrt(R2);
 
 	if (Mode == 0) {
-		*Bx=z/powf(RHO2,2.0)*(R2*(y*y-X2)-RHO2*X2)/R3;
-		*By=-x*y*z/powf(RHO2,2.0)*(2.0*R2+RHO2)/R3;
+		*Bx=z/pow(RHO2,2.0)*(R2*(y*y-X2)-RHO2*X2)/R3;
+		*By=-x*y*z/pow(RHO2,2.0)*(2.0*R2+RHO2)/R3;
 		*Bz=x/R3;
 	} else {
-		*Bx=z/powf(RHO2,2.0)*(y*y-X2);
-		*By=-2.0*x*y*z/powf(RHO2,2.0);
+		*Bx=z/pow(RHO2,2.0)*(y*y-X2);
+		*By=-2.0*x*y*z/pow(RHO2,2.0);
 		*Bz=x/RHO2;
 	}
 }
@@ -1603,10 +1632,10 @@ void Loops4(double x, double y, double z, double *Bx, double *By, double *Bz, do
 	
 	double CT, ST, CP, SP, XS, YSS, ZS, XSS, ZSS, BXS, BXSS, BYS, BZSS, BX1, BY1, BZ1, BX2, BY2, BZ2, BX3, BY3, BZ3, BX4, BY4, BZ4;
 	
-	CT=cosf(Theta);
-	ST=sinf(Theta);
-	CP=cosf(Phi);
-	SP=sinf(Phi);
+	CT=cos(Theta);
+	ST=sin(Theta);
+	CP=cos(Phi);
+	SP=sin(Phi);
 
 	XS=(x-Xc)*CP+(y-Yc)*SP;
 	YSS=(y-Yc)*CP-(x-Xc)*SP;
@@ -1713,22 +1742,22 @@ void R2Sheet(double x, double y, double z, double *Bx, double *By, double *Bz) {
 	int i,j;
 
 	XKS=XKSI(x,y,z);
-	T1X=XKS/sqrtf(powf(XKS,2)+powf(PNONX[5],2));
-	T2X=powf(PNONX[6],3)/powf(sqrtf(powf(XKS,2)+powf(PNONX[6],2)),3);
-	T3X=XKS/powf(sqrtf(powf(XKS,2)+powf(PNONX[7],2)),5) *3.493856*powf(PNONX[7],4);
+	T1X=XKS/sqrt(pow(XKS,2)+pow(PNONX[5],2));
+	T2X=pow(PNONX[6],3)/pow(sqrt(pow(XKS,2)+pow(PNONX[6],2)),3);
+	T3X=XKS/pow(sqrt(pow(XKS,2)+pow(PNONX[7],2)),5) *3.493856*pow(PNONX[7],4);
 
-	T1Y=XKS/sqrtf(powf(XKS,2)+powf(PNONY[5],2));
-	T2Y=powf(PNONY[6],3)/powf(sqrtf(powf(XKS,2)+powf(PNONY[6],2)),3);
-	T3Y=XKS/powf(sqrtf(powf(XKS,2)+powf(PNONY[7],2)),5) *3.493856*powf(PNONY[7],4);
+	T1Y=XKS/sqrt(pow(XKS,2)+pow(PNONY[5],2));
+	T2Y=pow(PNONY[6],3)/pow(sqrt(pow(XKS,2)+pow(PNONY[6],2)),3);
+	T3Y=XKS/pow(sqrt(pow(XKS,2)+pow(PNONY[7],2)),5) *3.493856*pow(PNONY[7],4);
 
-	T1Z=XKS/sqrtf(powf(XKS,2)+powf(PNONZ[5],2));
-	T2Z=powf(PNONZ[6],3)/powf(sqrtf(powf(XKS,2)+powf(PNONZ[6],2)),3);
-	T3Z=XKS/powf(sqrtf(powf(XKS,2)+powf(PNONZ[7],2)),5) *3.493856*powf(PNONZ[7],4);
+	T1Z=XKS/sqrt(pow(XKS,2)+pow(PNONZ[5],2));
+	T2Z=pow(PNONZ[6],3)/pow(sqrt(pow(XKS,2)+pow(PNONZ[6],2)),3);
+	T3Z=XKS/pow(sqrt(pow(XKS,2)+pow(PNONZ[7],2)),5) *3.493856*pow(PNONZ[7],4);
 	
 	
 	RHO2=x*x + y*y;
-	R=sqrtf(RHO2+z*z);
-	RHO=sqrtf(RHO2);
+	R=sqrt(RHO2+z*z);
+	RHO=sqrt(RHO2);
 
 	C1P=x/RHO;
 	S1P=y/RHO;
@@ -1813,7 +1842,7 @@ double XKSI(double x, double y, double z) {
 	XY=x*y;
 	XYZ=XY*z;
 	R2=X2+Y2+Z2;
-	R=sqrtf(R2);
+	R=sqrt(R2);
 	R3=R2*R;
 	R4=R2*R2;
 	XR=x/R;
@@ -1823,7 +1852,7 @@ double XKSI(double x, double y, double z) {
 	if (R < R0) {
 		PR = 0.0;
 	} else {
-		PR = sqrtf(powf(R-R0,2)+DR2)-DR;
+		PR = sqrt(pow(R-R0,2)+DR2)-DR;
 	}
 
 	F=x+PR*(A11A12+A21A22*XR+A41A42*XR*XR+A51A52*YR*YR+A61A62*ZR*ZR);
@@ -1832,17 +1861,17 @@ double XKSI(double x, double y, double z) {
 	G2=G*G;
 
 	FGH=F*F+G2+H*H;
-	FGH32=powf(sqrtf(FGH),3);
+	FGH32=pow(sqrt(FGH),3);
 	FCHSG2=F*F+G2;
 
 	if (FCHSG2 < 1.0e-5) {
 		return -1.0;              
 	}
 
-	SQFCHSG2=sqrtf(FCHSG2);
+	SQFCHSG2=sqrt(FCHSG2);
 	ALPHA=FCHSG2/FGH32;
 	THETA=TNOON+0.50*DTETA*(1.0-F/SQFCHSG2);
-	PHI=powf(sinf(THETA),2);
+	PHI=pow(sin(THETA),2);
 
 	return (ALPHA-PHI);
 	
@@ -1850,7 +1879,7 @@ double XKSI(double x, double y, double z) {
 
 double Fexp(double S, double A) {
 	if (A < 0.0) {
-		return sqrtf(-2.0*A*M_E)*S*expf(A*S*S);
+		return sqrt(-2.0*A*M_E)*S*expf(A*S*S);
 	} else {
 		return S*expf(A*(S*S-1.0));
 	}
@@ -1867,7 +1896,7 @@ double Fexp1(double S, double A) {
 
 double TKSI( double xksi, double xks0, double Dxksi) {
 	double tdz3, br3, tksii;
-	tdz3 = 2.0*powf(Dxksi,3);
+	tdz3 = 2.0*pow(Dxksi,3);
 	
 	if (xksi-xks0 < -Dxksi) { 
 		tksii = 0.0;
@@ -1876,11 +1905,11 @@ double TKSI( double xksi, double xks0, double Dxksi) {
 		tksii = 1.0;
 	}
 	if (xksi >= xks0-Dxksi && xksi < xks0) {
-		br3 = powf(xksi-xks0+Dxksi,3.0);
+		br3 = pow(xksi-xks0+Dxksi,3.0);
 		tksii = 1.5*br3/(tdz3+br3);
 	}
 	if (xksi >= xks0 && xksi < xks0+Dxksi) {
-		br3 = powf(xksi-xks0-Dxksi,3.0);
+		br3 = pow(xksi-xks0-Dxksi,3.0);
 		tksii = 1.0+1.5*br3/(tdz3-br3);		
 	}
 	return tksii;
@@ -1888,14 +1917,14 @@ double TKSI( double xksi, double xks0, double Dxksi) {
 
 void Dipole(double ps, double x, double y, double z, double *Bx, double *By, double *Bz) {
 	double SPS, CPS, PSI, P, U, V, T, Q;
-	SPS=sinf(ps);
-	CPS=cosf(ps);
+	SPS=sin(ps);
+	CPS=cos(ps);
 	PSI=ps;
 	P=x*x;
 	U=z*z;
 	V=3.0*z*x;
 	T=y*y;
-	Q=30574.0/powf(sqrtf(P+T+U),5.0);
+	Q=30574.0/pow(sqrt(P+T+U),5.0);
 	*Bx=Q*((T+U-2.0*P)*SPS-V*CPS);
 	*By=-3.0*y*Q*(x*SPS+z*CPS);
 	*Bz=Q*((P+T-2.0*U)*CPS-V*SPS);	

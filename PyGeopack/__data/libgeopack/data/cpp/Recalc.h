@@ -11,7 +11,8 @@ using namespace std;
 
 extern GPPar1 GP1;
 
-void Recalc(int Year, int DayNo, int Hour, int Min, int Sec, double Vx, double Vy, double Vz);
-
+extern "C" {
+	void Recalc(int Year, int DayNo, int Hour, int Min, int Sec, double Vx, double Vy, double Vz);
+}
 	
 #endif

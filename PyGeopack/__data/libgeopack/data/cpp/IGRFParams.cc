@@ -15,7 +15,6 @@ void ReadIGRFParameters(const char *FileName) {
 	//skip the first 4 lines
 	for (i=0;i<4;i++) {
 		fgets(line,1024,f);
-		printf("%s\n",line);
 	}
 	
 	//now to read each line of data
@@ -25,7 +24,7 @@ void ReadIGRFParameters(const char *FileName) {
 	for (i=0;i<195;i++) {
 		//read g/h column
 		fscanf(f,"%c",&gh);
-		printf("%d: %c\n",i,gh);
+
 		//read in the n and m integers
 		fscanf(f,"%d",&n);
 		fscanf(f,"%d",&m);
@@ -54,6 +53,10 @@ void ReadIGRFParameters(const char *FileName) {
 		
 	}
 	
+	//set the years
+	for (i=0;i<24;i++) {
+		IGRFParams[i].Year = 1900 + i*5;
+	}
 	
 }
 
@@ -65,7 +68,7 @@ void SetIGRFParams(int Year, int DayNo) {
 	 
 	float f0, f1;
 	int i, j, i0, i1;
-	 
+
 	if (Year < 1900) {
 		/* before 1900 we shall use the IGRF data from 1900*/
 		for (i=0;i<105;i++) {
@@ -78,9 +81,11 @@ void SetIGRFParams(int Year, int DayNo) {
 		/* Between 1900 and 2015, interpolate*/
 		i0 = (Year - 1900)/5;
 		i1 = i0 + 1;
+
 		/* This bit is crude but it will do, works for geopack!*/
-		f1 = (((float) Year) + ((float) (DayNo-1))/365.25 - IGRFParams[i0].Year)/5;
+		f1 = (((float) Year) + (((float) (DayNo-1))/365.25) - IGRFParams[i0].Year)/5;
 		f0 = 1.0 - f1;
+
 		for (i=0;i<105;i++) {
 			 IGRFCurr.n[i] = IGRFParams[i0].n[i];
 			 IGRFCurr.m[i] = IGRFParams[i0].m[i];

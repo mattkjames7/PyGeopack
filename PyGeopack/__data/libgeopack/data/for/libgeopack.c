@@ -1,15 +1,7 @@
 #include "libgeopack.h"
 
-
-double GetDipoleTilt() {
-	/* Returns the dipole tilt angle in radians*/
-	return GP1.PSI;
-}
-
-CustParam CustP;
 const float Re = 6371.2;
 TSD TSData = {.n = 0};
-char DataFile[256];
 
 void LoadTSData() {
 	printf("Reading Model Data\n");
@@ -163,7 +155,7 @@ void FreeTSData() {
 	}
 }
 
-double InterpParam(float *x, int Date, float ut) {
+float InterpParam(float *x, int Date, float ut) {
 	/*First get the start ind for searching for this date*/
 	int ind = MonthStartInd(Date);
 	int i, i0, i1;
@@ -193,10 +185,10 @@ double InterpParam(float *x, int Date, float ut) {
 	m = (x[i1]-x[i0])/dt;
 	c = x[i0];
 	out = m*dtp + c;
-	return (double) out;
+	return out;
 }
 
-void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, float *tilt, float *Vx, float *Vy, float *Vz) {
+void GetModelParams(int Date, float ut, const char *Model, int *iopt, float *parmod, float *tilt, float *Vx, float *Vy, float *Vz) {
 	/*Dipole tilt*/
 	tilt[0] = InterpParam(TSData.Tilt,Date,ut);
 
@@ -263,14 +255,14 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 }
 
 
-void DummyFunc(int iopt, double *parmod, double ps, double x, double y, double z, double *bx, double *by, double *bz) {
+void DummyFunc(int *iopt, float *parmod, float *ps, float *x, float *y, float *z, float *bx, float *by, float *bz) {
 	bx[0] = 0.0;
 	by[0] = 0.0;
 	bz[0] = 0.0;
 	return;
 }
 
-void SetCustParam(int iopt, double *parmod, float tilt, float Vx, float Vy, float Vz) {
+void SetCustParam(int iopt, float *parmod, float tilt, float Vx, float Vy, float Vz) {
 	CustP.iopt = iopt;
 	int i;
 	for (i=0;i<10;i++) {
@@ -283,105 +275,15 @@ void SetCustParam(int iopt, double *parmod, float tilt, float Vx, float Vy, floa
 }
 
 
-void Init(const char *filename, const char *igrffile) {
+void Init(const char *filename) {
 	strcpy(DataFile,filename);
 	if (TSData.n == 0) {
 		LoadTSData();	
 	}
-	ReadIGRFParameters(igrffile);
-}
-
-void GetGeopackParams(double *gp0, double *gp1) {
-	int i;
-	
-	gp0[0] = GP1.ST0;
-	gp0[1] = GP1.CT0;
-	gp0[2] = GP1.SL0;
-	gp0[3] = GP1.CL0;
-	gp0[4] = GP1.CTCL;
-	gp0[5] = GP1.STCL;
-	gp0[6] = GP1.CTSL;
-	gp0[7] = GP1.STSL;
-	gp0[8] = GP1.SFI;
-	gp0[1] = GP1.CFI;
-	gp0[10] = GP1.SPS;
-	gp0[11] = GP1.CPS;
-	gp0[12] = GP1.DS3;
-	gp0[13] = GP1.CGST;
-	gp0[14] = GP1.SGST;
-	gp0[15] = GP1.PSI;
-	gp0[16] = GP1.A11;
-	gp0[17] = GP1.A21;
-	gp0[18] = GP1.A31;
-	gp0[19] = GP1.A12;
-	gp0[20] = GP1.A22;
-	gp0[21] = GP1.A32;
-	gp0[22] = GP1.A13;
-	gp0[23] = GP1.A23;
-	gp0[24] = GP1.A33;
-	gp0[25] = GP1.E11;
-	gp0[26] = GP1.E21;
-	gp0[27] = GP1.E31;
-	gp0[28] = GP1.E12;
-	gp0[29] = GP1.E22;
-	gp0[30] = GP1.E32;
-	gp0[31] = GP1.E13;
-	gp0[32] = GP1.E23;
-	gp0[33] = GP1.E33;
- 
-	for (i=0;i<105;i++) {
-		gp1[i] = IGRFCurr.g[i];
-		gp1[i+105] = IGRFCurr.h[i];
-		gp1[i+210] = IGRFCurr.rec[i];
-	}
- 
-
 }
 
 
-void SetGeopackParams(double *gp0, double *gp1) {
-	int i;
-	
-	GP1.ST0 = gp0[0];
-	GP1.CT0 = gp0[1];
-	GP1.SL0 = gp0[2];
-	GP1.CL0 = gp0[3];
-	GP1.CTCL = gp0[4];
-	GP1.STCL = gp0[5];
-	GP1.CTSL = gp0[6];
-	GP1.STSL = gp0[7];
-	GP1.SFI = gp0[8];
-	GP1.CFI = gp0[9];
-	GP1.SPS = gp0[10];
-	GP1.CPS = gp0[11];
-	GP1.DS3 = gp0[12];
-	GP1.CGST = gp0[13];
-	GP1.SGST = gp0[14];
-	GP1.PSI = gp0[15];
-	GP1.A11 = gp0[16];
-	GP1.A21 = gp0[17];
-	GP1.A31 = gp0[18];
-	GP1.A12 = gp0[19];
-	GP1.A22 = gp0[20];
-	GP1.A32 = gp0[21];
-	GP1.A13 = gp0[22];
-	GP1.A23 = gp0[23];
-	GP1.A33 = gp0[24];
-	GP1.E11 = gp0[25];
-	GP1.E21 = gp0[26];
-	GP1.E31 = gp0[27];
-	GP1.E12 = gp0[28];
-	GP1.E22 = gp0[29];
-	GP1.E32 = gp0[30];
-	GP1.E13 = gp0[31];
-	GP1.E23 = gp0[32];
-	GP1.E33 = gp0[33];
- 
-	for (i=0;i<105;i++) {
-		IGRFCurr.g[i] = gp1[i];
-		IGRFCurr.h[i] = gp1[i+105];
-		IGRFCurr.rec[i] = gp1[i+210];
-	}
- 
-
+void GetGeopackParams(float *gp0, float *gp1){
+	getgeopackparams_(gp0,gp1);
 }
+

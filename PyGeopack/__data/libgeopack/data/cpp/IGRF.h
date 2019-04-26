@@ -7,8 +7,9 @@
 #include "ConvCoords.h"
 using namespace std;
 
-void IGRF_GEO(double R, double Theta, double Phi, double *Br, double *Btheta, double *Bphi);
-void IGRF_GSW(double XGSW, double YGSW, double ZGSW, double *HxGSW, double *HyGSW, double *HzGSW);
-void Dipole(double XGSW, double YGSW, double ZGSW, double *BxGSW, double *ByGSW, double *BzGSW);
-
+extern "C" {
+	void IGRF_GEO(double R, double Theta, double Phi, double *Br, double *Btheta, double *Bphi);
+	void IGRF_GSW(double XGSW, double YGSW, double ZGSW, double *HxGSW, double *HyGSW, double *HzGSW);
+	void Dipole(double XGSW, double YGSW, double ZGSW, double *BxGSW, double *ByGSW, double *BzGSW);
+}
 #endif

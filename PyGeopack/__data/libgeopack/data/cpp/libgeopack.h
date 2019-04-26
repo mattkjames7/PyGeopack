@@ -124,13 +124,15 @@ extern char DataFile[256];
 
 #endif
 
-
-void LoadTSData();
-void FreeTSData();
-void SetCustParam(int iopt, double *parmod, float tilt, float Vx, float Vy, float Vz);
-void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, float *tilt, float *Vx, float *Vy, float *Vz);
-void Init(const char *filename);
-
+extern "C" {
+	void LoadTSData();
+	void FreeTSData();
+	void SetCustParam(int iopt, double *parmod, float tilt, float Vx, float Vy, float Vz);
+	void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, float *tilt, float *Vx, float *Vy, float *Vz);	
+	void Init(const char *filename, const char *igrffile);
+	void GetGeopackParams(double *gp0, double *gp1);
+	void SetGeopackParams(double *gp0, double *gp1);
+}
 
 void PopulateMonthInds();
 int MonthStartInd(int Date);

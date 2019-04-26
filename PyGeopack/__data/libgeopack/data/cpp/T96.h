@@ -59,7 +59,9 @@ typedef struct{
 	double zsww;
 } Warp;
 
-void T96(int Iopt, double *ParMod, double Ps, double x, double y, double z, double *Bx, double *By, double *Bz);
+extern "C" {
+	void T96(int Iopt, double *ParMod, double Ps, double x, double y, double z, double *Bx, double *By, double *Bz);
+}
 void DipShld(double Ps, double x, double y, double z, double *Bx, double *By, double *Bz);
 void CylHarm(double *A, double x, double y, double z, double *Bx, double *By, double *Bz);
 void CylHar1(double *A, double x, double y, double z, double *Bx, double *By, double *Bz);
