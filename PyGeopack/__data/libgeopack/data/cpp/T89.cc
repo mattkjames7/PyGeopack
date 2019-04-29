@@ -114,12 +114,26 @@ void _GetZs(double xsm, double ysm, double zsm, double *zs, double *dzdx, double
 	dzdy[0] = 4.4*G*SPS*pow(y,3.0)/pow(y410,2.0);
 }
 
-void _GetRC(double xsm, double ysm, double zsm, double zs) {
-	/* Calculates the ring current contribution*/
-	double zr, Lrc2, hrc;
+void _GetRC(double xsm, double ysm, double zsm, double zs, double dzdx, double dzdy,) {
+	/* Calculates the ring current contribution using equations 13,16 and 17*/
+	double zr, Lrc2, hrc, Drc, xiRC, Src, rho2, Q;
+	double Bxsm, Bysm, Bzsm; 
+	rho2 = pow(xsm,2.0) + pow(ysm,2.0);
 	zr = zsm - zs;
 	Lrc2 = 25.0;
 	hrc = 0.5*(1.0 + xsm/sqrt(pow(xsm,2.0) + Lrc2));
+	Drc = D0 + gammaRC*hrc;
+	xiRC = sqrt(pow(zr,2.0) + pow(Drc,2.0));
+	Src = sqrt(rho2 + pow(aRC + xiRC,2.0));
+	Q = 3.0*C_03*(1.0/xiRC)*pow(Src,-5.0)*(aRC + xiRC)*xsm*zr;
+	
+	/*split Bz into separate terms to make it easier to follow*/
+	z0 = (C_03*2.0*pow(aRC + xiRC,2.0) - rho2)/pow(Src,-5.0);
+	
+	Bxsm = Q*x*zr;
+	Bysm = Q*y*zr;
+	Bzsm = 
+	
 }
 
  
