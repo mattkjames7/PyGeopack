@@ -483,7 +483,7 @@ void TraceFieldLine(float x0, float y0, float z0, int iopt, float *parmod, Model
 	float dir = -1.0;
 	float Err = 0.0001;
 	float Rlim = 1000.0;
-	int Nmax = MaxLen - 2;
+	int Nmax = MaxLen/2 - 2;
 	trace_08_(&x0,&y0,&z0,&dir,&DSMax,&Err,&Rlim,&R,&iopt,parmod,ModelFunc,&igrf_gsw_08_,xfn,yfn,zfn,x,y,z,&N,&Nmax);
 
 	/*reverse array elements*/
