@@ -105,19 +105,19 @@ void _GetZs(double xsm, double ysm, double zsm, double *zs, double *dzdx, double
 	y4 = pow(ysm,4.0);
 	xrc = xsm + Rc;
 	xrc2 = sqrt(pow(xsm,2.0) + 16.0);
-	y410 = y4 + 1.4; //In the text this is 10.0, but for some reason in T89c it is only 1.4
+	y410 = y4 + 10000.0;
 	
 	zs[0] = 0.5*TPS*(xrc - xrc2) - G*SPS*y4/y410;
 	
 	dzdx[0] = -0.5*TPS*(xrc - xrc2)/xrc2;
 	
-	dzdy[0] = 4.4*G*SPS*pow(y,3.0)/pow(y410,2.0);
+	dzdy[0] = 40000.0*G*SPS*pow(y,3.0)/pow(y410,2.0);
 }
 
-void _GetRC(double xsm, double ysm, double zsm, double zs, double dzdx, double dzdy,) {
+void _GetRC(double xsm, double ysm, double zsm, double zs, double dzdx, double dzdy, double *Bx, double *By, double *Bz) {
 	/* Calculates the ring current contribution using equations 13,16 and 17*/
-	double zr, Lrc2, hrc, Drc, xiRC, Src, rho2, Q;
-	double Bxsm, Bysm, Bzsm; 
+	double zr, Lrc2, hrc, Drc, xiRC, Src, rho2,;
+	double Bxsm, Bzsm; 
 	rho2 = pow(xsm,2.0) + pow(ysm,2.0);
 	zr = zsm - zs;
 	Lrc2 = 25.0;
@@ -125,17 +125,26 @@ void _GetRC(double xsm, double ysm, double zsm, double zs, double dzdx, double d
 	Drc = D0 + gammaRC*hrc;
 	xiRC = sqrt(pow(zr,2.0) + pow(Drc,2.0));
 	Src = sqrt(rho2 + pow(aRC + xiRC,2.0));
-	Q = 3.0*C_03*(1.0/xiRC)*pow(Src,-5.0)*(aRC + xiRC)*xsm*zr;
 	
-	/*split Bz into separate terms to make it easier to follow*/
-	z0 = (C_03*2.0*pow(aRC + xiRC,2.0) - rho2)/pow(Src,-5.0);
+	/*some intermediate quantities*/
+	fc = pow(Src,-5.0);
+	facxy = fc*3.0*(aRC + xiRC)/(xiRC);
+	faq = zr*(xsm*dzdx + ysm*dzdy) - Drc*D0*xsm*Lrc2/pow(xsm*xsm + Lrc2,1.5);
 	
-	Bxsm = Q*x*zr;
-	Bysm = Q*y*zr;
-	Bzsm = 
-	
+	/*calculate the output field in GSM*/
+	Bxsm = facxy*xzr;
+	By[0] = facxy*ysm*zr;
+	Bzsm = fc*(2.0*pow(aRC + xiRC,2.0) - rho2) + facxy*faq;
+
+	Bx[0] = Bxsm*CPS + Bzsm*SPS;
+	Bz[0] = Bzsm*CPS - Bxsm*SPS;
+
 }
 
+void _GetTail() {
+	
+	
+}
  
 void T89(int Iopt, double *ParMod, double Ps, double x, double y, double z, double *Bx, double *By, double *Bz) {
 	 
