@@ -12,7 +12,7 @@ obj:
 	gfortran -w -c -fPIC -fno-automatic -o TS04c.o  TS04c.f
 
 lib: 
-	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so geopack2008_rcf.f T89c.o T96.o T01_01.o TS04c.o TraceRoutines.o DateTimeTools.o ModelField.o ConvCoords.o libgeopack.o -lm
+	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so geopack2008_mkj.f T89c.o T96.o T01_01.o TS04c.o TraceRoutines.o DateTimeTools.o ModelField.o ConvCoords.o libgeopack.o -lm
 	rm -v *.o
 
 clean:

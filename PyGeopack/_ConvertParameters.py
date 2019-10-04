@@ -18,23 +18,24 @@ def _InterpField(a,flags,maxgap=36):
 	g0 = np.where(np.isfinite(a[:-1]) & (np.isfinite(a[1:]) == False))[0]
 	g1 = np.where(np.isfinite(a[1:]) & (np.isfinite(a[:-1]) == False))[0]+1
 	
-	#if the field starts with a valid value
-	if g1[0] < g0[0]:
-		g0 = np.append(0,g0)
-	#if the field ends with a valid value
-	if g0[-1] >= g1[-1]:
-		g1 = np.append(g1,g1.size) 
-	
-	#loop through each gap	
-	ng = g0.size
-	for i in range(0,ng):
-		gs = g1[i]-g0[i]
-		if gs <= maxgap:
-			x = np.arange(gs-1) + 1
-			m = (a[g1[i]] - a[g0[i]])/gs
-			c = a[g0[i]]
-			out[g0[i]+1:g1[i]] = m*x + c
-			flags[g0[i]+1:g1[i]] = 2
+	if g0.size > 0 and g1.size > 0:
+		#if the field starts with a valid value
+		if g1[0] < g0[0]:
+			g0 = np.append(0,g0)
+		#if the field ends with a valid value
+		if g0[-1] >= g1[-1]:
+			g1 = np.append(g1,g1.size) 
+		
+		#loop through each gap	
+		ng = g0.size
+		for i in range(0,ng):
+			gs = g1[i]-g0[i]
+			if gs <= maxgap:
+				x = np.arange(gs-1) + 1
+				m = (a[g1[i]] - a[g0[i]])/gs
+				c = a[g0[i]]
+				out[g0[i]+1:g1[i]] = m*x + c
+				flags[g0[i]+1:g1[i]] = 2
 	
 	return out
 
@@ -299,20 +300,25 @@ def _ConvertParameters():
 	data.Mn = np.int32(np.round((data.ut - data.Hr)*60.0))
 	
 	#copy flags
-	data.IMFFlag = np.int32(np.isfinite(omni.Bx) & np.isfinite(omni.By) & np.isfinite(omni.Bz))*2 - 1 
+	data.IMFFlag = np.int32(np.isfinite(omni.BxGSE) & np.isfinite(omni.ByGSM) & np.isfinite(omni.BzGSM))*2 - 1 
 	data.ISWFlag = np.int32(np.isfinite(omni.Vx) & np.isfinite(omni.Vy) & np.isfinite(omni.Vz))*2 - 1
 	
 	
 	#interpolate some fields
 	print('Interpolating fields')
-	fields = ['Bx','By','Bz','Vx','Vy','Vz','Den','Temp','SymH','Pdyn']
-	for f in fields:
-		if f in ['Bx','By','Bz']:
-			flag = data.IMFFlag
-		else:
-			flag = data.ISWFlag
-		data[f] = _InterpField(omni[f],flag,36)
-		
+	data.Bx = _InterpField(omni.BxGSE,data.IMFFlag,36)
+	data.By = _InterpField(omni.ByGSM,data.IMFFlag,36)
+	data.Bz = _InterpField(omni.BzGSM,data.IMFFlag,36)
+	data.Vx = _InterpField(omni.Vx,data.ISWFlag,36)
+	data.Vy = _InterpField(omni.Vy,data.ISWFlag,36)
+	data.Vz = _InterpField(omni.Vz,data.ISWFlag,36)
+	data.Den = _InterpField(omni.ProtonDensity,data.ISWFlag,36)
+	data.Temp = _InterpField(omni.Temp,data.ISWFlag,36)
+	data.SymH = _InterpField(omni.SymH,data.ISWFlag,36)
+	data.Pdyn = _InterpField(omni.FlowPressure,data.ISWFlag,36)
+	
+	return _ScanTS05Intervals(data)
+	
 	#fill in the Kp index
 	data.Kp = _InterpKp(data.Date,data.ut,kp)
 	

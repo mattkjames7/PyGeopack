@@ -281,3 +281,11 @@ void Init(const char *filename) {
 		LoadTSData();	
 	}
 }
+
+
+float GetDipoleTilt(int Year, int Doy, int Hr, int Mn, float Vx, float Vy, float Vz) {
+	float psi;
+	recalc_08_(Year,Doy,Hr,Mn,0,Vx,Vy,Vz);
+	psi = getpsi_();
+	return psi;
+}

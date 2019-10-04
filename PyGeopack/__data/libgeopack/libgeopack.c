@@ -285,7 +285,8 @@ void Init(const char *filename) {
 
 float GetDipoleTilt(int Year, int Doy, int Hr, int Mn, float Vx, float Vy, float Vz) {
 	float psi;
-	recalc_08_(Year,Doy,Hr,Mn,0,Vx,Vy,Vz);
+	int Sc = 0;
+	recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&Vx,&Vy,&Vz);
 	psi = getpsi_();
 	return psi;
 }

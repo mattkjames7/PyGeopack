@@ -74,7 +74,7 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, float *par
 //PyFunc i
 void Init(const char *filename);
 //CtypeStop
-
+float GetDipoleTilt(int Year, int Doy, int Hr, int Mn, float Vx, float Vy, float Vz);
 
 void PopulateMonthInds();
 int MonthStartInd(int Date);

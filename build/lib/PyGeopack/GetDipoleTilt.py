@@ -1,0 +1,45 @@
+import numpy as np
+from ._CFunctions import _CGetDipoleTilt
+import DateTimeTools as TT
+
+def GetDipoleTilt(Date,ut,V=None):
+	'''
+	Calculate the dipole tilt.
+	
+	'''
+	#if date is a tuple, assume it contains (year,doy)
+	if isinstance(Date,tuple):
+		Year,Doy = Date
+		Year = np.array([Year]).flatten().astype('int32')
+		Doy = np.array([Doy]).flatten().astype('int32')
+	else:
+		Doy = TT.DayNo(Date).flatten().astype('int32')
+		Year = np.array([Date//10000]).flatten().astype('int32')
+		
+	#if ut is a tuple, assume it contains (Hour, Minute)
+	if isinstance(ut,tuple):
+		Hr,Mn = ut
+		Hr = np.array([Hr]).flatten().astype('int32')
+		Mn = np.array([Mn]).flatten().astype('int32')		
+	else:
+		Hr = np.array([Hr]).flatten().astype('int32')
+		Mn = np.array([(ut - Hr)*60]).flatten().astype('int32')
+	
+	#V should be a tuple of (Vx,Vy,Vz)
+	if V is None:
+		Vx = np.zeros(Year.size,dtype='float32') - 400.0
+		Vy = np.zeros(Year.size,dtype='float32') + 29.78
+		Vz = np.zeros(Year.size,dtype='float32')
+	else:
+		Vx,Vy,Vz = V
+		Vx = Vx.astype('float32')
+		Vy = Vy.astype('float32')
+		Vz = Vz.astype('float32')
+
+	#loop through each one
+	n = Year.size
+	psi = np.zeros(n,dtype='float32')
+	for i in range(0,n):
+		psi[i] = _CGetDipoleTilt(Year[i],Doy[i],Hr[i],Mn[i],Vx[i],Vy[i],Vz[i])
+
+	return psi

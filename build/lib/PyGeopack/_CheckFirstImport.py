@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from . import Globals
-from .UpdateParameters import UpdateParameters
 import ctypes as ct
 
 def _CheckFirstImport():
@@ -35,6 +34,7 @@ def _CheckFirstImport():
 		while not ipt.lower() in ['y','n']:
 			ipt = input('Data file does not exist, download data (this may take a little while)? (y/n)')
 		if ipt.lower() == 'y':
+			from .UpdateParameters import UpdateParameters
 			UpdateParameters()
 	
 	#load the data
