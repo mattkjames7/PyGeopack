@@ -89,6 +89,8 @@ def _GetGParameters(data):
 	print()
 	
 def _ScanTS05Intervals(data):
+	n = data.size
+	
 	beg = []
 	end = []
 	SymHLowLim = -10.0
@@ -96,8 +98,8 @@ def _ScanTS05Intervals(data):
 	
 	i = -1 #current record
 	LenQuiet = 0 
-	SymHMax = 1000.0
-	SymHMin = -1000.0
+	SymHMax = -1000.0
+	SymHMin = 1000.0
 	while True:
 		i += 1
 		if i == data.size:
@@ -110,8 +112,8 @@ def _ScanTS05Intervals(data):
 			
 		if (data.IMFFlag[i] == -1) | (data.ISWFlag[i] == -1) | (data.Bz[i] < 0.0) | (data.SymH[i] < SymHLowLim):
 			LenQuiet = 0 
-			SymHMax = 1000.0
-			SymHMin = -1000.0			
+			SymHMax = -1000.0
+			SymHMin = 1000.0			
 		else:
 			if LenQuiet == 0:
 				FirstGoodi = copy.deepcopy(i)
@@ -119,23 +121,27 @@ def _ScanTS05Intervals(data):
 			if (SymHMax - SymHMin > DSymHLim):
 				i = FirstGoodi + 1
 				LenQuiet = 0
-				SymHMax = 1000.0
-				SymHMin = -1000.0	
+				SymHMax = -1000.0
+				SymHMin = 1000.0	
 			else:
 				LenQuiet += 1
 				
 				if LenQuiet == 24:
 					beg.append(copy.deepcopy(i))
+					brokeloop = False
 					for i in range(beg[-1],n):
 						if (data.IMFFlag[i] == -1) | (data.ISWFlag[i] == -1):
 							end.append(i-2)
-							beg[i] = beg[i]-LenQuiet
+							beg[-1] = beg[-1]-LenQuiet
 							LenQuiet = 0
-							SymHMax = 1000.0
-							SymHMin = -1000.0								
-					
-					end.append(n-1)
-					beg[i] = beg[i]-LenQuiet
+							SymHMax = -1000.0
+							SymHMin = 1000.0
+							brokeloop = True	
+							break							
+					if not brokeloop:
+						end.append(n-1)
+						beg[-1] = beg[-1]-LenQuiet
+	print(len(beg),len(end))
 	return beg,end	
 		
 def _GetWParameters(data):
@@ -154,14 +160,26 @@ def _GetWParameters(data):
     2.26596,    1.29123,   0.436819,    1.28211,    1.33199,   0.405553,
     1.62290,   0.699074,    1.26131,    2.42297,   0.537116,   0.619441])
 
-	DT1=A[44]/60.0  
-	DT2=A[45]/60.0
-	DT3=A[46]/60.0
-	DT4=A[47]/60.0
-	DT5=A[48]/60.0
-	DT6=A[49]/60.0
+	#Parameters from the paper (I think the values have changed slightly since publication)
+	r =  np.array([0.383403,0.648176,0.318752E-01,0.581168,1.15070,0.843004])/60.0
+	gamma = np.array([0.916555,0.898772,1.29123,1.33199,0.699074,0.537116])
+	beta = np.array([0.846509,0.180725,2.26596,1.28211,1.62290,2.42297])
+	lamda = np.array([0.394732,0.550920,0.387365,0.436819,0.405553,1.26131])
 
+	#let's calculate Sk
+	Nk = 1.16*data.Den/5.0
+	V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2)
+	Vk = V/400.0
+	Bsk = np.abs(data.Bz.clip(max=0.0))/5.0
 	
+	Sk1 = Nk**gamma[0] * Vk**beta[0] * Bsk**lamda[0]
+	Sk2 = Nk**gamma[1] * Vk**beta[1] * Bsk**lamda[1]
+	Sk3 = Nk**gamma[2] * Vk**beta[2] * Bsk**lamda[2]
+	Sk4 = Nk**gamma[3] * Vk**beta[3] * Bsk**lamda[3]
+	Sk5 = Nk**gamma[4] * Vk**beta[4] * Bsk**lamda[4]
+	Sk6 = Nk**gamma[5] * Vk**beta[5] * Bsk**lamda[5]
+
+
 	#get the intervals valid for the TS05 model
 	print('Scanning for valid TS05 intervals')
 	beg,end = _ScanTS05Intervals(data)
@@ -172,90 +190,112 @@ def _GetWParameters(data):
 	#loop through each interval
 	ni = len(beg)
 	for i in range(0,ni):
-		print('\rProcessing interval {0} of {1}'.format(i+1,ni),end='')
 		iB = beg[i]
 		iE = end[i]
+		print('Processing interval {0} of {1} ({2} to {3})'.format(i+1,ni,iB,iE))
+
+		
 		for j in range(iB,iE):
-			Pdyn = 1.937e-6*data.Den[j]*V[j]**2
-			By = data.By[j]
-			Bz = data.Bz[j]
-			SymH = data.SymH[j]
+			print('\r{:5.1f}%'.format(100.0*(j+1-iB)/(iE-iB)),end='')
+			# W1 = 0.0
+			# W2 = 0.0
+			# W3 = 0.0
+			# W4 = 0.0
+			# W5 = 0.0
+			# W6 = 0.0
+
+			# Key1 = 1
+			# Key2 = 1
+			# Key3 = 1
+			# Key4 = 1
+			# Key5 = 1
+			# Key6 = 1
+		
+			k = np.arange(j,iB-1,-1)
+			#print(k)
+			TAUMT = (j-k)*5.0
+			ARG1 = -TAUMT*r[0]
+			ARG2 = -TAUMT*r[1]
+			ARG3 = -TAUMT*r[2]
+			ARG4 = -TAUMT*r[3]
+			ARG5 = -TAUMT*r[4]
+			ARG6 = -TAUMT*r[5]
 			
+			W1 = np.cumsum(Sk1[k])*np.exp(ARG1)
+			W2 = np.cumsum(Sk2[k])*np.exp(ARG2)
+			W3 = np.cumsum(Sk3[k])*np.exp(ARG3)
+			W4 = np.cumsum(Sk4[k])*np.exp(ARG4)
+			W5 = np.cumsum(Sk5[k])*np.exp(ARG5)
+			W6 = np.cumsum(Sk6[k])*np.exp(ARG6)
 			
-			W1 = 0.0
-			W2 = 0.0
-			W3 = 0.0
-			W4 = 0.0
-			W5 = 0.0
-			W6 = 0.0
+			Key1 = ARG1 >= -10.0
+			Key2 = ARG2 >= -10.0
+			Key3 = ARG3 >= -10.0
+			Key4 = ARG4 >= -10.0
+			Key5 = ARG5 >= -10.0
+			Key6 = ARG6 >= -10.0
+		
+			k1 = np.max(np.append(k[0],np.where(Key1)[0])) - k[0]
+			k2 = np.max(np.append(k[0],np.where(Key2)[0])) - k[0]
+			k3 = np.max(np.append(k[0],np.where(Key3)[0])) - k[0]
+			k4 = np.max(np.append(k[0],np.where(Key4)[0])) - k[0]
+			k5 = np.max(np.append(k[0],np.where(Key5)[0])) - k[0]
+			k6 = np.max(np.append(k[0],np.where(Key6)[0])) - k[0]
 
-			Key1 = 1
-			Key2 = 1
-			Key3 = 1
-			Key4 = 1
-			Key5 = 1
-			Key6 = 1
-
-			for k in range(j,iB,-1):
-				Vnorm = V[k]/400.0
-				Dennorm = data.Den[k]*1.16/5.0
-				Bsnorm = -data.Bz[k]/5.0
-			
-				if Bsnorm <= 0.0:
-					Bs1 = 0.0
-					Bs2 = 0.0
-					Bs3 = 0.0
-					Bs4 = 0.0
-					Bs5 = 0.0
-					Bs6 = 0.0
-				else:
-					Bs1 = Bsnorm**A[52]
-					Bs2 = Bsnorm**A[55]
-					Bs3 = Bsnorm**A[58]
-					Bs4 = Bsnorm**A[61]
-					Bs5 = Bsnorm**A[64]
-					Bs6 = Bsnorm**A[67]
-				
-				FAC1 = Dennorm**A[50] *Vnorm**A[51] *Bs1
-				FAC2 = Dennorm**A[53] *Vnorm**A[54] *Bs2
-				FAC3 = Dennorm**A[56] *Vnorm**A[57] *Bs3
-				FAC4 = Dennorm**A[59] *Vnorm**A[60] *Bs4
-				FAC5 = Dennorm**A[62] *Vnorm**A[63] *Bs5
-				FAC6 = Dennorm**A[65] *Vnorm**A[66] *Bs6				
-				
-				TAUMT = (i - k)*5.0
-
-				ARG1 = -TAUMT*DT1
-				ARG2 = -TAUMT*DT2
-				ARG3 = -TAUMT*DT3
-				ARG4 = -TAUMT*DT4
-				ARG5 = -TAUMT*DT5
-				ARG6 = -TAUMT*DT6
+		
+			# for k in range(j,iB,-1):
+				# TAUMT = (j - k)*5.0
 
 
-				if (ARG1 > -10.0) and (Key1 == 1):
-					W1 = W1 + FAC1*np.exp(ARG1)
-				if (ARG2 > -10.0) and (Key2 == 1):
-					W2 = W2 + FAC2*np.exp(ARG2)
-				if (ARG3 > -10.0) and (Key3 == 1):
-					W3 = W3 + FAC3*np.exp(ARG3)
-				if (ARG4 > -10.0) and (Key4 == 1):
-					W4 = W4 + FAC4*np.exp(ARG4)
-				if (ARG5 > -10.0) and (Key5 == 1):
-					W5 = W5 + FAC5*np.exp(ARG5)
-				if (ARG6 > -10.0) and (Key6 == 1):
-					W6 = W6 + FAC6*np.exp(ARG6)
-					
-				if Key1 == 0 and Key2 == 0 and Key3 == 0 and Key4 == 0 and Key5 == 0 and Key6 == 0:
-					break
-			data.W1[j] = W1*DT1*5
-			data.W2[j] = W2*DT2*5
-			data.W3[j] = W3*DT3*5
-			data.W4[j] = W4*DT4*5
-			data.W5[j] = W5*DT5*5
-			data.W6[j] = W6*DT6*5
-	print()
+				# ARG1 = -TAUMT*r[0]
+				# ARG2 = -TAUMT*r[1]
+				# ARG3 = -TAUMT*r[2]
+				# ARG4 = -TAUMT*r[3]
+				# ARG5 = -TAUMT*r[4]
+				# ARG6 = -TAUMT*r[5]
 
+
+				# if (ARG1 > -10.0) and (Key1 == 1):
+					# W1 = W1 + Sk1[k]*np.exp(ARG1)
+				# else:
+					# Key1 = 0
+				# if (ARG2 > -10.0) and (Key2 == 1):
+					# W2 = W2 + Sk2[k]*np.exp(ARG2)
+				# else:
+					# Key2 = 0
+				# if (ARG3 > -10.0) and (Key3 == 1):
+					# W3 = W3 + Sk3[k]*np.exp(ARG3)
+				# else:
+					# Key3 = 0
+				# if (ARG4 > -10.0) and (Key4 == 1):
+					# W4 = W4 + Sk4[k]*np.exp(ARG4)
+				# else:
+					# Key4 = 0
+				# if (ARG5 > -10.0) and (Key5 == 1):
+					# W5 = W5 + Sk5[k]*np.exp(ARG5)
+				# else:
+					# Key5 = 0
+				# if (ARG6 > -10.0) and (Key6 == 1):
+					# W6 = W6 + Sk6[k]*np.exp(ARG6)
+				# else:
+					# Key6 = 0	
+				# if Key1 == 0 and Key2 == 0 and Key3 == 0 and Key4 == 0 and Key5 == 0 and Key6 == 0:
+					# break
+			# data.W1[j] = W1*r[0]*5
+			# data.W2[j] = W2*r[1]*5
+			# data.W3[j] = W3*r[2]*5
+			# data.W4[j] = W4*r[3]*5
+			# data.W5[j] = W5*r[4]*5
+			# data.W6[j] = W6*r[5]*5
+			data.W1[j] = W1[k1]*r[0]*5
+			data.W2[j] = W2[k2]*r[1]*5
+			data.W3[j] = W3[k3]*r[2]*5
+			data.W4[j] = W4[k4]*r[3]*5
+			data.W5[j] = W5[k5]*r[4]*5
+			data.W6[j] = W6[k6]*r[5]*5
+		print()
+
+	
 def _ConvertParameters():
 	'''
 	This will take in all of the omni and kp index parameters required
@@ -316,8 +356,9 @@ def _ConvertParameters():
 	data.Temp = _InterpField(omni.Temp,data.ISWFlag,36)
 	data.SymH = _InterpField(omni.SymH,data.ISWFlag,36)
 	data.Pdyn = _InterpField(omni.FlowPressure,data.ISWFlag,36)
-	
-	return _ScanTS05Intervals(data)
+
+	#calculate W parameters
+	_GetWParameters(data)
 	
 	#fill in the Kp index
 	data.Kp = _InterpKp(data.Date,data.ut,kp)
@@ -329,7 +370,6 @@ def _ConvertParameters():
 	print('Calculating dipole tilt angles')
 	data.Tilt = GetDipoleTilt((data.Year,data.DayNo),(data.Hr,data.Mn),(data.Vx,data.Vy,data.Vz))
 	
-	#calculate W parameters
-	_GetWParameters(data)
+
 		
 	return data
