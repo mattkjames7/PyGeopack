@@ -10,9 +10,10 @@ obj:
 	gfortran -w -c -fPIC -fno-automatic -o T96.o  T96.f
 	gfortran -w -c -fPIC -fno-automatic -o T01_01.o  T01_01.f
 	gfortran -w -c -fPIC -fno-automatic -o TS04c.o  TS04c.f
+	gfortran -w -c -fPIC -fno-automatic -o wparams.o  wparams.f95
 
 lib: 
-	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so geopack2008_mkj.f T89c.o T96.o T01_01.o TS04c.o TraceRoutines.o DateTimeTools.o ModelField.o ConvCoords.o libgeopack.o -lm
+	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so geopack2008_mkj.f wparams.o T89c.o T96.o T01_01.o TS04c.o TraceRoutines.o DateTimeTools.o ModelField.o ConvCoords.o libgeopack.o -lm
 	rm -v *.o
 
 clean:

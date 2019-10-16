@@ -6,17 +6,17 @@ from ._CFunctions import _CSetCustParam
 def SetCustParam(iopt, parmod, tilt, Vx, Vy, Vz):
 
 	if iopt is None:
-		iopt = 1.0
+		iopt = -1
 	if parmod is None:
-		parmod = np.array([2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],dtype='float32')
+		parmod = np.zeros(10,dtype='float32') + np.nan
 	if tilt is None:
 		tilt = np.nan
 	if Vx is None:
-		Vx = -400.0
+		Vx = np.nan
 	if Vy is None:
-		Vy = 0.0
+		Vy = np.nan
 	if Vz is None:
-		Vz = 0.0
+		Vz = np.nan
 		
 	#Convert input variables to appropriate numpy dtype:
 	_iopt = np.int32(iopt)

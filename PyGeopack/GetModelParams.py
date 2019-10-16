@@ -2,9 +2,30 @@ import numpy as np
 from ._CFunctions import _CGetModelParams
 import ctypes
 
-###### File created automatically using PopulateCtypes ######
 
 def GetModelParams(Date, ut, Model):
+	'''
+	Returns the parameters which would be used to drive a model given a
+	date and a time.
+	
+	Inputs
+	======
+	Date	: Integer date, in the format yyyymmdd.
+	ut	: Floating point time in hours (i.e. ut = hh + mm/60).
+	Model	: String denoting which model to return parameters for out
+		of the following - 'T89'|'T96'|'T01'|'TS05'.
+	
+	Returns
+	=======
+	iopt	: Integer, related to Kp - used only for T89.
+	parmod	: 10 element array used for T96, T01 and TS05.
+	tilt	: The dipole tilt angle in radians.
+	Vx		: The x component of the solar wind velocity.
+	Vy		: The y component of the solar wind velocity.
+	Vz		: The z component of the solar wind velocity.
+	
+	'''
+
 
 	#Convert input variables to appropriate numpy dtype:
 	_Date = np.int32(Date)

@@ -8,7 +8,7 @@ from ._ReadTab import _ReadTab
 import RecarrayTools as RT
 import os
 import numpy as np
-from ._ConvertParameters import _ConvertParameters
+from ._CalculateParameters import _CalculateParameters
 
 # def UpdateParameters(Overwrite=False):
 	# '''
@@ -125,7 +125,7 @@ def UpdateParameters():
 		os.system('mkdir -pv '+Globals.DataPath)
 
 	#now combining all of the data and calculating the W and G parameters
-	data = _ConvertParameters()
+	data = _CalculateParameters()
 	
 	#save the data
 	print('Saving')

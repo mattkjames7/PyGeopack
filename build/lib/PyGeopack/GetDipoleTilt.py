@@ -4,7 +4,20 @@ import DateTimeTools as TT
 
 def GetDipoleTilt(Date,ut,V=None):
 	'''
-	Calculate the dipole tilt.
+	Calculate the dipole tilt angle.
+	
+	Inputs
+	======
+	Date: Either an array of date integers in the format yyymmdd, or a
+		tuple containing arrays of (Years,DayNo).
+	ut	: Either an array of time in hours (ut = hh + mm/60), or a tuple
+		containing integer arrays of (Hours,Minutes).
+	V	: Default = None, otherwise a tuple containing solar wind 
+		velocity components (Vx,Vy,Vz).
+		
+	Returns
+	=======
+	psi : An array of dipole tilt angles in radians.
 	
 	'''
 	#if date is a tuple, assume it contains (year,doy)

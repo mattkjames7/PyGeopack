@@ -3,22 +3,22 @@ from ._CheckFirstImport import _CheckFirstImport
 _CheckFirstImport()
 
 from .FreeTSData import FreeTSData
-from .GSEtoSMUT import GSEtoSMUT
-from .GSEtoGSMUT import GSEtoGSMUT
-from .MLTtoMLONUT import MLTtoMLONUT
-from .SMtoGSEUT import SMtoGSEUT
-from .GSEtoMAGUT import GSEtoMAGUT
-from .MLONtoMLTUT import MLONtoMLTUT
+from .GSEtoSM import GSEtoSM
+from .GSEtoGSM import GSEtoGSM
+from .MLTtoMLON import MLTtoMLON
+from .SMtoGSE import SMtoGSE
+from .GSEtoMAG import GSEtoMAG
+from .MLONtoMLT import MLONtoMLT
 from .LoadTSData import LoadTSData
 from .ModelField import ModelField
-from .MAGtoGSEUT import MAGtoGSEUT
+from .MAGtoGSE import MAGtoGSE
 from .SetCustParam import SetCustParam
-from .GSMtoSMUT import GSMtoSMUT
+from .GSMtoSM import GSMtoSM
 from .GetModelParams import GetModelParams
-from .MAGtoGEOUT import MAGtoGEOUT
+from .MAGtoGEO import MAGtoGEO
 from .TraceField import TraceField
-from .SMtoGSMUT import SMtoGSMUT
-from .GSMtoGSEUT import GSMtoGSEUT
-from .GEOtoMAGUT import GEOtoMAGUT
+from .SMtoGSM import SMtoGSM
+from .GSMtoGSE import GSMtoGSE
+from .GEOtoMAG import GEOtoMAG
 from .__del__ import __del__
 from .UpdateParameters import UpdateParameters

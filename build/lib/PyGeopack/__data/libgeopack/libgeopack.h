@@ -5,6 +5,7 @@
 #include <string.h>
 #include "DateTimeTools.h"
 #include <math.h>
+#include <stdbool.h>
 
 typedef struct {
 	int n;
@@ -61,6 +62,17 @@ extern const float Re;
 
 char DataFile[256];
 
+#define min(a,b) ({ \
+	__typeof__ (a) _a = (a);\
+	__typeof__ (b) _b = (b);\
+	_a < _b ? _a : _b;})
+
+#define max(a,b) ({ \
+	__typeof__ (a) _a = (a);\
+	__typeof__ (b) _b = (b);\
+	_a > _b ? _a : _b;})
+	
+
 #endif
 
 
@@ -75,6 +87,11 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, float *par
 void Init(const char *filename);
 //CtypeStop
 float GetDipoleTilt(int Year, int Doy, int Hr, int Mn, float Vx, float Vy, float Vz);
+
+void FillInKp(int nk, int *kDate, float *kut0, float *kut1, float *kp, int n, int *Date, float *ut, float *kpout);
+void FindIntervals(int n, float *SymH, float *Bz, int *SWflag, int *IMFflag, int *ni, int *ibeg, int *iend);
+void CalculateW(int n, float *SymH, float *Bz, int *SWflag, int *IMFflag, float *V, float *Den, float *W1, float *W2, float *W3, float *W4, float *W5, float *W6);
+void CalculateG(int n, float *By, float *Bz, float *V, bool *good, float *G1, float *G2);
 
 void PopulateMonthInds();
 int MonthStartInd(int Date);
@@ -94,4 +111,5 @@ extern void t89c_(int *iopt, float *parmod, float *ps, float *x, float *y, float
 extern void t96_(int *iopt, float *parmod, float *ps, float *x, float *y, float *z, float *bx, float *by, float *bz);
 extern void t01_01_(int *iopt, float *parmod, float *ps, float *x, float *y, float *z, float *bx, float *by, float *bz);
 extern void t04_s_(int *iopt, float *parmod, float *ps, float *x, float *y, float *z, float *bx, float *by, float *bz);
-
+extern void listwintervals_(int *n, float *SymH, float *Bz, int *SWflag, int *IMFflag, int *ni, int *ibeg, int *iend);
+extern void calculatew_(int *ni, int *ibeg, int *iend, int *n, float *Bz, float *V, float *Den, float *W1, float *W2, float *W3, float *W4, float *W5, float *W6);

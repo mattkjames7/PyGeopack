@@ -7,6 +7,9 @@ from . import Globals
 Arch = platform.architecture()[0]
 libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopack/libgeopack.so")
 
+fptr = np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")
+iptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
+bptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
 
 _CGSEtoGSMUT = libgeopack.GSEtoGSMUT
 _CGSEtoGSMUT.argtypes = [np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), ct.c_int, ct.c_int, ct.c_float, np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS"), np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")]
@@ -87,3 +90,21 @@ _CInit.argtypes = [ct.c_char_p]
 _CGetDipoleTilt = libgeopack.GetDipoleTilt
 _CGetDipoleTilt.argtypes = [ct.c_int,ct.c_int,ct.c_int,ct.c_int,ct.c_float,ct.c_float,ct.c_float]
 _CGetDipoleTilt.restype = ct.c_float
+
+
+_CFindIntervals = libgeopack.FindIntervals
+_CFindIntervals.argtypes = [ct.c_int,fptr,fptr,iptr,iptr,iptr,iptr,iptr]
+_CFindIntervals.restype = None
+
+
+_CCalculateW = libgeopack.CalculateW
+_CCalculateW.argtypes = [ct.c_int,fptr,fptr,iptr,iptr,fptr,fptr,fptr,fptr,fptr,fptr,fptr,fptr] 
+_CCalculateW.restype = None
+
+_CFillInKp = libgeopack.FillInKp
+_CFillInKp.argtypes = [ct.c_int,iptr,fptr,fptr,fptr,ct.c_int,iptr,fptr,fptr]
+_CFillInKp.restype = None
+
+_CCalculateG = libgeopack.CalculateG
+_CCalculateG.argtypes = [ct.c_int,fptr,fptr,fptr,bptr,fptr,fptr] 
+_CCalculateG.restype = None
