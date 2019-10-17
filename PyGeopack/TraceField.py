@@ -32,7 +32,7 @@ class TraceField(object):
 		MltS = Magnetic local time of the southern footprint
 		Lshell = L-shell of the field line at the equator
 		MltE = Magnetic local time of the equatorial footprint
-		FlLen = Field line lenght in planetary radii
+		FlLen = Field line length in planetary radii
 		R = sqrt(x**2 + y**2 + z**2)		
 	
 	'''

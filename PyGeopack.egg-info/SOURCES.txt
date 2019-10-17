@@ -50,5 +50,6 @@ PyGeopack/__data/libgeopack/TraceRoutines.h
 PyGeopack/__data/libgeopack/geopack2008_mkj.f
 PyGeopack/__data/libgeopack/libgeopack.c
 PyGeopack/__data/libgeopack/libgeopack.h
+PyGeopack/__data/libgeopack/libgeopack.so
 PyGeopack/__data/libgeopack/makefile
 PyGeopack/__data/libgeopack/wparams.f95

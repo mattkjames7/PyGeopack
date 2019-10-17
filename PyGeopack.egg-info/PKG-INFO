@@ -13,9 +13,6 @@ Description: # PyGeopack
         magnetosphere. See https://ccmc.gsfc.nasa.gov/modelweb/magnetos/tsygan.html
         and http://geo.phys.spbu.ru/~tsyganenko/modeling.html for more information.
         
-        NOTE: T01 doesn't currently work - there's a segmentation fault for some 
-        reason.
-        
         ## Requirements
         
         The following Python packages will be installed automatically:
@@ -25,24 +22,19 @@ Description: # PyGeopack
         * RecarrayTools
         * DateTimeTools
         * kpindex
-        
-        During the first import of the `PyGeopack` module, some C and Fortran 
-        needs compiling first, so the following will be needed:
-        
-        * gcc
-        * make
-        * gfortran
+        * pyomnidata
         
         ## Installation
         
-        Firstly a couple of environment variables need setting up: `$KPDATA_PATH`
-        and `$GEOPACK_PATH`, which will point to the Kp index data and the 
-        Geopack data, respectively. This can be done by including the following 
-        in your `~/.bashrc` file, or by running it in the terminal before 
-        starting Python:
+        Firstly a few environment variables need setting up: `$KPDATA_PATH`,
+        `$OMNIDATA_PATH` and `$GEOPACK_PATH`, which will point to the Kp index 
+        data, the omni data and the Geopack data, respectively. This can be done 
+        by including the following in your `~/.bashrc` file, or by running it in 
+        the terminal before starting Python:
         
         ```
         export KPDATA_PATH=/path/to/kp
+        export OMNIDATA_PATH=/path/to/omni
         export GEOPACK_PATH=/path/to/geopack/data
         ```
         where both of those directories must be writable by the current user, 
@@ -57,8 +49,18 @@ Description: # PyGeopack
         or by downloading the latest release on GitHub and running:
         
         ```
-        pip3 install PyGeopack-0.0.9-py3-none-any.whl --user
+        pip3 install PyGeopack-0.0.12-py3-none-any.whl --user
         ```
+        
+        NOTE: You should uninstall any previous versions before installing this. 
+        If you had a version installed before 0.0.12 - you will need to 
+        remove the old shared object files - they are likely to be contained
+        somewhere like (depending on the Python version used):
+        
+        ```
+        ~/.local/lib/python3.6/site-packages/PyGeopack/
+        ```
+        It's best just to remove everyting within that folder!
         
         ## Post-install
         
@@ -67,9 +69,230 @@ Description: # PyGeopack
         `$GEOPACK_PATH` then it will load into memory. If they don't exist, then
         the user will be prompted for authorisation to download the data, to 
         allow the data download, press 'y', otherwise press 'n'. The data 
-        download and conversion may take a little while.
+        download and conversion may take a while.
         
+        ## Usage
         
+        There are three main uses for this Python package:
+        
+        1. Calculating the model magnetic field at any given point in space.
+        2. Tracing along the magnetic field.
+        3. Coordinate conversions.
+        
+        Before doing any of the above, the module requires up to date omni 
+        parameters - the `UpdateParameters` routine will download and update
+        the Kp index and OMNI parameters, then calculate the G and W parameters
+        required for the models:
+        
+        ```python
+        import PyGeopack as gp
+        gp.UpdateParameters(SkipWParameters=True)
+        ```
+        The `SkipWParameters` keyword (set to `True` by default) can be used to
+        skip the lengthy process of calculating the six W parameters for the 
+        TS05 magnetic field model - if `True` then these will be filled with 
+        zeros. Apparently they aren't all that important anyway. The code 
+        included in this module can calculate them and is Tsyganenko's own code,
+        but it produces different numbers to those given in the files on
+        Tsyganenko's website! No idea why, so use them with caution!
+        
+        ### 1. Calculating the model field.
+        
+        To calculate the model field, use the `ModelField` function:
+        
+        ```python
+        Bx,By,Bz = gp.ModelField(x,y,z,Date,ut,Model='T96',CoordIn='GSM',CoordOut='GSM',**kwargs)
+        ```
+        Where `x`, `y` and `z` are the position(s) you wish to find the magnetic
+        field at in R<sub>E</sub> - these can be either scalars or 
+        `numpy.ndarray`s. `Date` is the date as an integer, in the format 
+        yyyymmdd. `ut` is the time in hours, i.e. `ut = hours + mins/60 + secs/3600'.
+        `Model` can be set to one of four strings currently: `'T89'`, `'T96'` 
+        (default), `'T01'` or `'TS05'`, more information about the models will 
+        be discussed further down in this document. `CoordIn` and `CoordOut`
+        denote the input and output coordinate systems, respectively, and can be
+        set to one of the three following options: `'GSM'` (default), `'GSE'` or
+        `'SM'`. `**kwargs` are discussed in detail in the "Model Parameters" 
+        section. `Bx`, `By` and `Bz` are the three components of the magnetic 
+        field model in nT for each of the input coordinates.
+        
+        ### 2. Tracing the magnetic field
+        
+        Trace along the magnetic field from 1 or more starting positions in the 
+        magnetosphere `x`, `y` and `z` using the `TraceField` object:
+        
+        ```python
+        T = gp.TraceField(x,y,z,Date,ut,Model='T96',CoordIn='GSM',CoordOut='GSM',
+        		alt=100.0,MaxLen=1000,DSMax=1.0,FlattenSingleTraces=True,Verbose=True,**kwargs)
+        ```
+        
+        `x`, `y` and `z` can either be scalars, or arrays of coordinates in 
+        R<sub>E</sub>.
+        `Date` can either be a single date, for all traces, or an array of dates
+        (one for each trace) where each is an integer in the format yyyymmhh.
+        `ut` is the time in hours (i.e. `ut = hours + mins/60`) and can either 
+        be a single value for all traces, or an array with a time for each trace.
+        `Model` denotes the field model being used - `'T89'`, `'T96'` (default),
+        `'T01'` or `'TS05'`.
+        `CoordIn` and `CoordOut` denote the input and output coordinate systems, 
+        respectively, and can be set to one of the three following options: 
+        `'GSM'` (default), `'GSE'` or `'SM'`.
+        `alt` is the altitude in km atwhich the trace will be terminated 
+        (`alt = 100.0` by default).
+        `MaxLen` is the maximum number of steps for the traces (default is 1000).
+        `DSMax` is the maximum step length in R<sub>E</sub> (default 1.0).
+        `FlattenSingleTraces` if set to `True` will flatten the 2D arrays stored
+        in the `TraceField` object if only a single trace is performed.
+        `Verbose` is `True` will output the tracing progress to the terminal.
+        `**kwargs` will be discussed in the "Model Parameters" section.
+        
+        The `TraceField` object, `T` in the above code snippet, contains the 
+        following arrays:
+        
+        | | |
+        |:--|:---|
+        | `x` |		x coordinate along the field trace(s) |
+        | `y` |			y coordinate along the field trace(s) |
+        | `z` |			z coordinate along the field trace(s) |
+        | `Bx` |			x component of the magnetic field along the trace(s) |
+        | `By` |			y component of the magnetic field along the trace(s) |
+        | `Bz` |			z component of the magnetic field along the trace(s) |	
+        | `nstep` |	 	number of steps along the trace(s) |
+        | `GlatN` |	 	Geographic latitude of the northern footprint(s) |
+        | `GlatS` |		Geographic latitude of the southern footprint(s) |
+        | `MlatN` |		Magnetic latitude of the northern footprint(s) |
+        | `MlatS` |		Magnetic latitude of the southern footprint(s) |
+        | `GlonN` |		Geographic longitude of the northern footprint(s) |
+        | `GlonS` |		Geographic longitude of the southern footprint(s) |
+        | `MlonN` |		Magnetic longitude of the northern footprint(s) |
+        | `MlonS` |		Magnetic longitude of the southern footprint(s) |
+        | `GltN` |			Geographic local time of the northern footprint(s) |
+        | `GltS` |			Geographic local time of the southern footprint(s) |
+        | `MltN` |			Magnetic local time of the northern footprint(s) |
+        | `MltS` |			Magnetic local time of the southern footprint(s) |
+        | `Lshell` |		L-shell of the field line(s) at the equator |
+        | `MltE` |			Magnetic local time of the equatorial footprint(s) |
+        | `FlLen` |		Field line length in planetary radii |
+        | `R` |			`R = sqrt(x**2 + y**2 + z**2)`	 |
+        
+        ### 3. Coordinate conversion
+        
+        This module contains the following Cartesian coordinate conversion
+        routines:
+        
+        ```python
+        x1,y1,z1 = gp.GSEtoGSM(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.GSEtoMAG(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.GSEtoSM(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.GSMtoGSE(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.GSMtoSM(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.MAGtoGSE(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.SMtoGSE(x0,y0,z0,Date,ut)
+        x1,y1,z1 = gp.SMtoGSM(x0,y0,z0,Date,ut)
+        ```
+        
+        where `x0`, `y0` and `z0` are either scalars or arrays of positions to
+        be transformed. `Date`is an integer in the format yyyymmdd and `ut` is
+        the time in hours (i.e. `ut = hours + minutes/60.0`). `x1`, `y1` and 
+        `z1` are the transformed coordinates.
+        
+        Also included are the following routines:
+        
+        ```python
+        MLon,MLat = gp.GEOtoMAG(Lat,Lon,Date,ut)
+        Lon,Lat = gp.MAGtoGEO(MLat,MLon,Date,ut)
+        ```
+        which convert between geographic ( `Lat` and `Lon`) and magnetic ( `MLat`
+        and `MLon`) latitude and longitudes.
+        
+        And for converting between magnetic longitude (`MLon`) and magnetic 
+        local time (`MLT`):
+        
+        ```python
+        MLT = gp.MLONtoMLT(MLon,Date,ut)
+        MLon = gp.MLTtoMLON(MLT,Date,ut)
+        ```
+        Descriptions of the coordinate systems:
+        
+        | Name                                  | Description | x        | y | z |
+        |:--------------------------------------|:-----------:|:---------|:--|:--|
+        | GSE - Geocentric Solar Ecliptic       | fixed       | Towards the Sun | Opposite to Earth's orbit | Perpendicular to the ecliptic plane |
+        | GSM - Geocentric Solar Magnetospheric | fixed       | Towards the Sun | | Projection of the dipole axis in the Y-Z GSE plane |
+        | SM - Solar Magnetic                   | fixed       | In the plane containing the Earth-Sum line and the dipole axis | | Along the dipole axis |
+        | MAG - Geomagnetic                     | rotating    | | Through intersection of magnetic equator and geographic meridian 90 degrees east of the meridian containing the dipole axis | Along the dipole axis |
+        | GEO - Geographic                      | rotating    | Through intersection of equator and Greenwich meridian | | Along Earth's rotation axis |
+        
+        NOTE: By "fixed", I mean that they do not rotate with the Earth's spin, they are not really fixed.
+        
+        ### Model Parameters
+        
+        In this section, the parameters and relevant `**kwargs` are discussed 
+        for each model. If `**kwargs` aren't used, then the relevant parameters
+        are found autmoatically for the date and time provided when using the 
+        models. Individual parameters amy be altered without affecting the 
+        others - if only a single parameter is changed, then the others are 
+        still automatically calculated. The `**kwargs` accepted by `ModelField`
+        and `TraceField` are:
+        
+        | Keyword  | Data Type              | Description                      |
+        |:---------|:-----------------------|:---------------------------------|
+        | `iopt`   | scalar integer         | iopt=Kp+1 (iopt=7 for Kp>=6)     |  
+        | `parmod` | 10-element float array | Elements 0 - 3 are Pdyn, SymH, IMF By and IMF Bz, respectively. Elements 4 - 9 depend on the model |
+        | `tilt`   | scalar float           | The dipole tilt angle in radians |
+        | `Vx`     | scalar float           | x component of solar wind velocity |
+        | `Vy`     | scalar float           | y component of solar wind velocity |
+        | `Vz`     | scalar float           | z component of solar wind velocity |
+        | `Kp`     | scalar integer         | Kp index                         |
+        | `Pdyn`   | scalar float           | Dynamic pressure in nPa          |
+        | `SymH`   | scalar float           | SymH in nT                       |
+        | `By`     | scalar float           | IMF y component in nT            |
+        | `Bz`     | scalar float           | IMF z component in nT            |
+        
+        All models can be affected by the `Vx`, `Vy`, and `Vz` parameters as 
+        these are used to aberrate the coordinates into the GSW frame, where 
+        GSW is equivalent to GSM in the situation where `Vy=0` and `Vz=0`. 
+        `tilt` is calculated automatically for all models based on the date, 
+        time and the IGRF magnetic field model.
+        
+        #### T89
+        
+        The only parameter used here is `iopt` which can be controlled with 
+        either setting `iopt` or `Kp` keywords to an integer. Valid values for
+        `iopt` are integers in the range 1-7, if `Kp` is set, then `iopt` is
+        set automatically equal to `Kp+1`. For `Kp`>=6 `iopt=7`.
+        
+        #### T96
+        
+        The first four elements of the `parmod` array are used for this model
+        where `parmod[0]` is the dynamic pressure, `parmod[1]` is the SymH,
+        `parmod[2]` is the y component of the interplanetary magnetic field 
+        (IMF) and `parmod[3]` is the z component of the IMF. All other elements
+        of this array are ignored. The entire `parmod` array can be set using
+        the `parmod` keyword, otherwise individual elements can be edited using
+        the `Pdyn`, `SymH`, `By` and `Bz` keywords, where other unchanged 
+        parameters will be calculated automatically.
+        
+        #### T01
+        
+        This model uses the first six elements of the `parmod` array, where the
+        first four are set in exactly the same way as in the T96 model. 
+        `parmod[4]` and `parmod[5]` correspond to the G1 and G2 parameters 
+        calculated in Tsyganenko, 2002b. These can, I believe, be set to 0.
+        
+        #### TS05
+        
+        This model uses all of the `parmod` array, where the first four are as 
+        in the T96 model. The last 6 elements are the W1-W6 parameters described
+        in Tsyganenko and Sitnov, 2005.
+        
+        ## References
+        
+        1. N.A. Tsyganenko, A Magnetospheric Magnetic Field Model with a Warped Tail Current Sheet, Planet. Space Sci. 37, 5-20, 1989.
+        2. N.A. Tsyganenko, Modeling the Earth's Magnetospheric Magnetic Field Confined Within a Realistic Magnetopause, J.Geophys.Res., 100, 5599-5612, 1995.
+        3. N.A. Tsyganenko and D.P. Stern, Modeling the Global Magnetic Field of the Large-Scale Birkeland Current Systems, J. Geophys.Res., 101, 27187-27198, 1996.
+        4. N.A. Tsyganenko, A model of the near magnetosphere with a dawn-dusk asymmetry - 1. Mathematical Structure, J. Geophys.Res., 107, A8, 10.1029/2001JA000219, 2002.
+        5. N.A. Tsyganenko, A model of the near magnetosphere with a dawn-dusk asymmetry - 2. Parameterization and fitting to observations, J. Geophys.Res., 107, A7, 10.1029/2001JA000220, 2002.
+        6. N.A. Tsyganenko and M. I. Sitnov, Modeling the dynamics of the inner magnetosphere during strong geomagnetic storms, J. Geophys.Res., 110, A3, 10.1029/2004JA010798, 2005. 
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

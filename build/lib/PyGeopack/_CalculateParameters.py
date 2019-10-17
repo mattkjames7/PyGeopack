@@ -361,7 +361,7 @@ def _LoadData(years):
 
 	return data,kp
 	
-def _CalculateParameters():
+def _CalculateParameters(SkipWParameters=True):
 	'''
 	This will take in all of the omni and kp index parameters required
 	for the Tsyganenko models and do the following:
@@ -390,12 +390,17 @@ def _CalculateParameters():
 	data.G1,data.G2 = _GetGParameters(data)
 
 	#calculate W parameters
-	_GetWParameters(data)
+	if SkipWParameters:
+		data.W1 = 0.0
+		data.W2 = 0.0
+		data.W3 = 0.0
+		data.W4 = 0.0
+		data.W5 = 0.0
+		data.W6 = 0.0
+	else:
+		_GetWParameters(data)
 	
-
 	
-
-		
 	return data
 
 

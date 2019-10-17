@@ -99,12 +99,18 @@ from ._CalculateParameters import _CalculateParameters
 	# RT.SaveRecarray(data,fname)
 	
 	
-def UpdateParameters():
+def UpdateParameters(SkipWParamters=True):
 	'''
 	This program will calculate all of the parameters required to drive 
 	the Tsyganenko models using OMNI data and Kp.
 	
 	This may take a while.
+	
+	Inputs
+	======
+	SkipWParameters: Boolean (default = True) if True, then the lengthy
+		(and likely incorrect) process of calculating the W parameters
+		will be skipped and they will be set to 0.
 	
 	'''
 	
@@ -125,7 +131,7 @@ def UpdateParameters():
 		os.system('mkdir -pv '+Globals.DataPath)
 
 	#now combining all of the data and calculating the W and G parameters
-	data = _CalculateParameters()
+	data = _CalculateParameters(SkipWParameters)
 	
 	#save the data
 	print('Saving')
