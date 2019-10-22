@@ -39,6 +39,8 @@ void ModelField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, c
 	float parmod[10], tilt, Vx, Vy, Vz;
 	GetModelParams(Date,ut,Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
 	recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	tilt = getpsi_();
+	
 	/*Convert input coordinates to GSM*/
 	float X[n],Y[n],Z[n];
 	switch (CoordIn) {

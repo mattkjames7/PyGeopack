@@ -189,52 +189,72 @@ float InterpParam(float *x, int Date, float ut) {
 }
 
 void GetModelParams(int Date, float ut, const char *Model, int *iopt, float *parmod, float *tilt, float *Vx, float *Vy, float *Vz) {
-	/*Dipole tilt*/
-	tilt[0] = InterpParam(TSData.Tilt,Date,ut);
+	/*fall back if the data are still not loaded*/
+	if (TSData.n == 0) {
+		iopt[0] = 1;
+		parmod[0] = 2.0;
+		parmod[1] = 0.0;
+		parmod[2] = 0.0;
+		parmod[3] = 0.0;
+		parmod[4] = 0.0;
+		parmod[5] = 0.0;
+		parmod[6] = 0.0;
+		parmod[7] = 0.0;
+		parmod[8] = 0.0;
+		parmod[9] = 0.0;
+		Vx[0] = -400.0;
+		Vy[0] = 0.0;
+		Vz[0] = 0.0;
+		tilt[0] = 0.0;
+	} else {
+	
+		/*Dipole tilt*/
+		tilt[0] = InterpParam(TSData.Tilt,Date,ut);
 
-	/*Vx, Vy, Vz*/
-	Vx[0] = InterpParam(TSData.Vx,Date,ut);
-	Vy[0] = InterpParam(TSData.Vy,Date,ut);
-	Vz[0] = InterpParam(TSData.Vz,Date,ut);	
-	/*The easiest one is T89 - just need Kp*/
-    if ((strcmp(Model,"T89") == 0) || (strcmp(Model,"T89c") == 0)) {
-		iopt[0] = (int) InterpParam(TSData.Kp,Date,ut) + 1;
-		if (iopt[0] > 7) {
-			iopt[0] = 7;
-		} else if (iopt[0] < 1) {
-			iopt[0] = 1;
-		}
-//		return;
-	/* Then T96 is Pdyn, Dst (SymH in this case), By, Bz */
-	} else if ((strcmp(Model,"T96") == 0) || (strcmp(Model,"T96c") == 0)) {
-		parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
-		parmod[1] = InterpParam(TSData.SymH,Date,ut);
-		parmod[2] = InterpParam(TSData.By,Date,ut);
-		parmod[3] = InterpParam(TSData.Bz,Date,ut);
-//		return;
-	/* Next T01 which uses: Pdyn, Dst, By, Bz, G1, G2*/
-	} else if ((strcmp(Model,"T01") == 0) || (strcmp(Model,"T01c") == 0)) {
-		parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
-		parmod[1] = InterpParam(TSData.SymH,Date,ut);
-		parmod[2] = InterpParam(TSData.By,Date,ut);
-		parmod[3] = InterpParam(TSData.Bz,Date,ut);
-		parmod[4] = InterpParam(TSData.G1,Date,ut);
-		parmod[5] = InterpParam(TSData.G2,Date,ut);
-//		return;
-	/*TS05: Pdyn, Dst, By, Bz, W1, W2, W3, W4, W5, W6*/
-	} else if ((strcmp(Model,"TS05") == 0) || (strcmp(Model,"TS05c") == 0)) {
-		parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
-		parmod[1] = InterpParam(TSData.SymH,Date,ut);
-		parmod[2] = InterpParam(TSData.By,Date,ut);
-		parmod[3] = InterpParam(TSData.Bz,Date,ut);
-		parmod[4] = InterpParam(TSData.W1,Date,ut);
-		parmod[5] = InterpParam(TSData.W2,Date,ut);		
-		parmod[6] = InterpParam(TSData.W3,Date,ut);
-		parmod[7] = InterpParam(TSData.W4,Date,ut);
-		parmod[8] = InterpParam(TSData.W5,Date,ut);
-		parmod[9] = InterpParam(TSData.W6,Date,ut);	
-//		return;
-	} 
+		/*Vx, Vy, Vz*/
+		Vx[0] = InterpParam(TSData.Vx,Date,ut);
+		Vy[0] = InterpParam(TSData.Vy,Date,ut);
+		Vz[0] = InterpParam(TSData.Vz,Date,ut);	
+		/*The easiest one is T89 - just need Kp*/
+		if ((strcmp(Model,"T89") == 0) || (strcmp(Model,"T89c") == 0)) {
+			iopt[0] = (int) InterpParam(TSData.Kp,Date,ut) + 1;
+			if (iopt[0] > 7) {
+				iopt[0] = 7;
+			} else if (iopt[0] < 1) {
+				iopt[0] = 1;
+			}
+	//		return;
+		/* Then T96 is Pdyn, Dst (SymH in this case), By, Bz */
+		} else if ((strcmp(Model,"T96") == 0) || (strcmp(Model,"T96c") == 0)) {
+			parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
+			parmod[1] = InterpParam(TSData.SymH,Date,ut);
+			parmod[2] = InterpParam(TSData.By,Date,ut);
+			parmod[3] = InterpParam(TSData.Bz,Date,ut);
+	//		return;
+		/* Next T01 which uses: Pdyn, Dst, By, Bz, G1, G2*/
+		} else if ((strcmp(Model,"T01") == 0) || (strcmp(Model,"T01c") == 0)) {
+			parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
+			parmod[1] = InterpParam(TSData.SymH,Date,ut);
+			parmod[2] = InterpParam(TSData.By,Date,ut);
+			parmod[3] = InterpParam(TSData.Bz,Date,ut);
+			parmod[4] = InterpParam(TSData.G1,Date,ut);
+			parmod[5] = InterpParam(TSData.G2,Date,ut);
+	//		return;
+		/*TS05: Pdyn, Dst, By, Bz, W1, W2, W3, W4, W5, W6*/
+		} else if ((strcmp(Model,"TS05") == 0) || (strcmp(Model,"TS05c") == 0)) {
+			parmod[0] = InterpParam(TSData.Pdyn,Date,ut);
+			parmod[1] = InterpParam(TSData.SymH,Date,ut);
+			parmod[2] = InterpParam(TSData.By,Date,ut);
+			parmod[3] = InterpParam(TSData.Bz,Date,ut);
+			parmod[4] = InterpParam(TSData.W1,Date,ut);
+			parmod[5] = InterpParam(TSData.W2,Date,ut);		
+			parmod[6] = InterpParam(TSData.W3,Date,ut);
+			parmod[7] = InterpParam(TSData.W4,Date,ut);
+			parmod[8] = InterpParam(TSData.W5,Date,ut);
+			parmod[9] = InterpParam(TSData.W6,Date,ut);	
+	//		return;
+		} 
+	}
 	if (strchr(Model,'c') != NULL) {
 		//In this bit we have chosen a custom model, so will use the custom params stored in CustP
 		//So, setting CustP needs to be done first!
