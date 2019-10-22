@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PyGeopack",
-    version="0.0.12",
+    version="0.0.13",
     author="Matthew Knight James",
     author_email="mattkjames7@gmail.com",
     description="Geopack08 wrapper for Python",
@@ -25,7 +25,8 @@ setuptools.setup(
 		'PyFileIO',
 		'RecarrayTools',
 		'DateTimeTools',
-		'kpindex'
+		'kpindex',
+		'pyomnidata',
 	],
 	include_package_data=True,
 )

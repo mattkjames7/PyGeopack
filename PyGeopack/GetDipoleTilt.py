@@ -35,7 +35,7 @@ def GetDipoleTilt(Date,ut,V=None):
 		Hr = np.array([Hr]).flatten().astype('int32')
 		Mn = np.array([Mn]).flatten().astype('int32')		
 	else:
-		Hr = np.array([Hr]).flatten().astype('int32')
+		Hr = np.array([ut]).flatten().astype('int32')
 		Mn = np.array([(ut - Hr)*60]).flatten().astype('int32')
 	
 	#V should be a tuple of (Vx,Vy,Vz)
