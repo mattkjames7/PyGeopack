@@ -1,6 +1,5 @@
 import numpy as np
-import pyomnidata as pod
-import kpindex
+
 import time
 import DateTimeTools as TT
 import copy
@@ -315,6 +314,14 @@ def _GetWParameters(data):
 	
 
 def _LoadData(years):
+
+	try:
+		import pyomnidata as pod
+		import kpindex
+	except:
+		print('Please install the following packages in order to create the parameter file: "kpindex" and "pyomnidata"')
+		return 
+
 	#load data
 	print('Reading OMNI Data')
 	omni = pod.GetOMNI(years,Res=5)

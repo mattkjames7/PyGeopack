@@ -30,12 +30,8 @@ def _CheckFirstImport():
 	#check for the data file
 	Globals.DataFile = Globals.DataPath + 'TSdata.bin'
 	if not os.path.isfile(Globals.DataFile):
-		ipt = ''
-		while not ipt.lower() in ['y','n']:
-			ipt = input('Data file does not exist, download data (this may take a little while)? (y/n)')
-		if ipt.lower() == 'y':
-			from .UpdateParameters import UpdateParameters
-			UpdateParameters()
+		print('Data file does not exist - to create data file run "PyGeopack.UpdateParameters()"')
+
 	
 	#load the data
 	from ._CFunctions import _CInit
@@ -43,8 +39,7 @@ def _CheckFirstImport():
 	if os.path.isfile(Globals.DataFile):
 		DataFileCT = ct.c_char_p(Globals.DataFile.encode('utf-8'))
 		_CInit(DataFileCT)
-	else:
-		print('Data file not found!!!! Thing may not work at all...')
+	
 #	DataFile = os.path.dirname(__file__)+"/__data/libgeopack/data/TSdata.bin"
 #	if not os.path.isfile(DataFile):
 #		print("data file has not been extracted yet - extracting!")

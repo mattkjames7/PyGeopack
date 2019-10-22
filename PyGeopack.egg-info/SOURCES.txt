@@ -45,6 +45,9 @@ PyGeopack/__data/libgeopack/T01_01.f
 PyGeopack/__data/libgeopack/T89c.f
 PyGeopack/__data/libgeopack/T96.f
 PyGeopack/__data/libgeopack/TS04c.f
+PyGeopack/__data/libgeopack/Tom.c
+PyGeopack/__data/libgeopack/Tom.h
+PyGeopack/__data/libgeopack/Tom96.f95
 PyGeopack/__data/libgeopack/TraceRoutines.c
 PyGeopack/__data/libgeopack/TraceRoutines.h
 PyGeopack/__data/libgeopack/geopack2008_mkj.f
@@ -52,4 +55,5 @@ PyGeopack/__data/libgeopack/libgeopack.c
 PyGeopack/__data/libgeopack/libgeopack.h
 PyGeopack/__data/libgeopack/libgeopack.so
 PyGeopack/__data/libgeopack/makefile
+PyGeopack/__data/libgeopack/test.f95
 PyGeopack/__data/libgeopack/wparams.f95

@@ -2,4 +2,3 @@ numpy
 PyFileIO
 RecarrayTools
 DateTimeTools
-kpindex

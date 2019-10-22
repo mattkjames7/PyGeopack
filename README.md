@@ -13,6 +13,10 @@ The following Python packages will be installed automatically:
 * PyFileIO
 * RecarrayTools
 * DateTimeTools
+
+The following packages will also be required for running the 
+```PyGeopack.UpdateParameters()``` routine:
+
 * kpindex
 * pyomnidata
 
@@ -41,7 +45,7 @@ pip3 install PyGeopack --user
 or by downloading the latest release on GitHub and running:
 
 ```
-pip3 install PyGeopack-0.0.12-py3-none-any.whl --user
+pip3 install PyGeopack-0.1.0-py3-none-any.whl --user
 ```
 
 NOTE: You should uninstall any previous versions before installing this. 
@@ -59,9 +63,8 @@ It's best just to remove everyting within that folder!
 After installation, the PyGeopack module will attempt to locate the 
 OMNI data required for the models. If these data exist already in
 `$GEOPACK_PATH` then it will load into memory. If they don't exist, then
-the user will be prompted for authorisation to download the data, to 
-allow the data download, press 'y', otherwise press 'n'. The data 
-download and conversion may take a while.
+the user will be shown a warning - the next section explains how to fix
+this.
 
 ## Usage
 
@@ -71,10 +74,10 @@ There are three main uses for this Python package:
 2. Tracing along the magnetic field.
 3. Coordinate conversions.
 
-Before doing any of the above, the module requires up to date omni 
-parameters - the `UpdateParameters` routine will download and update
-the Kp index and OMNI parameters, then calculate the G and W parameters
-required for the models:
+Before doing any of the above, it's recommended that you grab the up to 
+date omni parameters - the `UpdateParameters` routine will download and 
+update the Kp index and OMNI parameters, then calculate the G and W 
+parameters required for the models:
 
 ```python
 import PyGeopack as gp

@@ -4,11 +4,9 @@ const float Re = 6371.2;
 TSD TSData = {.n = 0};
 
 void LoadTSData() {
-	printf("Reading Model Data\n");
 	FILE *f = fopen(DataFile,"rb");
 	if (f == NULL) {
-		printf("Full file path: %s",DataFile);
-		printf("File open failed!\n");
+		return;
 	}
 	int n;
 	fread(&n,sizeof(int),1,f);
@@ -72,7 +70,6 @@ void LoadTSData() {
 	fclose(f);
 	
 	PopulateMonthInds();
-	printf("Done\n");
 }
 
 void PopulateMonthInds() {

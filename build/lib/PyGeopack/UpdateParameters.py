@@ -1,7 +1,5 @@
 from . import Globals
 import time
-import kpindex as kp
-import pyomnidata as omni
 from ._DownloadTS05Data import _DownloadTS05Data
 import PyFileIO as pf
 from ._ReadTab import _ReadTab
@@ -114,7 +112,13 @@ def UpdateParameters(SkipWParamters=True):
 	
 	'''
 	
-
+	try:
+		import kpindex as kp
+		import pyomnidata as omni
+	except:
+		print('Please install the following packages in order to create the parameter file: "kpindex" and "pyomnidata"')
+		return
+	
 	print('This process may take a while, please be patient')
 	time.sleep(1.0)
 	

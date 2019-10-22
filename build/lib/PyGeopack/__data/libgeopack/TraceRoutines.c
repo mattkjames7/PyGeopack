@@ -256,6 +256,7 @@ void TraceField(float *Xin, float *Yin, float *Zin, int n, int *Date, float *ut,
 			/*get params and recalc08*/
 			GetModelParams(Date[i],ut[i],Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
 			recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+			tilt = getpsi_();
 		}
 		/*Convert input coordinates to GSM*/
 		
