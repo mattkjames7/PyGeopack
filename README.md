@@ -101,7 +101,7 @@ Bx,By,Bz = gp.ModelField(x,y,z,Date,ut,Model='T96',CoordIn='GSM',CoordOut='GSM',
 Where `x`, `y` and `z` are the position(s) you wish to find the magnetic
 field at in R<sub>E</sub> - these can be either scalars or 
 `numpy.ndarray`s. `Date` is the date as an integer, in the format 
-yyyymmdd. `ut` is the time in hours, i.e. `ut = hours + mins/60 + secs/3600'.
+yyyymmdd. `ut` is the time in hours, i.e. `ut = hours + mins/60 + secs/3600`.
 `Model` can be set to one of four strings currently: `'T89'`, `'T96'` 
 (default), `'T01'` or `'TS05'`, more information about the models will 
 be discussed further down in this document. `CoordIn` and `CoordOut`
