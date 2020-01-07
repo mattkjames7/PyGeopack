@@ -6,5 +6,5 @@
 
 using namespace std;
 
-void Sun(int iyear, int iday, int ihour, int min, int isec, double *gst, double *slong, double *srasn, double *sdec);
+void Sun(int iyear, int iday, int ihour, int min, int isec, double *gst, double *slong, double *srasn, double *sdec, double *oblique);
 #endif

@@ -1,15 +1,30 @@
 #include "Magnetopause.h"
 
 void ShueEtAlMP(double XN_PD, double Vel, double BzIMF, double XGSW, double YGSW, double ZGSW, double *XMGNP, double *YMGNP, double *ZMGNP, double *Dist, int *Id) {
+	/*******************************************************************
+	 * This routine is based on the SHUETAL_MGNP_08 subroutine from
+	 * Geopack.
+	 * 
+	 * This will determine whether a point in space is within the Shue et al 
+	 * magnetopause, and also determine the nearest point on the magnetopause.
+	 * 
+	 * 
+	 * ****************************************************************/
+	
+	
 	double P, R0, Alpha, Rm, XMT96, YMT96, ZMT96, Rho2, R, ST, CT, Phi, T, F, GradF_T, GradF_R, GradF, DR, DT, DS, Rho;
 	int Id96, NIT;
 	
+	/* Check if the ram pressure is provided in XN_PD or if it needs to
+	 * be calculated (based on the sign of Vel */
 	if (Vel < 0.0) {
 		P = XN_PD;
 	} else {
 		P = 1.94e-6 * XN_PD * Vel*Vel;
 	}
 	
+	/* Work out Phi - the angle between the y and z componenets of the 
+	 * input vector */
 	if (YGSW != 0.0 || ZGSW != 0.0) {
 		Phi = atan2(YGSW,ZGSW);
 	} else { 
@@ -17,15 +32,22 @@ void ShueEtAlMP(double XN_PD, double Vel, double BzIMF, double XGSW, double YGSW
 	}
 	
 	Id[0] = -1;
+	/* These two quantities are calculated using equations 10 and 11 of
+	 * Shue et al 1998 */ 
 	R0 = (10.22 + 1.29*tanh(0.184*(BzIMF + 8.14)))*pow(P,(-0.15151515));
 	Alpha = (0.58 - 0.007*BzIMF)*(1.0 + 0.024*log(P));
+	
+	/* Compare the current radial position to that of the MP */
 	R = sqrt(XGSW*XGSW + YGSW*YGSW + ZGSW*ZGSW);
 	Rm = R0*pow((2.0/(1.0 + XGSW/R)),Alpha);
 	
 	if (R <= Rm) {
+		/* Within the MP */
 		Id[0] = 1;
 	}
 	
+	/* Search for the T96 MP position, as a starting point for finding the
+	 * nearest point on the Shue et al one */
 	T96MP(P,-1.0,XGSW,YGSW,ZGSW,&XMT96,&YMT96,&ZMT96,Dist,&Id96);
 	
 	Rho2 = YMT96*YMT96 + ZMT96*ZMT96;
@@ -33,8 +55,9 @@ void ShueEtAlMP(double XN_PD, double Vel, double BzIMF, double XGSW, double YGSW
 	ST = sqrt(Rho2)/R;
 	CT = XMT96/R;
 	
+	/* Apparently this is Newton's iterative method which will find the
+	 * nearest point on the MP */
 	NIT = 0;
-	
 	while (1) {
 		T = atan2(ST,CT);
 		Rm = R0*pow((2.0/(1.0+CT)),Alpha);
@@ -70,7 +93,13 @@ void ShueEtAlMP(double XN_PD, double Vel, double BzIMF, double XGSW, double YGSW
 }
 
 void T96MP(double XN_PD, double Vel, double XGSW, double YGSW, double ZGSW, double *XMGNP, double *YMGNP, double *ZMGNP, double *Dist, int *ID) {
-	
+	/*******************************************************************
+	 * This function is based on the T96_MGNP_08 routine of Geopack.
+	 * It works out a point on the T96 magnetopause with the same Tau 
+	 * parameter (see Tsyganenko 1995) as the current position - this is 
+	 * used as a starting point for finding the actual nearest position 
+	 * on the Shue et al 1998 MP.
+	 * ****************************************************************/
 	double Pd, Rat, Rat16, A0, S00, X00, A, S0, Z0, Xm, Phi, Rho, RhoMGNP, XKSI, XDZT, SQ1, SQ2, Sigma, Tau, Arg, X0;
 	
 	if (Vel < 0.0) {
