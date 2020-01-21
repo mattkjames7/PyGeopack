@@ -6,4 +6,8 @@ else
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$(pwd)"
 fi
 
+echo "Testing field model"
 ./test
+
+echo "Testing conversion to L, MLT and Rnorm"
+./testsandhucoords
