@@ -87,6 +87,7 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 void Init(const char *filename);
 //CtypeStop
 double GetDipoleTilt(int Year, int Doy, int Hr, int Mn, double Vx, double Vy, double Vz);
+double GetDipoleTiltUT(int Date, float ut, double Vx, double Vy, double Vz);
 
 void FillInKp(int nk, int *kDate, float *kut0, float *kut1, float *kp, int n, int *Date, float *ut, float *kpout);
 void FindIntervals(int n, float *SymH, float *Bz, int *SWflag, int *IMFflag, int *ni, int *ibeg, int *iend);

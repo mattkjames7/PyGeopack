@@ -279,6 +279,32 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 			}
 		}
 	}
+	
+	/* Do a final parameter check*/
+	if (isnan(tilt[0])) {
+		tilt[0] = GetDipoleTiltUT(Date,ut,Vx[0],Vy[0],Vz[0]);
+	}
+	if ((iopt[0] <= 0) || (iopt[0] >= 8)) {
+		iopt[0] = 1;
+	}
+	if (isnan(Vx[0])) {
+		Vx[0] = -400.0;
+	}
+	if (isnan(Vy[0])) {
+		Vy[0] = 0.0;
+	}
+	if (isnan(Vz[0])) {
+		Vz[0] = 0.0;
+	}
+	if (isnan(parmod[0])) { 
+		parmod[0] = 2.0;
+	}
+	int i;
+	for (i=1;i<10;i++) {
+		if (isnan(parmod[i])) {
+			parmod[i] = 0.0;
+		}
+	}	
 }
 
 
@@ -309,14 +335,30 @@ void Init(const char *filename) {
 	}
 }
 
-
 double GetDipoleTilt(int Year, int Doy, int Hr, int Mn, double Vx, double Vy, double Vz) {
-	double psi;
+	double psi, vx0 = -400.0, vy0 = 0.0, vz0 = 0.0;
 	int Sc = 0;
-	recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&Vx,&Vy,&Vz);
+	if (isnan(Vx)) {
+		recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&vx0,&vy0,&vz0);
+	} else {
+		recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&Vx,&Vy,&Vz);
+	}
 	psi = getpsi_();
 	return psi;
 }
+
+double GetDipoleTiltUT(int Date, float ut, double Vx, double Vy, double Vz) {
+	int Year, Doy, Hr, Mn, Sc;
+	/*convert date into Year and DayNo*/
+	DateToYearDayNo(Date,&Year,&Doy);
+		
+	/*convert decimal UT to Hr, Mn, Sc*/
+	DecUTToHHMMSS(ut,&Hr,&Mn,&Sc);	
+		
+	return GetDipoleTilt(Year,Doy,Hr,Mn,Vx,Vy,Vz);
+		
+}
+
 
 void FindIntervals(int n, float *SymH, float *Bz, int *SWflag, int *IMFflag, int *ni, int *ibeg, int *iend) {
 	/*

@@ -163,7 +163,7 @@ class TraceField(object):
 		else:
 			_Date = np.array(Date).astype('int32')
 		if np.size(ut) == 1:
-			_ut = np.zeros(_n,dtype='float32')
+			_ut = np.zeros(_n,dtype='float32') + ut
 		else:
 			_ut = np.array(ut).astype('float32')
 		_Model = ctypes.c_char_p(Model.encode('utf-8'))
