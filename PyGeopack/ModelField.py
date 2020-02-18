@@ -4,7 +4,7 @@ from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
 
-def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',**kwargs):
+def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',OutDtype='float64',**kwargs):
 	'''
 	Calculates the model magnetic field at a given position or array of
 	positions in space.
@@ -108,18 +108,18 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 		
 
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = np.array(Xin).astype("float32")
-	_Yin = np.array(Yin).astype("float32")
-	_Zin = np.array(Zin).astype("float32")
+	_Xin = np.array(Xin).astype("float64")
+	_Yin = np.array(Yin).astype("float64")
+	_Zin = np.array(Zin).astype("float64")
 	_n = np.int32(_Xin.size)
 	_Date = np.int32(Date)
 	_ut = np.float32(ut)
 	_Model = ctypes.c_char_p(Model.encode('utf-8'))
 	_CoordIn = _CoordCode(CoordIn)
 	_CoordOut = _CoordCode(CoordOut)
-	_Bx = np.zeros(_n,dtype="float32")
-	_By = np.zeros(_n,dtype="float32")
-	_Bz = np.zeros(_n,dtype="float32")
+	_Bx = np.zeros(_n,dtype="float64")
+	_By = np.zeros(_n,dtype="float64")
+	_Bz = np.zeros(_n,dtype="float64")
 	_CModelField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _Bx, _By, _Bz)
 
-	return _Bx,_By,_Bz
+	return _Bx.astype(OutDtype),_By.astype(OutDtype),_Bz.astype(OutDtype)

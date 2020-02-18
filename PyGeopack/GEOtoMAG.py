@@ -22,13 +22,13 @@ def GEOtoMAG(Lon, Lat, Date, ut):
 	'''
 	
 	#Convert input variables to appropriate numpy dtype:
-	_Lon = np.array([Lon]).flatten().astype("float32")
-	_Lat = np.array([Lat]).flatten().astype("float32")
+	_Lon = np.array([Lon]).flatten().astype("float64")
+	_Lat = np.array([Lat]).flatten().astype("float64")
 	_n = np.int32(_Lon.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_MLon = np.zeros(n,dtype="float32")
-	_MLat = np.zeros(n,dtype="float32")
+	_MLon = np.zeros(n,dtype="float64")
+	_MLat = np.zeros(n,dtype="float64")
 	_CGEOtoMAGUT(_Lon, _Lat, _n, _date, _UT, _MLon, _MLat)
 
 	return _MLon,_MLat

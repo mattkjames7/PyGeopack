@@ -20,15 +20,15 @@ def GSEtoGSM(Xin, Yin, Zin, Date, ut):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = np.array([Xin]).flatten().astype("float32")
-	_Yin = np.array([Yin]).flatten().astype("float32")
-	_Zin = np.array([Zin]).flatten().astype("float32")
+	_Xin = np.array([Xin]).flatten().astype("float64")
+	_Yin = np.array([Yin]).flatten().astype("float64")
+	_Zin = np.array([Zin]).flatten().astype("float64")
 	_n = np.int32(_Xin.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_Xout = np.zeros(_n,dtype="float32")
-	_Yout = np.zeros(_n,dtype="float32")
-	_Zout = np.zeros(_n,dtype="float32")
+	_Xout = np.zeros(_n,dtype="float64")
+	_Yout = np.zeros(_n,dtype="float64")
+	_Zout = np.zeros(_n,dtype="float64")
 	_CGSEtoGSMUT(_Xin, _Yin, _Zin, _n, _date, _UT, _Xout, _Yout, _Zout)
 
 	return _Xout,_Yout,_Zout

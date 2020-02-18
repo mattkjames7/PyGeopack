@@ -21,13 +21,13 @@ def MAGtoGEO(MLon, MLat, Date, ut):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	_MLon = np.array([MLon]).flatten().astype("float32")
-	_MLat = np.array([MLat]).flatten().astype("float32")
+	_MLon = np.array([MLon]).flatten().astype("float64")
+	_MLat = np.array([MLat]).flatten().astype("float64")
 	_n = np.int32(_MLon.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_Lon = np.zeros(_n,dtype="float32")
-	_Lat = np.zeros(_n,dtype="float32")
+	_Lon = np.zeros(_n,dtype="float64")
+	_Lat = np.zeros(_n,dtype="float64")
 	_CMAGtoGEOUT(_MLon, _MLat, _n, _date, _UT, _Lon, _Lat)
 
 	return _Lon,_Lat

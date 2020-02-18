@@ -18,11 +18,11 @@ def MLTtoMLON(MLT, date, UT):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	_MLT = np.array([MLT]).flatten().astype("float32")
+	_MLT = np.array([MLT]).flatten().astype("float64")
 	_n = np.int32(_MLT.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_MLon = np.zeros(_n,dtype="float32")
+	_MLon = np.zeros(_n,dtype="float64")
 	_CMLTtoMLONUT(_MLT, _n, _date, _UT, _MLon)
 
 	return _MLon
