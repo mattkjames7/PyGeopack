@@ -20,29 +20,16 @@ def GetDipoleTilt(Date,ut,V=None):
 	psi : An array of dipole tilt angles in radians.
 	
 	'''
-	#if date is a tuple, assume it contains (year,doy)
-	if isinstance(Date,tuple):
-		Year,Doy = Date
-		Year = np.array([Year]).flatten().astype('int32')
-		Doy = np.array([Doy]).flatten().astype('int32')
-	else:
-		Doy = TT.DayNo(Date).flatten().astype('int32')
-		Year = np.array([Date//10000]).flatten().astype('int32')
+	_Date = np.array([Date]).flatten().astype('int32')
+	_ut = np.array([ut]).flatten().astype('float32')
 		
-	#if ut is a tuple, assume it contains (Hour, Minute)
-	if isinstance(ut,tuple):
-		Hr,Mn = ut
-		Hr = np.array([Hr]).flatten().astype('int32')
-		Mn = np.array([Mn]).flatten().astype('int32')		
-	else:
-		Hr = np.array([ut]).flatten().astype('int32')
-		Mn = np.array([(ut - Hr)*60]).flatten().astype('int32')
+
 	
 	#V should be a tuple of (Vx,Vy,Vz)
 	if V is None:
-		Vx = np.zeros(Year.size,dtype='float64') + np.nan
-		Vy = np.zeros(Year.size,dtype='float64') + np.nan
-		Vz = np.zeros(Year.size,dtype='float64') + np.nan
+		Vx = np.zeros(_Date.size,dtype='float64') + np.nan
+		Vy = np.zeros(_Date.size,dtype='float64') + np.nan
+		Vz = np.zeros(_Date.size,dtype='float64') + np.nan
 	else:
 		Vx,Vy,Vz = V
 		Vx = Vx.astype('float64')
@@ -50,9 +37,9 @@ def GetDipoleTilt(Date,ut,V=None):
 		Vz = Vz.astype('float64')
 
 	#loop through each one
-	n = Year.size
+	n = _Date.size
 	psi = np.zeros(n,dtype='float64')
 	for i in range(0,n):
-		psi[i] = _CGetDipoleTilt(Year[i],Doy[i],Hr[i],Mn[i],Vx[i],Vy[i],Vz[i])
+		psi[i] = _CGetDipoleTilt(Date[i],ut[i],Vx[i],Vy[i],Vz[i])
 
 	return psi

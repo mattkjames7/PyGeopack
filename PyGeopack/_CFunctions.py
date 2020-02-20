@@ -91,8 +91,8 @@ _CTraceField.restype = None
 _CInit = libgeopack.Init
 _CInit.argtypes = [ct.c_char_p]
 
-_CGetDipoleTilt = libgeopack.GetDipoleTilt
-_CGetDipoleTilt.argtypes = [ct.c_int,ct.c_int,ct.c_int,ct.c_int,ct.c_double,ct.c_double,ct.c_double]
+_CGetDipoleTilt = libgeopack.GetDipoleTiltUT
+_CGetDipoleTilt.argtypes = [ct.c_int,ct.c_float,ct.c_double,ct.c_double,ct.c_double]
 _CGetDipoleTilt.restype = ct.c_double
 
 
