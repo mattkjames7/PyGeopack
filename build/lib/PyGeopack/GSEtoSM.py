@@ -2,7 +2,7 @@ import numpy as np
 from ._CFunctions import _CGSEtoSMUT
 
 
-def GSEtoSM(Xin, Yin, Zin, Date, ut):
+def GSEtoSM(Xin, Yin, Zin, Date, ut, V=None):
 	'''
 	Converts from Cartesian GSE to SM coordinates.
 	
@@ -23,28 +23,39 @@ def GSEtoSM(Xin, Yin, Zin, Date, ut):
 	_n = np.int32(np.size(Xin))
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_Xout = np.zeros(_n,dtype="float32")
-	_Yout = np.zeros(_n,dtype="float32")
-	_Zout = np.zeros(_n,dtype="float32")	
+	_Xout = np.zeros(_n,dtype="float64")
+	_Yout = np.zeros(_n,dtype="float64")
+	_Zout = np.zeros(_n,dtype="float64")	
+
+	#make velocity arrays
+	if V is None:
+		_Vx = np.nan
+		_Vy = np.nan
+		_Vz = np.nan
+	else:
+		_Vx = np.float32(V[0])
+		_Vy = np.float32(V[1])
+		_Vz = np.float32(V[2])
+				
 
 	if np.size(Date) > 1 or np.size(ut) > 1:
 		for i in range(0,_n):
-			_Xin = np.array([Xin[i]]).astype('float32')
-			_Yin = np.array([Yin[i]]).astype('float32')
-			_Zin = np.array([Zin[i]]).astype('float32')
-			tmpX = np.zeros((1,),dtype='float32')
-			tmpY = np.zeros((1,),dtype='float32')
-			tmpZ = np.zeros((1,),dtype='float32')
-			_CGSEtoSMUT(_Xin, _Yin, _Zin, 1, _date[i], _UT[i], tmpX, tmpY, tmpZ)
+			_Xin = np.array([Xin[i]]).astype('float64')
+			_Yin = np.array([Yin[i]]).astype('float64')
+			_Zin = np.array([Zin[i]]).astype('float64')
+			tmpX = np.zeros((1,),dtype='float64')
+			tmpY = np.zeros((1,),dtype='float64')
+			tmpZ = np.zeros((1,),dtype='float64')
+			_CGSEtoSMUT(_Xin, _Yin, _Zin, 1, _Vx, _Vy, _Vz, _date[i], _UT[i], tmpX, tmpY, tmpZ)
 			_Xout[i] = tmpX[0]
 			_Yout[i] = tmpY[0]
 			_Zout[i] = tmpZ[0]
 	else:
-		_Xin = np.array(Xin).astype("float32")
-		_Yin = np.array(Yin).astype("float32")
-		_Zin = np.array(Zin).astype("float32")
+		_Xin = np.array(Xin).astype("float64")
+		_Yin = np.array(Yin).astype("float64")
+		_Zin = np.array(Zin).astype("float64")
 
 
-		_CGSEtoSMUT(_Xin, _Yin, _Zin, _n, _date, _UT, _Xout, _Yout, _Zout)
+		_CGSEtoSMUT(_Xin, _Yin, _Zin, _n, _Vx, _Vy, _Vz, _date, _UT, _Xout, _Yout, _Zout)
 
 	return _Xout,_Yout,_Zout

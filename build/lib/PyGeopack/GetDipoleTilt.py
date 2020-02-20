@@ -40,18 +40,18 @@ def GetDipoleTilt(Date,ut,V=None):
 	
 	#V should be a tuple of (Vx,Vy,Vz)
 	if V is None:
-		Vx = np.zeros(Year.size,dtype='float32') - 400.0
-		Vy = np.zeros(Year.size,dtype='float32') + 29.78
-		Vz = np.zeros(Year.size,dtype='float32')
+		Vx = np.zeros(Year.size,dtype='float64') + np.nan
+		Vy = np.zeros(Year.size,dtype='float64') + np.nan
+		Vz = np.zeros(Year.size,dtype='float64') + np.nan
 	else:
 		Vx,Vy,Vz = V
-		Vx = Vx.astype('float32')
-		Vy = Vy.astype('float32')
-		Vz = Vz.astype('float32')
+		Vx = Vx.astype('float64')
+		Vy = Vy.astype('float64')
+		Vz = Vz.astype('float64')
 
 	#loop through each one
 	n = Year.size
-	psi = np.zeros(n,dtype='float32')
+	psi = np.zeros(n,dtype='float64')
 	for i in range(0,n):
 		psi[i] = _CGetDipoleTilt(Year[i],Doy[i],Hr[i],Mn[i],Vx[i],Vy[i],Vz[i])
 

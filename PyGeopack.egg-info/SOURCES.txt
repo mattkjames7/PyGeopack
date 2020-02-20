@@ -17,6 +17,7 @@ PyGeopack/MAGtoGSE.py
 PyGeopack/MLONtoMLT.py
 PyGeopack/MLTtoMLON.py
 PyGeopack/ModelField.py
+PyGeopack/ReadTSData.py
 PyGeopack/SMtoGSE.py
 PyGeopack/SMtoGSM.py
 PyGeopack/SetCustParam.py
@@ -39,6 +40,7 @@ PyGeopack/__data/libgeopack/ConvCoords.c
 PyGeopack/__data/libgeopack/ConvCoords.h
 PyGeopack/__data/libgeopack/DateTimeTools.c
 PyGeopack/__data/libgeopack/DateTimeTools.h
+PyGeopack/__data/libgeopack/Geopack-2008_mkj_dp.f
 PyGeopack/__data/libgeopack/ModelField.c
 PyGeopack/__data/libgeopack/ModelField.h
 PyGeopack/__data/libgeopack/T01_01.f

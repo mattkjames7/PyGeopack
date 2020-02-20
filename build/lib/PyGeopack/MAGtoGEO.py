@@ -3,7 +3,7 @@ from ._CFunctions import _CMAGtoGEOUT
 
 ###### File created automatically using PopulateCtypes ######
 
-def MAGtoGEO(MLon, MLat, Date, ut):
+def MAGtoGEO(MLon, MLat, Date, ut, V=None):
 	'''
 	Converts from magnetic to geographic longitude and latitude.
 	
@@ -21,13 +21,25 @@ def MAGtoGEO(MLon, MLat, Date, ut):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	_MLon = np.array([MLon]).flatten().astype("float32")
-	_MLat = np.array([MLat]).flatten().astype("float32")
+	_MLon = np.array([MLon]).flatten().astype("float64")
+	_MLat = np.array([MLat]).flatten().astype("float64")
 	_n = np.int32(_MLon.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_Lon = np.zeros(_n,dtype="float32")
-	_Lat = np.zeros(_n,dtype="float32")
-	_CMAGtoGEOUT(_MLon, _MLat, _n, _date, _UT, _Lon, _Lat)
+	_Lon = np.zeros(_n,dtype="float64")
+	_Lat = np.zeros(_n,dtype="float64")
+
+	#make velocity arrays
+	if V is None:
+		_Vx = np.nan
+		_Vy = np.nan
+		_Vz = np.nan
+	else:
+		_Vx = np.float32(V[0])
+		_Vy = np.float32(V[1])
+		_Vz = np.float32(V[2])
+				
+
+	_CMAGtoGEOUT(_MLon, _MLat, _n, _Vx, _Vy, _Vz, _date, _UT, _Lon, _Lat)
 
 	return _Lon,_Lat

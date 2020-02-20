@@ -23,3 +23,5 @@ from .GEOtoMAG import GEOtoMAG
 from .__del__ import __del__
 from .UpdateParameters import UpdateParameters
 from .GetDipoleTilt import GetDipoleTilt
+
+from .ReadTSData import ReadTSData

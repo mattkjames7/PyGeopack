@@ -2,7 +2,7 @@ import numpy as np
 from ._CFunctions import _CGSMtoGSEUT
 
 
-def GSMtoGSE(Xin, Yin, Zin, Date, ut):
+def GSMtoGSE(Xin, Yin, Zin, Date, ut, V=None):
 	'''
 	Converts from Cartesian GSM to GSE coordinates.
 	
@@ -20,15 +20,27 @@ def GSMtoGSE(Xin, Yin, Zin, Date, ut):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = np.array([Xin]).flatten().astype("float32")
-	_Yin = np.array([Yin]).flatten().astype("float32")
-	_Zin = np.array([Zin]).flatten().astype("float32")
+	_Xin = np.array([Xin]).flatten().astype("float64")
+	_Yin = np.array([Yin]).flatten().astype("float64")
+	_Zin = np.array([Zin]).flatten().astype("float64")
 	_n = np.int32(_Xin.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_Xout = np.zeros(_n,dtype="float32")
-	_Yout = np.zeros(_n,dtype="float32")
-	_Zout = np.zeros(_n,dtype="float32")
-	_CGSMtoGSEUT(_Xin, _Yin, _Zin, _n, _date, _UT, _Xout, _Yout, _Zout)
+	_Xout = np.zeros(_n,dtype="float64")
+	_Yout = np.zeros(_n,dtype="float64")
+	_Zout = np.zeros(_n,dtype="float64")
+
+	#make velocity arrays
+	if V is None:
+		_Vx = np.nan
+		_Vy = np.nan
+		_Vz = np.nan
+	else:
+		_Vx = np.float32(V[0])
+		_Vy = np.float32(V[1])
+		_Vz = np.float32(V[2])
+				
+
+	_CGSMtoGSEUT(_Xin, _Yin, _Zin, _n, _Vx, _Vy, _Vz, _date, _UT, _Xout, _Yout, _Zout)
 
 	return _Xout,_Yout,_Zout
