@@ -203,6 +203,9 @@ class TraceField(object):
 			self.Bx = ((_Bx.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			self.By = ((_By.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			self.Bz = ((_Bz.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.s = ((_s.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.R = ((_R.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.Rnorm = ((_Rnorm.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			for i in range(0,15):
 				setattr(self,fpnames[i],_FP[0,i])
 			self.R = (np.sqrt(self.x**2 + self.y**2 + self.z**2)).astype(OutDtype)
@@ -213,6 +216,9 @@ class TraceField(object):
 			self.Bx = _Bx.reshape((_n,MaxLen)).astype(OutDtype)
 			self.By = _By.reshape((_n,MaxLen)).astype(OutDtype)
 			self.Bz = _Bz.reshape((_n,MaxLen)).astype(OutDtype)
+			self.s = _s.reshape((_n,MaxLen)).astype(OutDtype)
+			self.R = _R.reshape((_n,MaxLen)).astype(OutDtype)
+			self.Rnorm = _Rnorm.reshape((_n,MaxLen)).astype(OutDtype)
 			self.nstep = _nstep.astype(OutDtype)
 			for i in range(0,15):
 				setattr(self,fpnames[i],_FP[:,i])
