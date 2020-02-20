@@ -40,9 +40,9 @@ def GetDipoleTilt(Date,ut,V=None):
 	
 	#V should be a tuple of (Vx,Vy,Vz)
 	if V is None:
-		Vx = np.zeros(Year.size,dtype='float64') - 400.0
-		Vy = np.zeros(Year.size,dtype='float64') + 29.78
-		Vz = np.zeros(Year.size,dtype='float64')
+		Vx = np.zeros(Year.size,dtype='float64') + np.nan
+		Vy = np.zeros(Year.size,dtype='float64') + np.nan
+		Vz = np.zeros(Year.size,dtype='float64') + np.nan
 	else:
 		Vx,Vy,Vz = V
 		Vx = Vx.astype('float64')

@@ -76,18 +76,15 @@ char DataFile[256];
 #endif
 
 
-//CtypeStart
 void LoadTSData();
 void FreeTSData();
-//PyFunc iiiiii
 void SetCustParam(int iopt, float *parmod, float tilt, float Vx, float Vy, float Vz);
-//PyFunc iiioooooo
 void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, double *tilt, double *Vx, double *Vy, double *Vz);
-//PyFunc i
 void Init(const char *filename);
-//CtypeStop
 double GetDipoleTilt(int Year, int Doy, int Hr, int Mn, double Vx, double Vy, double Vz);
 double GetDipoleTiltUT(int Date, float ut, double Vx, double Vy, double Vz);
+void GetSWVelocity(int Date, float ut, const char *Model, double *Vx, double *Vy, double * Vz);
+bool WithinMP(double x, double y, double z, double Bz, double Pdyn);
 
 void FillInKp(int nk, int *kDate, float *kut0, float *kut1, float *kp, int n, int *Date, float *ut, float *kpout);
 void FindIntervals(int n, float *SymH, float *Bz, int *SWflag, int *IMFflag, int *ni, int *ibeg, int *iend);

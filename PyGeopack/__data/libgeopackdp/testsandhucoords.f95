@@ -9,7 +9,7 @@ program main
 	z = (/ 0.D0, 0.D0, 0.D0, 0.D0,  0.D0,  0.D0, 0.D0, 0.D0, 0.D0, 0.D0, 0.D0, 0.5D0, 1.D0 /)
 
 	
-	call tomsandhucoords96(x,y,z,13,20120101,12.0,0,l,m,r)
+	call tomsandhucoords96(x,y,z,13,20120101,12.0,1,l,m,r)
 	
 	write(*,*) "*******************************************************"
 	write(*,*) "Test along x"

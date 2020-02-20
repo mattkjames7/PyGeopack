@@ -2,7 +2,7 @@ import numpy as np
 from ._CFunctions import _CGSEtoSMUT
 
 
-def GSEtoSM(Xin, Yin, Zin, Date, ut):
+def GSEtoSM(Xin, Yin, Zin, Date, ut, V=None):
 	'''
 	Converts from Cartesian GSE to SM coordinates.
 	
@@ -27,6 +27,17 @@ def GSEtoSM(Xin, Yin, Zin, Date, ut):
 	_Yout = np.zeros(_n,dtype="float64")
 	_Zout = np.zeros(_n,dtype="float64")	
 
+	#make velocity arrays
+	if V is None:
+		_Vx = np.nan
+		_Vy = np.nan
+		_Vz = np.nan
+	else:
+		_Vx = np.float32(V[0])
+		_Vy = np.float32(V[1])
+		_Vz = np.float32(V[2])
+				
+
 	if np.size(Date) > 1 or np.size(ut) > 1:
 		for i in range(0,_n):
 			_Xin = np.array([Xin[i]]).astype('float64')
@@ -35,7 +46,7 @@ def GSEtoSM(Xin, Yin, Zin, Date, ut):
 			tmpX = np.zeros((1,),dtype='float64')
 			tmpY = np.zeros((1,),dtype='float64')
 			tmpZ = np.zeros((1,),dtype='float64')
-			_CGSEtoSMUT(_Xin, _Yin, _Zin, 1, _date[i], _UT[i], tmpX, tmpY, tmpZ)
+			_CGSEtoSMUT(_Xin, _Yin, _Zin, 1, _Vx, _Vy, _Vz, _date[i], _UT[i], tmpX, tmpY, tmpZ)
 			_Xout[i] = tmpX[0]
 			_Yout[i] = tmpY[0]
 			_Zout[i] = tmpZ[0]
@@ -45,6 +56,6 @@ def GSEtoSM(Xin, Yin, Zin, Date, ut):
 		_Zin = np.array(Zin).astype("float64")
 
 
-		_CGSEtoSMUT(_Xin, _Yin, _Zin, _n, _date, _UT, _Xout, _Yout, _Zout)
+		_CGSEtoSMUT(_Xin, _Yin, _Zin, _n, _Vx, _Vy, _Vz, _date, _UT, _Xout, _Yout, _Zout)
 
 	return _Xout,_Yout,_Zout

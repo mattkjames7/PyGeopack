@@ -2,7 +2,7 @@ import numpy as np
 from ._CFunctions import _CSMtoGSMUT
 
 
-def SMtoGSM(Xin, Yin, Zin, Date, ut):
+def SMtoGSM(Xin, Yin, Zin, Date, ut, V=None):
 	'''
 	Converts from Cartesian SM to GSM coordinates.
 	
@@ -29,6 +29,19 @@ def SMtoGSM(Xin, Yin, Zin, Date, ut):
 	_Xout = np.zeros(_n,dtype="float64")
 	_Yout = np.zeros(_n,dtype="float64")
 	_Zout = np.zeros(_n,dtype="float64")
-	_CSMtoGSMUT(_Xin, _Yin, _Zin, _n, _date, _UT, _Xout, _Yout, _Zout)
+
+
+	#make velocity arrays
+	if V is None:
+		_Vx = np.nan
+		_Vy = np.nan
+		_Vz = np.nan
+	else:
+		_Vx = np.float32(V[0])
+		_Vy = np.float32(V[1])
+		_Vz = np.float32(V[2])
+				
+
+	_CSMtoGSMUT(_Xin, _Yin, _Zin, _n, _Vx, _Vy, _Vz, _date, _UT, _Xout, _Yout, _Zout)
 
 	return _Xout,_Yout,_Zout

@@ -1,10 +1,10 @@
 #include "ConvCoords.h"
 
-void GSEtoGSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void GSEtoGSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double Vx=-400.0, Vy=0.0, Vz=0.0;
 	int i;
 	int dirp = 1, dirn = -1;
+
 
 	/*Set up geopack arrays using recalc*/
 	recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
@@ -15,20 +15,24 @@ void GSEtoGSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo,
 	return;
 }
 
-void GSEtoGSMUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void GSEtoGSMUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
 	
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GSEtoGSM(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	GSEtoGSM(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
-void GSMtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void GSMtoGSE(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double Vx=-400.0, Vy=0.0, Vz=0.0;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -41,21 +45,25 @@ void GSMtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo,
 	return;
 }
 
-void GSMtoGSEUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void GSMtoGSEUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
 	
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GSMtoGSE(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	GSMtoGSE(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
 
-void GSMtoSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void GSMtoSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double Vx=-400.0, Vy=0.0, Vz=0.0;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -68,22 +76,27 @@ void GSMtoSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, 
 	return;
 }
 
-void GSMtoSMUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void GSMtoSMUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GSMtoSM(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	GSMtoSM(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
-void SMtoGSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void SMtoGSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double Vx=-400.0, Vy=0.0, Vz=0.0;
 	int i;
 	int dirp = 1, dirn = -1;
+
 
 	/*Set up geopack arrays using recalc*/
 	recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
@@ -94,21 +107,26 @@ void SMtoGSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, 
 	return;
 }
 
-void SMtoGSMUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void SMtoGSMUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	SMtoGSM(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	SMtoGSM(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
 
-void GSEtoSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void GSEtoSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double X[n],Y[n],Z[n], Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X[n],Y[n],Z[n];
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -122,20 +140,25 @@ void GSEtoSM(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, 
 	return;
 }
 
-void GSEtoSMUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void GSEtoSMUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GSEtoSM(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	GSEtoSM(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
-void GSEtoMAG(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void GSEtoMAG(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double X[n],Y[n],Z[n], Xt, Yt, Zt, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X[n],Y[n],Z[n], Xt, Yt, Zt;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -150,21 +173,26 @@ void GSEtoMAG(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo,
 	return;
 }
 
-void GSEtoMAGUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void GSEtoMAGUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GSEtoMAG(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	GSEtoMAG(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
 
-void SMtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void SMtoGSE(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double X[n],Y[n],Z[n], Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X[n],Y[n],Z[n];
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -178,21 +206,26 @@ void SMtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, 
 	return;
 }
 
-void SMtoGSEUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void SMtoGSEUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	SMtoGSE(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	SMtoGSE(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
 
-void MAGtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
+void MAGtoGSE(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout) {
 
-	double X,Y,Z, Xt, Yt, Zt, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X,Y,Z, Xt, Yt, Zt;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -207,22 +240,27 @@ void MAGtoGSE(double *Xin, double *Yin, double *Zin, int n, int Year, int DayNo,
 	return;
 }
 
-void MAGtoGSEUT(double *Xin, double *Yin, double *Zin, int n, int date, float UT, double *Xout, double *Yout, double *Zout) {
+void MAGtoGSEUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	MAGtoGSE(Xin,Yin,Zin,n,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
+	MAGtoGSE(Xin,Yin,Zin,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,Xout,Yout,Zout);
 }
 
 
 
-void MLONtoMLT(double *MLon, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLT) {
+void MLONtoMLT(double *MLon, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLT) {
 
-	double X0,Y0,Z0,X1,Y1,Z1, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X0,Y0,Z0,X1,Y1,Z1;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -240,9 +278,9 @@ void MLONtoMLT(double *MLon, int n, int Year, int DayNo, int Hr, int Mn, int Sc,
 	return;
 }
 
-void MLTtoMLON(double *MLT, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLon) {
+void MLTtoMLON(double *MLT, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLon) {
 
-	double X0,Y0,Z0,X1,Y1,Z1, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X0,Y0,Z0,X1,Y1,Z1;
 	int i;
 	int dirp = 1, dirn = -1;
 
@@ -261,32 +299,43 @@ void MLTtoMLON(double *MLT, int n, int Year, int DayNo, int Hr, int Mn, int Sc, 
 	return;
 }
 
-void MLONtoMLTUT(double *MLon, int n, int date,float UT, double *MLT) {
+void MLONtoMLTUT(double *MLon, int n, double Vx, double Vy, double Vz, int date,float UT, double *MLT) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	MLONtoMLT(MLon,n,Year,DayNo,Hr,Mn,Sc,MLT);
+	MLONtoMLT(MLon,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,MLT);
 	
 	
 }
 
-void MLTtoMLONUT(double *MLT, int n, int date,float UT, double *MLon) {
+void MLTtoMLONUT(double *MLT, int n, double Vx, double Vy, double Vz, int date,float UT, double *MLon) {
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
+	
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	MLTtoMLON(MLT,n,Year,DayNo,Hr,Mn,Sc,MLon);
+	MLTtoMLON(MLT,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,MLon);
 }
 
-void GEOtoMAG(double *Lon, double *Lat, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLon, double *MLat) {
+void GEOtoMAG(double *Lon, double *Lat, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLon, double *MLat) {
 
-	double X0,Y0,Z0,X1,Y1,Z1, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X0,Y0,Z0,X1,Y1,Z1;
 	int i;
 	int dirp = 1, dirn = -1;
 	
@@ -306,25 +355,30 @@ void GEOtoMAG(double *Lon, double *Lat, int n, int Year, int DayNo, int Hr, int 
 }
 
 
-void GEOtoMAGUT(double *Lon, double *Lat, int n, int date,float UT, double *MLon, double *MLat) {
+void GEOtoMAGUT(double *Lon, double *Lat, int n, double Vx, double Vy, double Vz, int date,float UT, double *MLon, double *MLat) {
 
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	GEOtoMAG(Lon,Lat,n,Year,DayNo,Hr,Mn,Sc,MLon,MLat);
+	GEOtoMAG(Lon,Lat,n,Vx,Vy,Vz,Year,DayNo,Hr,Mn,Sc,MLon,MLat);
 	
 	
 	return;
 }
 
 
-void MAGtoGEO(double *MLon, double *MLat, int n, int Year, int DayNo, int Hr, int Mn, int Sc, double *Lon, double *Lat) {
+void MAGtoGEO(double *MLon, double *MLat, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Lon, double *Lat) {
 
-	double X0,Y0,Z0,X1,Y1,Z1, Vx=-400.0, Vy=0.0, Vz=0.0;
+	double X0,Y0,Z0,X1,Y1,Z1;
 	int i;
 	int dirp = 1, dirn = -1;
 	
@@ -342,16 +396,21 @@ void MAGtoGEO(double *MLon, double *MLat, int n, int Year, int DayNo, int Hr, in
 }
 
 
-void MAGtoGEOUT(double *MLon, double *MLat, int n, int date,float UT, double *Lon, double *Lat) {
+void MAGtoGEOUT(double *MLon, double *MLat, int n, double Vx, double Vy, double Vz, int date,float UT, double *Lon, double *Lat) {
 
 	int Year, DayNo, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(date,&Year,&DayNo);
-	
+
+	/*Get velocity if needed*/
+	if (isnan(Vx)) { 
+		GetSWVelocity(date,UT,NULL,&Vx,&Vy,&Vz);
+	}
+		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(UT,&Hr,&Mn,&Sc);
 	
-	MAGtoGEO(MLon,MLat,n,Year,DayNo,Hr,Mn,Sc,Lon,Lat);
+	MAGtoGEO(MLon,MLat,Vx,Vy,Vz,n,Year,DayNo,Hr,Mn,Sc,Lon,Lat);
 }
 
 

@@ -185,7 +185,71 @@ float InterpParam(float *x, int Date, float ut) {
 	return out;
 }
 
+void GetSWVelocity(int Date, float ut, const char *Model, double *Vx, double *Vy, double * Vz) {
+	/*******************************************************************
+	 * Get the components of the solar wind velocity
+	 * 
+	 * 
+	 * ****************************************************************/
+	/*check that the data file is loaded*/
+	if (TSData.n == 0) {
+		Vx[0] = -400.0;
+		Vy[0] = 29.78;
+		Vz[0] = 0.0;		
+	} else {
+		Vx[0] = (double) InterpParam(TSData.Vx,Date,ut);
+		Vy[0] = (double) InterpParam(TSData.Vy,Date,ut);
+		Vz[0] = (double) InterpParam(TSData.Vz,Date,ut);
+	}		
+	if (Model != NULL) {
+		if (strchr(Model,'c') != NULL) {
+			//In this bit we have chosen a custom model, so will use the custom params stored in CustP
+			//So, setting CustP needs to be done first!
+			if (!isnan(CustP.Vx)) {
+				Vx[0] = (double) CustP.Vx;
+			}
+			if (!isnan(CustP.Vy)) {
+				Vy[0] = (double) CustP.Vy;
+			}
+			if (!isnan(CustP.Vz)) {
+				Vz[0] = (double) CustP.Vz;
+			}
+		}
+	}
+	/* Do a final parameter check*/
+	if (isnan(Vx[0])) {
+		Vx[0] = -400.0;
+	}
+	if (isnan(Vy[0])) {
+		Vy[0] = 29.78;
+	}
+	if (isnan(Vz[0])) {
+		Vz[0] = 0.0;
+	}
+
+}	
+
+bool WithinMP(double x, double y, double z, double Bz, double Pdyn) {
+	/*******************************************************************
+	 * Check whether a point is inside the magnetosphere
+	 * 
+	 * ****************************************************************/
+	 int i;
+	 double r0, alpha, r, rm;
+	 
+	 r0 = (10.22 + 1.29*tanh(0.184*(Bz + 8.14)))*pow(Pdyn,-0.15151515);
+	 alpha = (0.58-0.007*Bz)*(1.0 + 0.024*log(Pdyn));
+	 r = sqrt(x*x + y*y + z*z);
+	 rm = r0*pow(2.0/(1.0 + x/r),alpha);
+	 return (r < rm);
+}
+
 void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, double *tilt, double *Vx, double *Vy, double *Vz) {
+	
+	/*Get the solar wind velocity first*/
+	GetSWVelocity(Date,ut,Model,Vx,Vy,Vz);
+	
+	
 	/*fall back if the data are still not loaded*/
 	if (TSData.n == 0) {
 		iopt[0] = 1;
@@ -199,19 +263,13 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 		parmod[7] = 0.0;
 		parmod[8] = 0.0;
 		parmod[9] = 0.0;
-		Vx[0] = -400.0;
-		Vy[0] = 0.0;
-		Vz[0] = 0.0;
 		tilt[0] = 0.0;
 	} else {
 	
 		/*Dipole tilt*/
 		tilt[0] = (double) InterpParam(TSData.Tilt,Date,ut);
 
-		/*Vx, Vy, Vz*/
-		Vx[0] = (double) InterpParam(TSData.Vx,Date,ut);
-		Vy[0] = (double) InterpParam(TSData.Vy,Date,ut);
-		Vz[0] = (double) InterpParam(TSData.Vz,Date,ut);	
+
 		/*The easiest one is T89 - just need Kp*/
 		if ((strcmp(Model,"T89") == 0) || (strcmp(Model,"T89c") == 0)) {
 			iopt[0] = (int) InterpParam(TSData.Kp,Date,ut) + 1;
@@ -263,15 +321,6 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 		if ((CustP.iopt > 0) && (CustP.iopt < 8)) {
 			iopt[0] = (int) CustP.iopt;
 		}
-		if (!isnan(CustP.Vx)) {
-			Vx[0] = (double) CustP.Vx;
-		}
-		if (!isnan(CustP.Vy)) {
-			Vy[0] = (double) CustP.Vy;
-		}
-		if (!isnan(CustP.Vz)) {
-			Vz[0] = (double) CustP.Vz;
-		}
 		int i;
 		for (i=0;i<10;i++) {
 			if (!isnan(CustP.parmod[i])) {
@@ -286,15 +335,6 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 	}
 	if ((iopt[0] <= 0) || (iopt[0] >= 8)) {
 		iopt[0] = 1;
-	}
-	if (isnan(Vx[0])) {
-		Vx[0] = -400.0;
-	}
-	if (isnan(Vy[0])) {
-		Vy[0] = 0.0;
-	}
-	if (isnan(Vz[0])) {
-		Vz[0] = 0.0;
 	}
 	if (isnan(parmod[0])) { 
 		parmod[0] = 2.0;
@@ -336,13 +376,11 @@ void Init(const char *filename) {
 }
 
 double GetDipoleTilt(int Year, int Doy, int Hr, int Mn, double Vx, double Vy, double Vz) {
-	double psi, vx0 = -400.0, vy0 = 0.0, vz0 = 0.0;
+	double psi;
 	int Sc = 0;
-	if (isnan(Vx)) {
-		recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&vx0,&vy0,&vz0);
-	} else {
-		recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&Vx,&Vy,&Vz);
-	}
+
+	recalc_08_(&Year,&Doy,&Hr,&Mn,&Sc,&Vx,&Vy,&Vz);
+
 	psi = getpsi_();
 	return psi;
 }
@@ -351,6 +389,10 @@ double GetDipoleTiltUT(int Date, float ut, double Vx, double Vy, double Vz) {
 	int Year, Doy, Hr, Mn, Sc;
 	/*convert date into Year and DayNo*/
 	DateToYearDayNo(Date,&Year,&Doy);
+
+	if (isnan(Vx)) {
+		GetSWVelocity(Date,ut,NULL,&Vx,&Vy,&Vz);
+	}
 		
 	/*convert decimal UT to Hr, Mn, Sc*/
 	DecUTToHHMMSS(ut,&Hr,&Mn,&Sc);	

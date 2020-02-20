@@ -35,7 +35,6 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	 * T96 magnetic field traces.
 	 * 
 	 * ****************************************************************/
-	 
 	/* Trace parameters */
 	const char *Model = "T96";
 	int CoordIn = 3;
@@ -56,12 +55,12 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	}
 	
 	
-	
 	/* Create some temporary arrays to store the output of the tracing*/
 	int *nstep;
-	double *Xout, *Yout, *Zout, *Bx, *By, *Bz, *GlatN, *GlatS;
+	double *Xout, *Yout, *Zout, *Bx, *By, *Bz, *FP, *s, *R, *Rn;/*GlatN, *GlatS;
 	double *MlatN, *MlatS, *GlonN, *GlonS, *MlonN, *MlonS,*GltN, *GltS;
-	double *MltN, *MltS, *Lshell, *MltE, *FlLen;
+	double *MltN, *MltS, *Lshell, *MltE, *FlLen;*/
+	
 	
 	Xout = (double*) malloc(n*MaxLen*sizeof(double));
 	Yout = (double*) malloc(n*MaxLen*sizeof(double));
@@ -69,7 +68,17 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	Bx = (double*) malloc(n*MaxLen*sizeof(double));
 	By = (double*) malloc(n*MaxLen*sizeof(double));
 	Bz = (double*) malloc(n*MaxLen*sizeof(double));
+	s = (double*) malloc(n*MaxLen*sizeof(double));
+	R = (double*) malloc(n*MaxLen*sizeof(double));
+	Rn = (double*) malloc(n*MaxLen*sizeof(double));
 	nstep = (int*) malloc(n*sizeof(int));
+	/* FP replaces all of the footprint longitude, latitudes etc in the 
+	 * following order:
+	 * GlatN,GlatS,MlatN,MlatS,GlonN,GlonS,MlonN,MlonS
+	 * GltN,GltS,MltN,MltS,Lshell,MltE,FlLen
+	 * */
+	FP = (double*) malloc(n*15*sizeof(double));
+/*
 	GlatN = (double*) malloc(n*sizeof(double));
 	GlatS = (double*) malloc(n*sizeof(double));
 	MlatN = (double*) malloc(n*sizeof(double));
@@ -84,45 +93,37 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	MltS = (double*) malloc(n*sizeof(double));
 	Lshell = (double*) malloc(n*sizeof(double));
 	MltE = (double*) malloc(n*sizeof(double));
-	FlLen = (double*) malloc(n*sizeof(double));
+	FlLen = (double*) malloc(n*sizeof(double));*/
 	
 	
 
-	
 	/* Perform the traces */
 	TraceField(Xin,Yin,Zin,n,dates,uts,Model,CoordIn,CoordOut,alt,MaxLen,
-			DSMax,Xout,Yout,Zout,Bx,By,Bz,nstep,GlatN,GlatS,MlatN,MlatS,
-			GlonN,GlonS,MlonN,MlonS,GltN,GltS,MltN,MltS,Lshell,MltE,FlLen, (bool) Verbose);
-
+			DSMax,Xout,Yout,Zout,s,R,Rn,Bx,By,Bz,nstep,FP, (bool) Verbose);
 
 	/* Temporary stuff for R */
-	double *R;
-	R = (double*) malloc(MaxLen*sizeof(double));
-	int I;
 			
 	/* Now to loop through each trace and calculate L, M and Rnorm */
 	for (i=0;i<n;i++) {
 		/* Check for a good trace first of all (>0 steps and footprints in both hemispheres */
-		if ((nstep[i] > 0) && (isfinite(Lshell[i]))) {
-			CalculateR(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],R,&I);
-			
+		if ((nstep[i] > 0) && (isfinite(FP[i*15+12]))) {
+		
 			/* Here we set L = Rmax (alternatively you could set L = Lshell 
 			 * from above -  that would be R at Z=0*/
-			L[i] = R[I];
+			L[i] = FP[i*15+12];
 			
 			/* Local time (in hours, hopefully) of the field line, again at where Rmax is, not Z=0 */
-			M[i] = fmod(2*M_PI + atan2(-Yout[i*MaxLen + I],-Xout[i*MaxLen + I]),2*M_PI)*12.0/M_PI;
+			M[i] = FP[i*15+13];
 			
 			/* now for Rnorm */
-			Rnorm[i] = sqrt(Xin[i]*Xin[i] + Yin[i]*Yin[i] + Zin[i]*Zin[i])/R[I];
+			Rnorm[i] = sqrt(Xin[i]*Xin[i] + Yin[i]*Yin[i] + Zin[i]*Zin[i])/L[i];
 		} else { 
 			L[i] = NAN;
 			M[i] = NAN;
 			Rnorm[i] = NAN;
 		}
 	}
-	
-	
+
 	/* Free some memory */
 	free(R);
 	free(Xout);
@@ -132,7 +133,7 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	free(By);
 	free(Bz);
 	free(nstep);
-	free(GlatN);
+/*	free(GlatN);
 	free(GlatS);
 	free(MlatN);
 	free(MlatS);
@@ -146,7 +147,10 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 	free(MltS);
 	free(Lshell);
 	free(MltE);
-	free(FlLen);
+	free(FlLen);*/
+	free(FP);
+	free(Rn);
+	free(s);
 	free(dates);
 	free(uts);	
 }
