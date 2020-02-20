@@ -175,27 +175,24 @@ class TraceField(object):
 		_Xout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_Yout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_Zout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
+		_s = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
+		_R = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
+		_Rnorm = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_Bx = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_By = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_Bz = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
 		_nstep = np.zeros(_n,dtype="int32")
-		_GlatN = np.zeros(_n,dtype="float64")
-		_GlatS = np.zeros(_n,dtype="float64")
-		_MlatN = np.zeros(_n,dtype="float64")
-		_MlatS = np.zeros(_n,dtype="float64")
-		_GlonN = np.zeros(_n,dtype="float64")
-		_GlonS = np.zeros(_n,dtype="float64")
-		_MlonN = np.zeros(_n,dtype="float64")
-		_MlonS = np.zeros(_n,dtype="float64")
-		_GltN = np.zeros(_n,dtype="float64")
-		_GltS = np.zeros(_n,dtype="float64")
-		_MltN = np.zeros(_n,dtype="float64")
-		_MltS = np.zeros(_n,dtype="float64")
-		_Lshell = np.zeros(_n,dtype="float64")
-		_MltE = np.zeros(_n,dtype="float64")
-		_FlLen = np.zeros(_n,dtype="float64")
+		_FP = np.zeros(_n*15,dtype="float64")
 		_Verb = np.bool(Verbose)
-		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _Bx, _By, _Bz, _nstep, _GlatN, _GlatS, _MlatN, _MlatS, _GlonN, _GlonS, _MlonN, _MlonS, _GltN, _GltS, _MltN, _MltS, _Lshell, _MltE, _FlLen, _Verb)
+		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb)
+
+		#reshape the footprints
+		_FP = _FP.reshape((_n,15))
+		
+		fpnames = ['GlatN','GlatS','MlatN','MlatS',
+					'GlonN','GlonS','MlonN','MlonS',
+					'GltN','GltS','MltN','MltS',
+					'Lshell','MltE','FlLen']
 
 		self.n = _n
 		if _n == 1 and FlattenSingleTraces:
@@ -206,21 +203,8 @@ class TraceField(object):
 			self.Bx = ((_Bx.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			self.By = ((_By.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			self.Bz = ((_Bz.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.GlatN = (_GlatN[0]).astype(OutDtype)
-			self.GlatS = (_GlatS[0]).astype(OutDtype)
-			self.MlatN = (_MlatN[0]).astype(OutDtype)
-			self.MlatS = (_MlatS[0]).astype(OutDtype)
-			self.GlonN = (_GlonN[0]).astype(OutDtype)
-			self.GlonS = (_GlonS[0]).astype(OutDtype)
-			self.MlonN = (_MlonN[0]).astype(OutDtype)
-			self.MlonS = (_MlonS[0]).astype(OutDtype)
-			self.GltN = (_GltN[0]).astype(OutDtype)
-			self.GltS = (_GltS[0]).astype(OutDtype)
-			self.MltN = (_MltN[0]).astype(OutDtype)
-			self.MltS = (_MltS[0]).astype(OutDtype)
-			self.Lshell = (_Lshell[0]).astype(OutDtype)
-			self.MltE = (_MltE[0]).astype(OutDtype)
-			self.FlLen = (_FlLen[0]).astype(OutDtype)
+			for i in range(0,15):
+				setattr(self,fpnames[i],_FP[0,i])
 			self.R = (np.sqrt(self.x**2 + self.y**2 + self.z**2)).astype(OutDtype)
 		else:
 			self.x = _Xout.reshape((_n,MaxLen)).astype(OutDtype)
@@ -230,19 +214,6 @@ class TraceField(object):
 			self.By = _By.reshape((_n,MaxLen)).astype(OutDtype)
 			self.Bz = _Bz.reshape((_n,MaxLen)).astype(OutDtype)
 			self.nstep = _nstep.astype(OutDtype)
-			self.GlatN = _GlatN.astype(OutDtype)
-			self.GlatS = _GlatS.astype(OutDtype)
-			self.MlatN = _MlatN.astype(OutDtype)
-			self.MlatS = _MlatS.astype(OutDtype)
-			self.GlonN = _GlonN.astype(OutDtype)
-			self.GlonS = _GlonS.astype(OutDtype)
-			self.MlonN = _MlonN.astype(OutDtype)
-			self.MlonS = _MlonS.astype(OutDtype)
-			self.GltN = _GltN.astype(OutDtype)
-			self.GltS = _GltS.astype(OutDtype)
-			self.MltN = _MltN.astype(OutDtype)
-			self.MltS = _MltS.astype(OutDtype)
-			self.Lshell = _Lshell.astype(OutDtype)
-			self.MltE = _MltE.astype(OutDtype)
-			self.FlLen = _FlLen.astype(OutDtype)
+			for i in range(0,15):
+				setattr(self,fpnames[i],_FP[:,i])
 			self.R = np.sqrt(self.x**2 + self.y**2 + self.z**2).astype(OutDtype)

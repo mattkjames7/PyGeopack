@@ -82,7 +82,10 @@ _CModelField.restype = None
 
 
 _CTraceField = libgeopack.TraceField
-_CTraceField.argtypes = [dptr, dptr, dptr, ct.c_int, iptr, fptr, ct.c_char_p, ct.c_int, ct.c_int, ct.c_double, ct.c_int, ct.c_double,  dptr, dptr, dptr, dptr, dptr, dptr, iptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, ct.c_bool]
+_CTraceField.argtypes = [dptr, dptr, dptr, ct.c_int, iptr, fptr, ct.c_char_p,
+						ct.c_int, ct.c_int, ct.c_double, ct.c_int, ct.c_double,
+						dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, 
+						iptr, dptr, ct.c_bool]
 _CTraceField.restype = None
 
 _CInit = libgeopack.Init
