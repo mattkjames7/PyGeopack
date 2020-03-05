@@ -1,6 +1,6 @@
-include PyGeopack/__data/libgeopack/*.c
-include PyGeopack/__data/libgeopack/*.f
-include PyGeopack/__data/libgeopack/*.f95
-include PyGeopack/__data/libgeopack/*.h
-include PyGeopack/__data/libgeopack/makefile
-include PyGeopack/__data/libgeopack/libgeopack.so
+include PyGeopack/__data/libgeopackdp/*.c
+include PyGeopack/__data/libgeopackdp/*.f
+include PyGeopack/__data/libgeopackdp/*.f95
+include PyGeopack/__data/libgeopackdp/*.h
+include PyGeopack/__data/libgeopackdp/makefile
+include PyGeopack/__data/libgeopackdp/libgeopackdp.so
