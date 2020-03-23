@@ -388,7 +388,7 @@ def _CalculateParameters(SkipWParameters=True):
 
 	#get the dipole tilt angle
 	print('Calculating dipole tilt angles')
-	data.Tilt = GetDipoleTilt((data.Year,data.DayNo),(data.Hr,data.Mn),(data.Vx,data.Vy,data.Vz))
+	data.Tilt = GetDipoleTilt(data.Date,data.ut,(data.Vx,data.Vy,data.Vz))
 	
 	#fill in the Kp index
 	data.Kp = _FillInKp(data.Date,data.ut,kp)
