@@ -1,4 +1,6 @@
 numpy
 PyFileIO
 RecarrayTools
-DateTimeTools>=0.0.5
+DateTimeTools>=0.0.6
+kpindex
+pyomnidata
