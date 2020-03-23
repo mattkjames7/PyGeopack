@@ -1,4 +1,4 @@
 numpy
 PyFileIO
 RecarrayTools
-DateTimeTools
+DateTimeTools>=0.0.5
