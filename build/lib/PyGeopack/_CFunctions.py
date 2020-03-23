@@ -5,8 +5,23 @@ import platform
 from . import Globals
 
 Arch = platform.architecture()[0]
-libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
+try:
+	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
+except:
+	print('importing libgeopackdb.so failed, attempting to recompile')
+	path = os.path.dirname(__file__)
+	if '/usr/local/' in path:
+		sudo = 'sudo '
+	else:
+		sudo = ''
 
+	CWD = os.getcwd()
+	os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
+	os.system(sudo+'make clean')
+	os.system(sudo+'make')
+	os.chdir(CWD)	
+	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
+	
 fptr = np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")
 dptr = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
 iptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")

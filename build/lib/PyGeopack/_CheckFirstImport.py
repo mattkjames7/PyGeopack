@@ -13,11 +13,11 @@ def _CheckFirstImport():
 	
 	
 	#first of all - check if the shared object exists
-	SOFile = os.path.dirname(__file__)+"/__data/libgeopack/libgeopack.so"
+	SOFile = os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so"
 	if not os.path.isfile(SOFile):
-		print("libgeopack.so not found - attempting compilation!")
+		print("libgeopackdp.so not found - attempting compilation!")
 		CWD = os.getcwd()
-		os.chdir(os.path.dirname(__file__)+"/__data/libgeopack/")
+		os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
 		os.system(sudo+'make')
 		os.chdir(CWD)
 
