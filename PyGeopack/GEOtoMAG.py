@@ -27,8 +27,8 @@ def GEOtoMAG(Lon, Lat, Date, ut, V=None):
 	_n = np.int32(_Lon.size)
 	_date = np.int32(Date)
 	_UT = np.float32(ut)
-	_MLon = np.zeros(n,dtype="float64")
-	_MLat = np.zeros(n,dtype="float64")
+	_MLon = np.zeros(_n,dtype="float64")
+	_MLat = np.zeros(_n,dtype="float64")
 
 	#make velocity arrays
 	if V is None:
