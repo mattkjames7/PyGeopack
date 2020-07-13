@@ -163,7 +163,7 @@ class TraceField(object):
 		else:
 			_Date = np.array(Date).astype('int32')
 		if np.size(ut) == 1:
-			_ut = np.zeros(_n,dtype='float32') + ut
+			_ut = np.zeros(_n,dtype='float32') + np.float32(ut)
 		else:
 			_ut = np.array(ut).astype('float32')
 		_Model = ctypes.c_char_p(Model.encode('utf-8'))
@@ -184,6 +184,7 @@ class TraceField(object):
 		_nstep = np.zeros(_n,dtype="int32")
 		_FP = np.zeros(_n*15,dtype="float64")
 		_Verb = np.bool(Verbose)
+
 		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb)
 
 		#reshape the footprints
