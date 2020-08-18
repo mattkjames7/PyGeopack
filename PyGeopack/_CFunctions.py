@@ -21,58 +21,74 @@ except:
 	os.system(sudo+'make')
 	os.chdir(CWD)	
 	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
-	
-fptr = np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")
-dptr = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
-iptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
-bptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
 
+#define some dtypes
+c_int = ct.c_int
+c_float = ct.c_float
+c_double = ct.c_double
+c_float_ptr = np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")
+c_double_ptr = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
+c_int_ptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
+c_bool_ptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
+
+#Convert GSE to GSM coordinates
 _CGSEtoGSMUT = libgeopack.GSEtoGSMUT
-_CGSEtoGSMUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CGSEtoGSMUT.argtypes = [	c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr, 		#z GSE
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSM (out)
+							c_double_ptr, 		#y GSM (out)
+							c_double_ptr	]	#z GSM (out)
 _CGSEtoGSMUT.restype = None
 
 _CGSMtoGSEUT = libgeopack.GSMtoGSEUT
-_CGSMtoGSEUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CGSMtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGSMtoGSEUT.restype = None
 
 _CGSMtoSMUT = libgeopack.GSMtoSMUT
-_CGSMtoSMUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CGSMtoSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGSMtoSMUT.restype = None
 
 _CSMtoGSMUT = libgeopack.SMtoGSMUT
-_CSMtoGSMUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CSMtoGSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CSMtoGSMUT.restype = None
 
 _CGSEtoSMUT = libgeopack.GSEtoSMUT
-_CGSEtoSMUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CGSEtoSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGSEtoSMUT.restype = None
 
 _CGSEtoMAGUT = libgeopack.GSEtoMAGUT
-_CGSEtoMAGUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CGSEtoMAGUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGSEtoMAGUT.restype = None
 
 _CSMtoGSEUT = libgeopack.SMtoGSEUT
-_CSMtoGSEUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CSMtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CSMtoGSEUT.restype = None
 
 _CMAGtoGSEUT = libgeopack.MAGtoGSEUT
-_CMAGtoGSEUT.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr, dptr]
+_CMAGtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
 _CMAGtoGSEUT.restype = None
 
 _CMLONtoMLTUT = libgeopack.MLONtoMLTUT
-_CMLONtoMLTUT.argtypes = [dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr]
+_CMLONtoMLTUT.argtypes = [c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr]
 _CMLONtoMLTUT.restype = None
 
 _CMLTtoMLONUT = libgeopack.MLTtoMLONUT
-_CMLTtoMLONUT.argtypes = [dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr]
+_CMLTtoMLONUT.argtypes = [c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr]
 _CMLTtoMLONUT.restype = None
 
 _CGEOtoMAGUT = libgeopack.GEOtoMAGUT
-_CGEOtoMAGUT.argtypes = [dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr]
+_CGEOtoMAGUT.argtypes = [c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr]
 _CGEOtoMAGUT.restype = None
 
 _CMAGtoGEOUT = libgeopack.MAGtoGEOUT
-_CMAGtoGEOUT.argtypes = [dptr, dptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, dptr, dptr]
+_CMAGtoGEOUT.argtypes = [c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr]
 _CMAGtoGEOUT.restype = None
 
 _CLoadTSData = libgeopack.LoadTSData
@@ -84,23 +100,23 @@ _CFreeTSData.argtypes = []
 _CFreeTSData.restype = None
 
 _CSetCustParam = libgeopack.SetCustParam
-_CSetCustParam.argtypes = [ct.c_int, fptr, ct.c_float, ct.c_float, ct.c_float, ct.c_float]
+_CSetCustParam.argtypes = [ct.c_int, c_float_ptr, ct.c_float, ct.c_float, ct.c_float, ct.c_float]
 _CSetCustParam.restype = None
 
 _CGetModelParams = libgeopack.GetModelParams
-_CGetModelParams.argtypes = [ct.c_int, ct.c_float, ct.c_char_p, iptr, dptr, dptr, dptr, dptr, dptr]
+_CGetModelParams.argtypes = [ct.c_int, ct.c_float, ct.c_char_p, c_int_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGetModelParams.restype = None
 
 _CModelField = libgeopack.ModelField
-_CModelField.argtypes = [dptr, dptr, dptr, ct.c_int, ct.c_int, ct.c_float, ct.c_char_p, ct.c_int, ct.c_int, dptr, dptr, dptr]
+_CModelField.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_int, ct.c_float, ct.c_char_p, ct.c_int, ct.c_int, c_double_ptr, c_double_ptr, c_double_ptr]
 _CModelField.restype = None
 
 
 _CTraceField = libgeopack.TraceField
-_CTraceField.argtypes = [dptr, dptr, dptr, ct.c_int, iptr, fptr, ct.c_char_p,
+_CTraceField.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, c_int_ptr, c_float_ptr, ct.c_char_p,
 						ct.c_int, ct.c_int, ct.c_double, ct.c_int, ct.c_double,
-						dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, dptr, 
-						iptr, dptr, ct.c_bool]
+						c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, 
+						c_int_ptr, c_double_ptr, ct.c_bool]
 _CTraceField.restype = None
 
 _CInit = libgeopack.Init
@@ -112,18 +128,18 @@ _CGetDipoleTilt.restype = ct.c_double
 
 
 _CFindIntervals = libgeopack.FindIntervals
-_CFindIntervals.argtypes = [ct.c_int,fptr,fptr,iptr,iptr,iptr,iptr,iptr]
+_CFindIntervals.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_int_ptr,c_int_ptr,c_int_ptr,c_int_ptr,c_int_ptr]
 _CFindIntervals.restype = None
 
 
 _CCalculateW = libgeopack.CalculateW
-_CCalculateW.argtypes = [ct.c_int,fptr,fptr,iptr,iptr,fptr,fptr,fptr,fptr,fptr,fptr,fptr,fptr] 
+_CCalculateW.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_int_ptr,c_int_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr] 
 _CCalculateW.restype = None
 
 _CFillInKp = libgeopack.FillInKp
-_CFillInKp.argtypes = [ct.c_int,iptr,fptr,fptr,fptr,ct.c_int,iptr,fptr,fptr]
+_CFillInKp.argtypes = [ct.c_int,c_int_ptr,c_float_ptr,c_float_ptr,c_float_ptr,ct.c_int,c_int_ptr,c_float_ptr,c_float_ptr]
 _CFillInKp.restype = None
 
 _CCalculateG = libgeopack.CalculateG
-_CCalculateG.argtypes = [ct.c_int,fptr,fptr,fptr,bptr,fptr,fptr] 
+_CCalculateG.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_float_ptr,c_bool_ptr,c_float_ptr,c_float_ptr] 
 _CCalculateG.restype = None

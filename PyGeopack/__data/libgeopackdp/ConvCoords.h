@@ -3,7 +3,27 @@
 #include "DateTimeTools.h"
 #include "libgeopack.h"
 
-void GSEtoGSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout);
+/***********************************************************************
+ * GSEtoGSM
+ * 
+ * Wrapper for converting GSE to GSM coordinates
+ * ********************************************************************/
+void GSEtoGSM(	double Xin, double Yin, double Zin,
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+/***********************************************************************
+ * GSEtoGSMUT
+ * 
+ * Wrapper for converting GSE to GSM coordinates
+ * ********************************************************************/
+void GSEtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
 void GSMtoGSE(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout);
 void GSMtoSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout);
 void SMtoGSM(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Xout, double *Yout, double *Zout);
@@ -16,9 +36,6 @@ void MLTtoMLON(double *MLT, int n, double Vx, double Vy, double Vz, int Year, in
 void GEOtoMAG(double *Lon, double *Lat, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *MLon, double *MLat);
 void MAGtoGEO(double *MLon, double *MLat, int n, double Vx, double Vy, double Vz, int Year, int DayNo, int Hr, int Mn, int Sc, double *Lon, double *Lat);
 
-//CtypeStart
-//PyFunc iiiiiiooo
-void GSEtoGSMUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout);
 //PyFunc iiiiiiooo
 void GSMtoGSEUT(double *Xin, double *Yin, double *Zin, int n, double Vx, double Vy, double Vz, int date, float UT, double *Xout, double *Yout, double *Zout);
 //PyFunc iiiiiiooo
