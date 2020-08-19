@@ -47,49 +47,190 @@ _CGSEtoGSMUT.argtypes = [	c_double_ptr, 		#x GSE
 							c_double_ptr	]	#z GSM (out)
 _CGSEtoGSMUT.restype = None
 
+#Convert GSM to GSE coordinates
 _CGSMtoGSEUT = libgeopack.GSMtoGSEUT
-_CGSMtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CGSMtoGSEUT.argtypes = [	c_double_ptr,  		#x GSM
+							c_double_ptr, 		#y GSM
+							c_double_ptr, 		#z GSM
+							c_int, 				#number of vectors
+							c_double_ptr,		#SW Vx
+							c_double_ptr,		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr,		#UT array
+							c_double_ptr, 		#x GSE (out)
+							c_double_ptr, 		#y GSE (out)
+							c_double_ptr]		#z GSE (out)
 _CGSMtoGSEUT.restype = None
 
+#Convert GSM to SM coordinates
 _CGSMtoSMUT = libgeopack.GSMtoSMUT
-_CGSMtoSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CGSMtoSMUT.argtypes = [	c_double_ptr, 		#x GSM
+							c_double_ptr, 		#y GSM
+							c_double_ptr, 		#z GSM
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x SM
+							c_double_ptr, 		#y SM
+							c_double_ptr]		#z SM
 _CGSMtoSMUT.restype = None
 
 _CSMtoGSMUT = libgeopack.SMtoGSMUT
-_CSMtoGSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CSMtoGSMUT.argtypes = [	c_double_ptr, 		#x SM
+							c_double_ptr, 		#y SM
+							c_double_ptr, 		#z SM
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSM
+							c_double_ptr, 		#y GSM
+							c_double_ptr]		#z GSM
 _CSMtoGSMUT.restype = None
 
 _CGSEtoSMUT = libgeopack.GSEtoSMUT
-_CGSEtoSMUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CGSEtoSMUT.argtypes = [	c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr, 		#z GSE
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x SM
+							c_double_ptr, 		#y SM
+							c_double_ptr]		#z SM
 _CGSEtoSMUT.restype = None
 
 _CGSEtoMAGUT = libgeopack.GSEtoMAGUT
-_CGSEtoMAGUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CGSEtoMAGUT.argtypes = [	c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr, 		#z GSE
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x MAG
+							c_double_ptr, 		#y MAG
+							c_double_ptr]		#z MAG
 _CGSEtoMAGUT.restype = None
 
 _CSMtoGSEUT = libgeopack.SMtoGSEUT
-_CSMtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CSMtoGSEUT.argtypes = [	c_double_ptr, 		#x SM
+							c_double_ptr, 		#y SM
+							c_double_ptr, 		#z SM
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr]		#z GSE
 _CSMtoGSEUT.restype = None
 
 _CMAGtoGSEUT = libgeopack.MAGtoGSEUT
-_CMAGtoGSEUT.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr, c_double_ptr]
+_CMAGtoGSEUT.argtypes = [	c_double_ptr, 		#x MAG
+							c_double_ptr, 		#y MAG
+							c_double_ptr, 		#z MAG
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr]		#z GSE
 _CMAGtoGSEUT.restype = None
 
 _CMLONtoMLTUT = libgeopack.MLONtoMLTUT
-_CMLONtoMLTUT.argtypes = [c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr]
+_CMLONtoMLTUT.argtypes = [	c_double_ptr,		#Mlon
+							c_int, 				#number of longitudes
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr]		#MLT
 _CMLONtoMLTUT.restype = None
 
 _CMLTtoMLONUT = libgeopack.MLTtoMLONUT
-_CMLTtoMLONUT.argtypes = [c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr]
+_CMLTtoMLONUT.argtypes = [	c_double_ptr,		#MLT
+							c_int, 				#number of local times
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr]		#MLon
 _CMLTtoMLONUT.restype = None
 
 _CGEOtoMAGUT = libgeopack.GEOtoMAGUT
-_CGEOtoMAGUT.argtypes = [c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr]
+_CGEOtoMAGUT.argtypes = [	c_double_ptr, 		#x GEO
+							c_double_ptr, 		#y GEO
+							c_double_ptr, 		#z GEO
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x MAG
+							c_double_ptr, 		#y MAG
+							c_double_ptr]		#z MAG
 _CGEOtoMAGUT.restype = None
 
 _CMAGtoGEOUT = libgeopack.MAGtoGEOUT
-_CMAGtoGEOUT.argtypes = [c_double_ptr, c_double_ptr, ct.c_int, ct.c_double, ct.c_double, ct.c_double, ct.c_int, ct.c_float, c_double_ptr, c_double_ptr]
+_CMAGtoGEOUT.argtypes = [	c_double_ptr, 		#x MAG
+							c_double_ptr, 		#y MAG
+							c_double_ptr, 		#z MAG
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GEO
+							c_double_ptr, 		#y GEO
+							c_double_ptr]		#z GEO
 _CMAGtoGEOUT.restype = None
+
+_CGEOtoMAGUT_LL = libgeopack.GEOtoMAGUT_LL
+_CGEOtoMAGUT_LL.argtypes = [c_double_ptr, 		#GEO Longitude
+							c_double_ptr, 		#GEO Latitude
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#MAG Longitude
+							c_double_ptr]		#MAG Latitude
+_CGEOtoMAGUT_LL.restype = None
+
+_CMAGtoGEOUT_LL = libgeopack.MAGtoGEOUT_LL
+_CMAGtoGEOUT_LL.argtypes = [c_double_ptr, 		#MAG longitude
+							c_double_ptr, 		#MAG latitude
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#GEO Longitude
+							c_double_ptr]		#GEO Latitude
+_CMAGtoGEOUT_LL.restype = None
 
 _CLoadTSData = libgeopack.LoadTSData
 _CLoadTSData.argtypes = []

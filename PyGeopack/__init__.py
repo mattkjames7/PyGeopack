@@ -15,11 +15,11 @@ from .MAGtoGSE import MAGtoGSE
 from .SetCustParam import SetCustParam
 from .GSMtoSM import GSMtoSM
 from .GetModelParams import GetModelParams
-from .MAGtoGEO import MAGtoGEO
+from .MAGtoGEO import MAGtoGEO,MAGtoGEOLL
 from .TraceField import TraceField
 from .SMtoGSM import SMtoGSM
 from .GSMtoGSE import GSMtoGSE
-from .GEOtoMAG import GEOtoMAG
+from .GEOtoMAG import GEOtoMAG,GEOtoMAGLL
 from .__del__ import __del__
 from .UpdateParameters import UpdateParameters
 from .GetDipoleTilt import GetDipoleTilt

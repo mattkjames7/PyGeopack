@@ -344,7 +344,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			FieldLineR(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&R[i*MaxLen]);
 
 			/* find trace footprints */
-			TraceFootprints(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],&R[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&FP[i*15],MaxLen);
+			TraceFootprints(ut[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],&R[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&FP[i*15],MaxLen);
 
 			/* Get the Rnorm of each point */
 			FieldLineRnorm(&R[i*MaxLen],nstep[i],FP[i*15+12],&Rnorm[i*MaxLen]);
@@ -442,7 +442,7 @@ void MagLatLonLT(double x, double y, double z, double *lat, double *lon, double 
 	lt[0] = fmod(atan2(-Y1,-X1)*12.0/M_PI + 24.0,24.0);
 }
 
-void GeoLatLonLT(double x, double y, double z, double *lat, double *lon, double *lt) {
+void GeoLatLonLT(float ut, double x, double y, double z, double *lat, double *lon, double *lt) {
 	int dirp = 1;
 	int dirn = -1;
 	double X1, Y1, Z1;
@@ -450,7 +450,7 @@ void GeoLatLonLT(double x, double y, double z, double *lat, double *lon, double 
 	
 	/*convert GSW to SM*/
 	geogsw_08_(&X1,&Y1,&Z1,&x,&y,&z,&dirn);
-
+	
 	/* Calculate the spherical coordinate */
 	CartToSpherical(X1,Y1,Z1,&r,&theta,&phi);	
 	
@@ -461,12 +461,13 @@ void GeoLatLonLT(double x, double y, double z, double *lat, double *lon, double 
 	lon[0] = phi*180.0/M_PI;
 	
 	/* local time */	
-	lt[0] = fmod(atan2(-Y1,-X1)*12.0/M_PI + 24.0,24.0);
+	//lt[0] = fmod(atan2(-Y1,-X1)*12.0/M_PI + 24.0,24.0);
+	lt[0] = fmod(ut + lon[0]/15.0 + 24.0,24.0);
 }
 
 
 
-void TraceFootprints(double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
+void TraceFootprints(float ut, double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
 					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen) {
 
 
@@ -482,7 +483,7 @@ void TraceFootprints(double *x, double *y, double *z, double *s, double *R, int 
 
 	/* Calculate the lat, long and lt of the northern footprint*/
 	if (RFN <= MaxR) {
-		GeoLatLonLT(xfn,yfn,zfn,&GlatN,&GlonN,&GltN);
+		GeoLatLonLT(ut,xfn,yfn,zfn,&GlatN,&GlonN,&GltN);
 		MagLatLonLT(xfn,yfn,zfn,&MlatN,&MlonN,&MltN);
 	} else {
 		MltN = NAN;
@@ -495,7 +496,7 @@ void TraceFootprints(double *x, double *y, double *z, double *s, double *R, int 
 
 	/* Calculate the lat, long and lt of the southern footprint*/ 
 	if (RFS <= MaxR) {
-		GeoLatLonLT(xfs,yfs,zfs,&GlatS,&GlonS,&GltS);
+		GeoLatLonLT(ut,xfs,yfs,zfs,&GlatS,&GlonS,&GltS);
 		MagLatLonLT(xfs,yfs,zfs,&MlatS,&MlonS,&MltS);
 	} else {
 		MltS = NAN;

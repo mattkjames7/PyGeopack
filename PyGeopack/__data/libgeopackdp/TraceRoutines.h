@@ -27,8 +27,8 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				int *nstep, double *FP, bool Verbose);
 void ConvertTraceCoords(int nstep, int CoordOut, double *x, double *y, double *z, double *Bx, double *By, double *Bz);
 void MagLatLonLT(double x, double y, double z, double *lat, double *lon, double *lt);	
-void GeoLatLonLT(double x, double y, double z, double *lat, double *lon, double *lt);
-void TraceFootprints(double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
+void GeoLatLonLT(float ut, double x, double y, double z, double *lat, double *lon, double *lt);
+void TraceFootprints(float ut, double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
 					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen);
 void ReverseElements(double *x, int n);
 void TraceFieldLine(double x0, double y0, double z0, int iopt, double *parmod, ModelFuncPtr ModelFunc,double alt, int MaxLen, double DSMax, 

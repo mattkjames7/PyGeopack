@@ -12,7 +12,7 @@ def GSEtoGSM(Xin, Yin, Zin, Date, ut, V=None):
 	Xin	: Array or scalar of x coordinates in R_E.
 	Yin	: Array or scalar of y coordinates in R_E.
 	Zin	: Array or scalar of z coordinates in R_E.
-	Date	: Integer dat in format yyyymmdd.
+	Date	: Integer date in format yyyymmdd.
 	ut	: Time in hours (ut = hh + mm/60 + ss/3600).	
 	
 	Returns
@@ -21,19 +21,6 @@ def GSEtoGSM(Xin, Yin, Zin, Date, ut, V=None):
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:
-	# _Xin = np.array([Xin]).flatten().astype("float64")
-	# _Yin = np.array([Yin]).flatten().astype("float64")
-	# _Zin = np.array([Zin]).flatten().astype("float64")
-	# _n = np.int32(_Xin.size)
-	# _date = np.int32(Date)
-	# _UT = np.float32(ut)
-	# _Xout = np.zeros(_n,dtype="float64")
-	# _Yout = np.zeros(_n,dtype="float64")
-	# _Zout = np.zeros(_n,dtype="float64")
-	
-	# #make velocity arrays
-
-		
 	_Xin = _CTConv(Xin,'c_double_ptr')
 	_Yin = _CTConv(Yin,'c_double_ptr')
 	_Zin = _CTConv(Zin,'c_double_ptr')
