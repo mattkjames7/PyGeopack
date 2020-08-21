@@ -335,7 +335,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			TraceFieldLine(X[i],Y[i],Z[i],iopt,parmod,ModelFunc,alt,MaxLen,DSMax,&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&nstep[i]);
 
 			/*get B vectors along trace*/
-			ModelField(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],Date[i],ut[i],Model,2,2,&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
+			ModelField(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&Date[i],&ut[i],Model,2,2,&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
 
 			/* Get the distance along the field line*/
 			FieldLineDistance(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&s[i*MaxLen]);

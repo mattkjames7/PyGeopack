@@ -1,5 +1,5 @@
 import numpy as np
-
+import ctypes as ct
 
 def _CTConv(x,ctype,nd=1):
 	'''
@@ -16,6 +16,9 @@ def _CTConv(x,ctype,nd=1):
 	'''
 	if ctype == 'null':
 		return None
+		
+	if ctype == 'c_char_p':
+		return ct.c_char_p(x.encode('utf-8'))
 
 	scl = ['c_bool','c_int','c_float','c_double']
 	arr = ['c_bool_ptr','c_int_ptr','c_float_ptr','c_double_ptr']

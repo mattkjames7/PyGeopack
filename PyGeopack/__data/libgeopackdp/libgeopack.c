@@ -278,6 +278,9 @@ void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *pa
 			} else if (iopt[0] < 1) {
 				iopt[0] = 1;
 			}
+			/* these are needed for checking if we are inside the magnetopause or not */
+			parmod[0] = (double) InterpParam(TSData.Pdyn,Date,ut);
+			parmod[3] = (double) InterpParam(TSData.Bz,Date,ut);
 	//		return;
 		/* Then T96 is Pdyn, Dst (SymH in this case), By, Bz */
 		} else if ((strcmp(Model,"T96") == 0) || (strcmp(Model,"T96c") == 0)) {

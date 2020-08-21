@@ -23,6 +23,8 @@ except:
 	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
 
 #define some dtypes
+c_char_p = ct.c_char_p
+c_bool = ct.c_bool
 c_int = ct.c_int
 c_float = ct.c_float
 c_double = ct.c_double
@@ -248,16 +250,48 @@ _CGetModelParams = libgeopack.GetModelParams
 _CGetModelParams.argtypes = [ct.c_int, ct.c_float, ct.c_char_p, c_int_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr]
 _CGetModelParams.restype = None
 
+#obtain the model magnetic field
 _CModelField = libgeopack.ModelField
-_CModelField.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, ct.c_int, ct.c_float, ct.c_char_p, ct.c_int, ct.c_int, c_double_ptr, c_double_ptr, c_double_ptr]
+_CModelField.argtypes = [	c_double_ptr, 	#x coord
+							c_double_ptr, 	#y coord
+							c_double_ptr, 	#z coord
+							c_int, 			#number of positions
+							c_int_ptr, 		#Date array
+							c_float_ptr, 	#ut array
+							c_char_p, 		#Model name
+							c_int, 			#input coords
+							c_int, 			#output coords
+							c_double_ptr, 	#output Bx
+							c_double_ptr, 	#output By
+							c_double_ptr]	#otuput Bz
 _CModelField.restype = None
 
-
+#Trace field lines
 _CTraceField = libgeopack.TraceField
-_CTraceField.argtypes = [c_double_ptr, c_double_ptr, c_double_ptr, ct.c_int, c_int_ptr, c_float_ptr, ct.c_char_p,
-						ct.c_int, ct.c_int, ct.c_double, ct.c_int, ct.c_double,
-						c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, 
-						c_int_ptr, c_double_ptr, ct.c_bool]
+_CTraceField.argtypes = [	c_double_ptr,	#x coord
+							c_double_ptr, 	#y coord
+							c_double_ptr, 	#z coord
+							c_int, 			#number of positions
+							c_int_ptr, 		#Date 
+							c_float_ptr, 	#UT
+							c_char_p,		#Model
+							c_int, 			#input coord system
+							c_int,			#output coord system
+							c_double, 		#termination altitude (km)
+							c_int,			#Maximum number of trace steps
+							c_double,		#Max step size
+							c_double_ptr, 	#output x positions
+							c_double_ptr, 	#output y positions
+							c_double_ptr, 	#output z positions
+							c_double_ptr, 	#output distance along field line
+							c_double_ptr, 	#output R
+							c_double_ptr, 	#output Rnorm
+							c_double_ptr, 	#output Bx
+							c_double_ptr, 	#output By
+							c_double_ptr, 	#output Bz
+							c_int_ptr, 		#output number of steps
+							c_double_ptr, 	#output footprint info
+							c_bool]			#Verbose 
 _CTraceField.restype = None
 
 _CInit = libgeopack.Init
