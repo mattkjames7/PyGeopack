@@ -247,13 +247,13 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	 * 
 	 * ****************************************************************/
 	
-	
+	printf("here\n");
 	int dirp = 1, dirn = -1;
 	/*Check that TSData has been loaded*/
 	if (TSData.n == 0) {
 		LoadTSData();
 	} 
-
+	printf("here\n");
 	/* move all of the declarations here, before the loop*/
 	int Year, DayNo, Hr, Mn, Sc, i, j;
 	ModelFuncPtr ModelFunc;
@@ -262,7 +262,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	double parmod[10], tilt, Vx, Vy, Vz;
 	double X[n], Y[n], Z[n];
 	bool update, inMP;
-	
+	printf("here\n");
 	/*get model function and parmod*/
 	if ((strcmp(Model,"T89") == 0) || (strcmp(Model,"T89c") == 0)){
 		ModelFunc = &t89c_;
@@ -278,24 +278,26 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		printf("Model %s not found\n",Model);
 		return;
 	}
-
+	printf("here\n");
 	for (i=0;i<n;i++) {
+		printf("%d %d\n",i,n);
 		if (Verbose) {
 			printf("\rTracing field line %d of %d (%6.2f)%%",i+1,n,((float) (i+1)*100.0)/n);
 		}
+		printf("a\n");
 		/*convert date into Year and DayNo*/
 		DateToYearDayNo(Date[i],&Year,&DayNo);
-		
+		printf("a\n");
 		/*convert decimal UT to Hr, Mn, Sc*/
 		DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
-	
+		printf("a\n");
 		update = false;
 		if (i == 0) {
 			update = true;
 		} else if ((Date[i] != Date[i-1]) || (ut[i] != ut[i-1])) {
 			update = true;
 		}
-
+		printf("a\n");
 		if (update) {
 			/*get params and recalc08*/
 			GetModelParams(Date[i],ut[i],Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
@@ -304,7 +306,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		}
 		/*Convert input coordinates to GSM*/
 		
-
+	printf("a\n");
 		switch (CoordIn) {
 			case 1:
 				/*GSE in*/
@@ -325,30 +327,31 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				return;	
 				break;	
 		}
-		
+		printf("a\n");
 		/*Check if the point is within the MP*/
 		inMP = WithinMP(X[i],Y[i],Z[i],parmod[3],parmod[0]);
 		
-		
+		printf("a\n");
 		if (inMP) {
+			printf("b\n");
 			/* perform trace */
 			TraceFieldLine(X[i],Y[i],Z[i],iopt,parmod,ModelFunc,alt,MaxLen,DSMax,&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&nstep[i]);
-
+			printf("b %d\n",nstep[i]);
 			/*get B vectors along trace*/
 			ModelField(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&Date[i],&ut[i],Model,2,2,&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
-
+			printf("b\n");
 			/* Get the distance along the field line*/
 			FieldLineDistance(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&s[i*MaxLen]);
-
+			printf("b\n");
 			/* Get the radius of each point */
 			FieldLineR(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&R[i*MaxLen]);
-
+			printf("b\n");
 			/* find trace footprints */
 			TraceFootprints(ut[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],&R[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&FP[i*15],MaxLen);
-
+			printf("b\n");
 			/* Get the Rnorm of each point */
 			FieldLineRnorm(&R[i*MaxLen],nstep[i],FP[i*15+12],&Rnorm[i*MaxLen]);
-							
+			printf("b\n");			
 		} else {
 			/*fill with NaN*/
 			nstep[i] = 0;
