@@ -184,7 +184,7 @@ class TraceField(object):
 		_nstep = np.zeros(_n,dtype="int32")
 		_FP = np.zeros(_n*15,dtype="float64")
 		_Verb = np.bool(Verbose)
-		print(_n)
+
 		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb)
 
 		#reshape the footprints

@@ -2,16 +2,18 @@
 
 
 void ModelField(	double *Xin, double *Yin, double *Zin, int n, 
-					int *Date, float *ut, const char *Model, 
-					int CoordIn, int CoordOut, 
+					int *Date, float *ut, int SameTime, 
+					const char *Model,	int CoordIn, int CoordOut, 
 					double *Bx, double *By, double *Bz) {
 
 	/*Check that TSData has been loaded*/
 	if (TSData.n == 0) {
 		LoadTSData();
 	} 
-	
+
 	/* declare a bunch of variables to use */
+	int CurrDate;
+	float CurrUT;
 	int Year, DayNo, Hr, Mn, Sc, i;
 	int dirp = 1, dirn = -1;
 	int iopt;
@@ -44,37 +46,49 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 		printf("Model %s not found\n",Model);
 		return;
 	}
-	
+
 	
 	/* start looping through all the positions/times here */
 	for (i=0;i<n;i++) {
+		
+		/* Get the current date and time - it may be an array or just a
+		 * single scalar */
+		if (SameTime) {
+			CurrDate = Date[0];
+			CurrUT = ut[0];
+		} else {
+			CurrDate = Date[i];
+			CurrUT = ut[i];
+		}
+
 		recalc = 0;
 		/* check if the time is different to the previous iteration */
-		if ((Date[i] != pDate) || (ut[i] != put)) {
+		if ((CurrDate != pDate) || (CurrUT != put)) {
 			/*convert date into Year and DayNo*/
-			DateToYearDayNo(Date[i],&Year,&DayNo);
+			DateToYearDayNo(CurrDate,&Year,&DayNo);
 			
 			/*convert decimal UT to Hr, Mn, Sc*/
-			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			DecUTToHHMMSS(CurrUT,&Hr,&Mn,&Sc);
 			
 			/*set the flag to call recalc*/
 			recalc = 1;
 		}
-	
+
+
 		/* check for a difference in the velocity */
-		GetSWVelocity(Date[i],ut[i],NULL,&Vx,&Vy,&Vz);
+		GetSWVelocity(CurrDate,CurrUT,NULL,&Vx,&Vy,&Vz);
 		if ((Vx != pVx) || (Vy != pVy) || (Vz != pVz)) {
 			recalc = 1;
 		}
-	
+
 		
 		/*get params and recalc08*/
 		if (recalc) {
-			GetModelParams(Date[i],ut[i],Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
+			GetModelParams(CurrDate,CurrUT,Model,&iopt,parmod,&tilt,&Vx,&Vy,&Vz);
 			recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
 			tilt = getpsi_();
 		}
-			
+
 		/*Convert input coordinates to GSM*/
 		
 		switch (CoordIn) {
@@ -113,7 +127,7 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 			Bygsm[i] = NAN;
 			Bzgsm[i] = NAN;
 		}
-		
+
 		/*now to convert the vectors to the desired output coordinates*/
 		switch (CoordOut) {
 			case 1:
@@ -135,7 +149,9 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 				return;	
 				break;	
 		}	
+
 	}
+
 	return;
 	
 }
