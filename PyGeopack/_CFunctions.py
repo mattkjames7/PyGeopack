@@ -258,6 +258,7 @@ _CModelField.argtypes = [	c_double_ptr, 	#x coord
 							c_int, 			#number of positions
 							c_int_ptr, 		#Date array
 							c_float_ptr, 	#ut array
+							c_int,			#a flag which tells the function whether there is one or more dates
 							c_char_p, 		#Model name
 							c_int, 			#input coords
 							c_int, 			#output coords
