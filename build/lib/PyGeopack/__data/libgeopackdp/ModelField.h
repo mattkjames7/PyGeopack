@@ -6,7 +6,13 @@
 #endif
 
 
-//CtypeStart
-//PyFunc iiiiiiiiiooo
-void ModelField(double *Xin, double *Yin, double *Zin, int n, int Date, float ut, const char *Model, int CoordIn, int CoordOut, double *Bx, double *By, double *Bz);
-//CtypeStop
+/***********************************************************************
+ * ModelField
+ * 
+ * Calculates the magnetic field model for an array of times and
+ * positions.
+ * ********************************************************************/
+void ModelField(	double *Xin, double *Yin, double *Zin, int n, 
+					int *Date, float *ut, int SameTime, 
+					const char *Model,	int CoordIn, int CoordOut, 
+					double *Bx, double *By, double *Bz);

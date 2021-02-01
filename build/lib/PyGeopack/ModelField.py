@@ -3,6 +3,7 @@ from ._CFunctions import _CModelField
 from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
+from ._CTConv import _CTConv
 
 def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',OutDtype='float64',**kwargs):
 	'''
@@ -45,7 +46,8 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 	'T89'	: The T89 model is only dependent upon the iopt parameter
 			which is valid in the range 1 - 7, and is essentially
 			equal to Kp + 1 (use iopt = 7 for Kp >= 6). No other 
-			model uses the iopt parameter. 
+			model uses the iopt parameter. Pdyn and Bz will be used to 
+			check if we are inside the MP.
 	'T96'	: This model uses the first four parameters of parmod
 			which are Pdyn, SymH, By and Bz, respectively. All other 
 			elements of parmod are ignored.
@@ -108,18 +110,19 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 		
 
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = np.array(Xin).astype("float64")
-	_Yin = np.array(Yin).astype("float64")
-	_Zin = np.array(Zin).astype("float64")
-	_n = np.int32(_Xin.size)
-	_Date = np.int32(Date)
-	_ut = np.float32(ut)
-	_Model = ctypes.c_char_p(Model.encode('utf-8'))
-	_CoordIn = _CoordCode(CoordIn)
-	_CoordOut = _CoordCode(CoordOut)
+	_Xin = _CTConv(Xin,'c_double_ptr')
+	_Yin = _CTConv(Yin,'c_double_ptr')
+	_Zin = _CTConv(Zin,'c_double_ptr')
+	_n = _CTConv(_Xin.size,'c_int')
+	_Date = _CTConv(np.zeros(_n) + Date,'c_int_ptr')
+	_ut = _CTConv(np.zeros(_n) + ut,'c_float_ptr')
+	_SameTime = _CTConv(0,'c_int')
+	_Model = _CTConv(Model,'c_char_p')
+	_CoordIn = _CTConv(_CoordCode(CoordIn),'c_int')
+	_CoordOut = _CTConv(_CoordCode(CoordOut),'c_int')
 	_Bx = np.zeros(_n,dtype="float64")
 	_By = np.zeros(_n,dtype="float64")
 	_Bz = np.zeros(_n,dtype="float64")
-	_CModelField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _Bx, _By, _Bz)
+	_CModelField(_Xin, _Yin, _Zin, _n, _Date, _ut, _SameTime, _Model, _CoordIn, _CoordOut, _Bx, _By, _Bz)
 
 	return _Bx.astype(OutDtype),_By.astype(OutDtype),_Bz.astype(OutDtype)

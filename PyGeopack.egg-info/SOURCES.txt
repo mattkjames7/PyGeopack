@@ -21,9 +21,11 @@ PyGeopack/ReadTSData.py
 PyGeopack/SMtoGSE.py
 PyGeopack/SMtoGSM.py
 PyGeopack/SetCustParam.py
+PyGeopack/ShueMP.py
 PyGeopack/TraceField.py
 PyGeopack/UpdateParameters.py
 PyGeopack/_CFunctions.py
+PyGeopack/_CTConv.py
 PyGeopack/_CalculateParameters.py
 PyGeopack/_CheckFirstImport.py
 PyGeopack/_CoordCode.py
@@ -81,6 +83,8 @@ PyGeopack/__data/libgeopackdp/libgeopack.c
 PyGeopack/__data/libgeopackdp/libgeopack.h
 PyGeopack/__data/libgeopackdp/libgeopackdp.so
 PyGeopack/__data/libgeopackdp/makefile
+PyGeopack/__data/libgeopackdp/test
 PyGeopack/__data/libgeopackdp/test.f95
+PyGeopack/__data/libgeopackdp/testsandhucoords
 PyGeopack/__data/libgeopackdp/testsandhucoords.f95
 PyGeopack/__data/libgeopackdp/wparams.f95
