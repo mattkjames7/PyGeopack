@@ -12,7 +12,7 @@ def getversion():
 	'''
 	#get the init file path
 	thispath = os.path.abspath(os.path.dirname(__file__))+'/'
-	initfile = thispath + 'Arase/__init__.py'
+	initfile = thispath + 'PyGeopack/__init__.py'
 	
 	#read the file in
 	f = open(initfile,'r')

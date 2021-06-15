@@ -344,7 +344,7 @@ def _LoadData(years):
 	data.Date = omni.Date
 	data.ut = omni.ut
 	data.Year = data.Date//10000
-	data.DayNo = TT.DayNo(data.Date)
+	_,data.DayNo = TT.DayNo(data.Date)
 	data.Hr = np.int32(np.floor(data.ut))
 	data.Mn = np.int32(np.round((data.ut - data.Hr)*60.0))
 	
