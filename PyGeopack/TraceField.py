@@ -185,10 +185,15 @@ class TraceField(object):
 		_FP = np.zeros(_n*15,dtype="float64")
 		_Verb = np.bool(Verbose)
 
-		self._Xin = _Xin
-		self._Yin = _Yin
-		self._Zin = _Zin
-
+		#add inputs into object
+		self.Date = _Date
+		self.ut = _ut
+		self.Xin = _Xin
+		self.Yin = _Yin
+		self.Zin = _Zin
+		self.CoordIn = CoordIn
+		self.CoordOut = CoordOut
+		
 		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb)
 
 		#reshape the footprints
