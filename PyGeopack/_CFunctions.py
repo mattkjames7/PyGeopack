@@ -208,6 +208,77 @@ _CMAGtoGEOUT.argtypes = [	c_double_ptr, 		#x MAG
 							c_double_ptr]		#z GEO
 _CMAGtoGEOUT.restype = None
 
+
+#Convert GEI to GEO coordinates
+_CGEItoGEOUT = libgeopack.GEItoGEOUT
+_CGEItoGEOUT.argtypes = [	c_double_ptr, 		#x GEI
+							c_double_ptr, 		#y GEI
+							c_double_ptr, 		#z GEI
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GEO (out)
+							c_double_ptr, 		#y GEO (out)
+							c_double_ptr	]	#z GEO (out)
+_CGEItoGEOUT.restype = None
+
+
+#Convert GEO to GEI coordinates
+_CGEOtoGEIUT = libgeopack.GEOtoGEIUT
+_CGEOtoGEIUT.argtypes = [	c_double_ptr, 		#x GEO
+							c_double_ptr, 		#y GEO
+							c_double_ptr, 		#z GEO
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GEI (out)
+							c_double_ptr, 		#y GEI (out)
+							c_double_ptr	]	#z GEI (out)
+_CGEOtoGEIUT.restype = None
+
+
+#Convert GSM to GEO coordinates
+_CGSMtoGEOUT = libgeopack.GSMtoGEOUT
+_CGSMtoGEOUT.argtypes = [	c_double_ptr, 		#x GSM
+							c_double_ptr, 		#y GSM
+							c_double_ptr, 		#z GSM
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GEO (out)
+							c_double_ptr, 		#y GEO (out)
+							c_double_ptr	]	#z GEO (out)
+_CGSMtoGEOUT.restype = None
+
+
+#Convert GEO to GSM coordinates
+_CGEOtoGSMUT = libgeopack.GEOtoGSMUT
+_CGEOtoGSMUT.argtypes = [	c_double_ptr, 		#x GEO
+							c_double_ptr, 		#y GEO
+							c_double_ptr, 		#z GEO
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSM (out)
+							c_double_ptr, 		#y GSM (out)
+							c_double_ptr	]	#z GSM (out)
+_CGEOtoGSMUT.restype = None
+
+
+
+
 _CGEOtoMAGUT_LL = libgeopack.GEOtoMAGUT_LL
 _CGEOtoMAGUT_LL.argtypes = [c_double_ptr, 		#GEO Longitude
 							c_double_ptr, 		#GEO Latitude

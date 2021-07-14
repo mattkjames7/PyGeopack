@@ -23,6 +23,10 @@ from .TraceField import TraceField
 from .SMtoGSM import SMtoGSM
 from .GSMtoGSE import GSMtoGSE
 from .GEOtoMAG import GEOtoMAG,GEOtoMAGLL
+from .GEOtoGEI import GEOtoGEI
+from .GEItoGEO import GEItoGEO
+from .GEOtoGSM import GEOtoGSM
+from .GSMtoGEO import GSMtoGEO
 from .__del__ import __del__
 from .UpdateParameters import UpdateParameters
 from .GetDipoleTilt import GetDipoleTilt
