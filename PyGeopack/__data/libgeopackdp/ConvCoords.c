@@ -2189,3 +2189,1583 @@ void GEOtoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 
 
 
+
+
+
+/***********************************************************************
+ * NAME : 			void SMtoGEO(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to GEO coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEO coordinate (R_E)
+ * 		double	*Yout	y GEO coordinate (R_E)
+ * 		double	*Zout	z GEO coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to GEO coordinates
+ * 
+ * ********************************************************************/
+void SMtoGEO(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	smgsw_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
+	geogsw_08_(Xout,Yout,Zout,&Xt,&Yt,&Zt,&dirn);
+	
+	return;
+}
+
+void SMtoGEOUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		SMtoGEO(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GEOtoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEO to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEO coordinate (R_E)
+ * 		double	Yin		y GEO coordinate (R_E)
+ * 		double	Zin		z GEO coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEO to SM coordinates
+ * 
+ * ********************************************************************/
+void GEOtoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geogsw_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
+	smgsw_08_(Xout,Yout,Zout,&Xt,&Yt,&Zt,&dirn);
+	
+	return;
+}
+
+void GEOtoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GEOtoSM(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+
+/***********************************************************************
+ * NAME : 			void GSEtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSE to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSE coordinate (R_E)
+ * 		double	Yin		y GSE coordinate (R_E)
+ * 		double	Zin		z GSE coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSE to GEI coordinates
+ * 
+ * ********************************************************************/
+void GSEtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	gswgse_08_(&Xt0,&Yt0,&Zt0,&Xin,&Yin,&Zin,&dirn);
+	geogsw_08_(&Xt1,&Yt1,&Zt1,&Xt0,&Yt0,&Zt0,&dirn);
+	geigeo_08_(Xout,Yout,Zout,&Xt1,&Yt1,&Zt1,&dirn);
+	
+	return;
+}
+
+void GSEtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GSEtoGEI(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoGSE(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to GSE coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSE coordinate (R_E)
+ * 		double	*Yout	y GSE coordinate (R_E)
+ * 		double	*Zout	z GSE coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to GSE coordinates
+ * 
+ * ********************************************************************/
+void GEItoGSE(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geigeo_08_(&Xin,&Yin,&Zin,&Xt0,&Yt0,&Zt0,&dirp);
+	geogsw_08_(&Xt0,&Yt0,&Zt0,&Xt1,&Yt1,&Zt1,&dirp);
+	gswgse_08_(&Xt1,&Yt1,&Zt1,Xout,Yout,Zout,&dirp);
+	
+	return;
+}
+
+void GEItoGSEUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GEItoGSE(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+/***********************************************************************
+ * NAME : 			void GSMtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSM to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSM coordinate (R_E)
+ * 		double	Yin		y GSM coordinate (R_E)
+ * 		double	Zin		z GSM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSM to GEI coordinates
+ * 
+ * ********************************************************************/
+void GSMtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geogsw_08_(&Xt,&Yt,&Zt,&Xin,&Yin,&Zin,&dirn);
+	geigeo_08_(Xout,Yout,Zout,&Xt,&Yt,&Zt,&dirn);
+	
+	return;
+}
+
+void GSMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GSMtoGEI(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoGSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to GSM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSM coordinate (R_E)
+ * 		double	*Yout	y GSM coordinate (R_E)
+ * 		double	*Zout	z GSM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to GSM coordinates
+ * 
+ * ********************************************************************/
+void GEItoGSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geigeo_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
+	geogsw_08_(&Xt,&Yt,&Zt,Xout,Yout,Zout,&dirp);
+	
+	return;
+}
+
+void GEItoGSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GEItoGSM(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+/***********************************************************************
+ * NAME : 			void SMtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to GEI coordinates
+ * 
+ * ********************************************************************/
+void SMtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	smgsw_08_(&Xin,&Yin,&Zin,&Xt0,&Yt0,&Zt0,&dirp);
+	geogsw_08_(&Xt1,&Yt1,&Zt1,&Xt0,&Yt0,&Zt0,&dirn);
+	geigeo_08_(Xout,Yout,Zout,&Xt1,&Yt1,&Zt1,&dirn);
+	
+	return;
+}
+
+void SMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		SMtoGEI(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to SM coordinates
+ * 
+ * ********************************************************************/
+void GEItoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geigeo_08_(&Xin,&Yin,&Zin,&Xt0,&Yt0,&Zt0,&dirp);
+	geogsw_08_(&Xt0,&Yt0,&Zt0,&Xt1,&Yt1,&Zt1,&dirp);
+	smgsw_08_(Xout,Yout,Zout,&Xt1,&Yt1,&Zt1,&dirn);
+	
+	return;
+}
+
+void GEItoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GEItoSM(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to GEI coordinates
+ * 
+ * ********************************************************************/
+void MAGtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geomag_08_(&Xt,&Yt,&Zt,&Xin,&Yin,&Zin,&dirn);
+	geigeo_08_(Xout,Yout,Zout,&Xt,&Yt,&Zt,&dirn);
+	
+	return;
+}
+
+void MAGtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		MAGtoGEI(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to MAG coordinates
+ * 
+ * ********************************************************************/
+void GEItoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	geigeo_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
+	geomag_08_(&Xt,&Yt,&Zt,Xout,Yout,Zout,&dirp);
+	
+	return;
+}
+
+void GEItoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GEItoMAG(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoGSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to GSM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSM coordinate (R_E)
+ * 		double	*Yout	y GSM coordinate (R_E)
+ * 		double	*Zout	z GSM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to GSM coordinates
+ * 
+ * ********************************************************************/
+void MAGtoGSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	magsm_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
+	smgsw_08_(&Xt,&Yt,&Zt,Xout,Yout,Zout,&dirp);
+	
+	return;
+}
+
+void MAGtoGSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		MAGtoGSM(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void GSMtoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSM to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSM coordinate (R_E)
+ * 		double	Yin		y GSM coordinate (R_E)
+ * 		double	Zin		z GSM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSM to MAG coordinates
+ * 
+ * ********************************************************************/
+void GSMtoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	double Xt, Yt, Zt;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	smgsw_08_(&Xt,&Yt,&Zt,&Xin,&Yin,&Zin,&dirn);
+	magsm_08_(Xout,Yout,Zout,&Xt,&Yt,&Zt,&dirn);
+	
+	return;
+}
+
+void GSMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		GSMtoMAG(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to SM coordinates
+ * 
+ * ********************************************************************/
+void MAGtoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	magsm_08_(&Xin,&Yin,&Zin,Xout,Yout,Zout,&dirp);
+	
+	return;
+}
+
+void MAGtoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		MAGtoSM(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+/***********************************************************************
+ * NAME : 			void SMtoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to MAG coordinates
+ * 
+ * ********************************************************************/
+void SMtoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout) {
+
+	int i;
+	int dirp = 1, dirn = -1;
+	
+	/*Set up geopack arrays using recalc*/
+	if (recalc) {
+		recalc_08_(&Year,&DayNo,&Hr,&Mn,&Sc, &Vx, &Vy, &Vz);
+	}
+	
+	/* do the coordinate conversion */
+	magsm_08_(Xout,Yout,Zout,&Xin,&Yin,&Zin,&dirn);
+	
+	return;
+}
+
+void SMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout) {
+
+	int Year, DayNo, Hr, Mn, Sc;
+	int pDate = -1; /* previous date */
+	float put = -1.0; /* previous time */
+	int i, recalc;
+	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
+	
+	
+	/* loop through each date/time/position */
+	for (i=0;i<n;i++) {
+
+		recalc = 0;
+		if ((Date[i] != pDate) || (ut[i] != put)) {
+			/*convert date into Year and DayNo*/
+			DateToYearDayNo(Date[i],&Year,&DayNo);
+			
+			/*convert decimal UT to Hr, Mn, Sc*/
+			DecUTToHHMMSS(ut[i],&Hr,&Mn,&Sc);
+			
+			/*set the flag to call recalc*/
+			recalc = 1;
+		}
+
+		/*Get velocity if needed*/
+		if (isnan(Vx[i])) { 
+			GetSWVelocity(Date[i],ut[i],NULL,&vx,&vy,&vz);
+		} else {
+			vx = Vx[i];
+			vy = Vy[i];
+			vz = Vz[i];
+		}
+		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
+			recalc = 1;
+		}
+
+		/* convert this vector */
+		SMtoMAG(	Xin[i],Yin[i],Zin[i],
+					vx,vy,vz,recalc,
+					Year,DayNo,Hr,Mn,Sc,
+					&Xout[i],&Yout[i],&Zout[i]);
+					
+		/*note previous variables */
+		pDate = Date[i];
+		put = ut[i];
+		vxp = vx;
+		vyp = vy;
+		vzp = vz;
+		
+	}
+}
+
+
+
+

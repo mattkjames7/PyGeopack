@@ -332,3 +332,755 @@ void GEOtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 					double *Vx, double *Vy, double *Vz, 
 					int *Date, float *ut, 
 					double *Xout, double *Yout, double *Zout);
+
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void GSEtoGEO(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSE to GEO coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSE coordinate (R_E)
+ * 		double	Yin		y GSE coordinate (R_E)
+ * 		double	Zin		z GSE coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEO coordinate (R_E)
+ * 		double	*Yout	y GEO coordinate (R_E)
+ * 		double	*Zout	z GEO coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSE to GEO coordinates
+ * 
+ * ********************************************************************/
+void GSEtoGEO(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GSEtoGEOUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GEOtoGSE(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEO to GSE coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEO coordinate (R_E)
+ * 		double	Yin		y GEO coordinate (R_E)
+ * 		double	Zin		z GEO coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSE coordinate (R_E)
+ * 		double	*Yout	y GSE coordinate (R_E)
+ * 		double	*Zout	z GSE coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEO to GSE coordinates
+ * 
+ * ********************************************************************/
+void GEOtoGSE(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEOtoGSEUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void SMtoGEO(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to GEO coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEO coordinate (R_E)
+ * 		double	*Yout	y GEO coordinate (R_E)
+ * 		double	*Zout	z GEO coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to GEO coordinates
+ * 
+ * ********************************************************************/
+void SMtoGEO(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void SMtoGEOUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+/***********************************************************************
+ * NAME : 			void GEOtoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEO to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEO coordinate (R_E)
+ * 		double	Yin		y GEO coordinate (R_E)
+ * 		double	Zin		z GEO coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEO to SM coordinates
+ * 
+ * ********************************************************************/
+void GEOtoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEOtoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+
+/***********************************************************************
+ * NAME : 			void GSEtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSE to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSE coordinate (R_E)
+ * 		double	Yin		y GSE coordinate (R_E)
+ * 		double	Zin		z GSE coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSE to GEI coordinates
+ * 
+ * ********************************************************************/
+void GSEtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GSEtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoGSE(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to GSE coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSE coordinate (R_E)
+ * 		double	*Yout	y GSE coordinate (R_E)
+ * 		double	*Zout	z GSE coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to GSE coordinates
+ * 
+ * ********************************************************************/
+void GEItoGSE(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEItoGSEUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+/***********************************************************************
+ * NAME : 			void GSMtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSM to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSM coordinate (R_E)
+ * 		double	Yin		y GSM coordinate (R_E)
+ * 		double	Zin		z GSM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSM to GEI coordinates
+ * 
+ * ********************************************************************/
+void GSMtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GSMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoGSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to GSM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSM coordinate (R_E)
+ * 		double	*Yout	y GSM coordinate (R_E)
+ * 		double	*Zout	z GSM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to GSM coordinates
+ * 
+ * ********************************************************************/
+void GEItoGSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEItoGSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+/***********************************************************************
+ * NAME : 			void SMtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to GEI coordinates
+ * 
+ * ********************************************************************/
+void SMtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void SMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to SM coordinates
+ * 
+ * ********************************************************************/
+void GEItoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEItoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoGEI(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to GEI coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GEI coordinate (R_E)
+ * 		double	*Yout	y GEI coordinate (R_E)
+ * 		double	*Zout	z GEI coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to GEI coordinates
+ * 
+ * ********************************************************************/
+void MAGtoGEI(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void MAGtoGEIUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GEItoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GEI to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GEI coordinate (R_E)
+ * 		double	Yin		y GEI coordinate (R_E)
+ * 		double	Zin		z GEI coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GEI to MAG coordinates
+ * 
+ * ********************************************************************/
+void GEItoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GEItoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoGSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to GSM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x GSM coordinate (R_E)
+ * 		double	*Yout	y GSM coordinate (R_E)
+ * 		double	*Zout	z GSM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to GSM coordinates
+ * 
+ * ********************************************************************/
+void MAGtoGSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void MAGtoGSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void GSMtoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting GSM to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x GSM coordinate (R_E)
+ * 		double	Yin		y GSM coordinate (R_E)
+ * 		double	Zin		z GSM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from GSM to MAG coordinates
+ * 
+ * ********************************************************************/
+void GSMtoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void GSMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+
+
+/***********************************************************************
+ * NAME : 			void MAGtoSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting MAG to SM coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x MAG coordinate (R_E)
+ * 		double	Yin		y MAG coordinate (R_E)
+ * 		double	Zin		z MAG coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x SM coordinate (R_E)
+ * 		double	*Yout	y SM coordinate (R_E)
+ * 		double	*Zout	z SM coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from MAG to SM coordinates
+ * 
+ * ********************************************************************/
+void MAGtoSM(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void MAGtoSMUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
+/***********************************************************************
+ * NAME : 			void SMtoMAG(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
+ *									Year, DayNo, Hr, Mn, Sc, 
+ *									*Xout, *Yout, *Zout)
+ * 
+ * DESCRIPTION : 	Wrapper for converting SM to MAG coordinates
+ * 
+ * INPUTS : 
+ * 		double	Xin		x SM coordinate (R_E)
+ * 		double	Yin		y SM coordinate (R_E)
+ * 		double	Zin		z SM coordinate (R_E)
+ * 		double 	Vx		x-component of SW velocity in km/s
+ * 		double 	Vy		y-component of SW velocity in km/s
+ * 		double 	Vz		z-component of SW velocity in km/s
+ * 		int		recalc	Set to one ro call recalc_08_
+ * 		int		Year	Year
+ * 		int		DayNo	Day number for that year
+ * 		int		Hr		Hours
+ * 		int		Mn		Minutes
+ * 		int		Sc		Seconds
+ * 
+ * OUTPUTS : 
+ * 		double	*Xout	x MAG coordinate (R_E)
+ * 		double	*Yout	y MAG coordinate (R_E)
+ * 		double	*Zout	z MAG coordinate (R_E)
+ * 
+ * RETURNS : 
+ * 		void
+ * 
+ * PROCESS : 
+ * 		[1] Calls recalc_08_ function in FORTRAN (if recalc != 0)
+ * 		[2] Calls FORTRAN code to convert from SM to MAG coordinates
+ * 
+ * ********************************************************************/
+void SMtoMAG(	double Xin, double Yin, double Zin, 
+				double Vx, double Vy, double Vz, int recalc,
+				int Year, int DayNo, int Hr, int Mn, int Sc, 
+				double *Xout, double *Yout, double *Zout);
+
+void SMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout);
+
+
+
