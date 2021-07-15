@@ -49,3 +49,5 @@ from .GSMtoMAG import GSMtoMAG
 from .MAGtoGSM import MAGtoGSM
 from .SMtoMAG import SMtoMAG
 from .MAGtoSM import MAGtoSM
+
+from .ConvCoords import ConvCoords

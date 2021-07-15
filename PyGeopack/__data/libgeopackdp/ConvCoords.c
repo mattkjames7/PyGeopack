@@ -3766,6 +3766,90 @@ void SMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	}
 }
 
+void _PopulateConvFuncs() {
+	
+	if (!ConvFuncsLoaded) {
+		CoordAbr[0] = "GSE";
+		CoordAbr[1] = "GSM";
+		CoordAbr[2] = "SM";
+		CoordAbr[3] = "GEO";
+		CoordAbr[4] = "MAG";
+		CoordAbr[5] = "GEI";
+		
+		
+		ConvFuncs[0][1] = &GSEtoGSMUT;
+		ConvFuncs[0][2] = &GSEtoSMUT;
+		ConvFuncs[0][3] = &GSEtoGEOUT;
+		ConvFuncs[0][4] = &GSEtoMAGUT;
+		ConvFuncs[0][5] = &GSEtoGEIUT;
+
+		ConvFuncs[1][0] = &GSMtoGSEUT;
+		ConvFuncs[1][2] = &GSMtoSMUT;
+		ConvFuncs[1][3] = &GSMtoGEOUT;
+		ConvFuncs[1][4] = &GSMtoMAGUT;
+		ConvFuncs[1][5] = &GSMtoGEIUT;
+
+		ConvFuncs[2][0] = &SMtoGSEUT;
+		ConvFuncs[2][1] = &SMtoGSMUT;
+		ConvFuncs[2][3] = &SMtoGEOUT;
+		ConvFuncs[2][4] = &SMtoMAGUT;
+		ConvFuncs[2][5] = &SMtoGEIUT;
+
+		ConvFuncs[3][0] = &GEOtoGSEUT;
+		ConvFuncs[3][1] = &GEOtoGSMUT;
+		ConvFuncs[3][2] = &GEOtoSMUT;
+		ConvFuncs[3][4] = &GEOtoMAGUT;
+		ConvFuncs[3][5] = &GEOtoGEIUT;
+
+		ConvFuncs[4][0] = &MAGtoGSEUT;
+		ConvFuncs[4][1] = &MAGtoGSMUT;
+		ConvFuncs[4][2] = &MAGtoSMUT;
+		ConvFuncs[4][3] = &MAGtoGEOUT;
+		ConvFuncs[4][5] = &MAGtoGEIUT;
+
+		ConvFuncs[5][0] = &GEItoGSEUT;
+		ConvFuncs[5][1] = &GEItoGSMUT;
+		ConvFuncs[5][2] = &GEItoSMUT;
+		ConvFuncs[5][3] = &GEItoGEOUT;
+		ConvFuncs[5][4] = &GEItoMAGUT;
+	}
+	
+	ConvFuncsLoaded = true;
+
+}
 
 
-
+void ConvCoords(double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout,
+					const char *CoordIn, const char *CoordOut) {
+	
+	/* check that the function pointer array has been populated */			
+	_PopulateConvFuncs();
+	
+	/* get the indices for input and output functions */
+	int i, iIn = -1, iOut = -1;
+	for(i=0;i<6;i++) {
+		if ((iIn > -1) && (iOut > -1)) {
+			break;
+		}
+		if (iIn == -1) {
+			if (strcmp(CoordAbr[i],CoordIn) == 0) {
+				iIn = i;
+			}
+		}
+		if (iOut == -1) {
+			if (strcmp(CoordAbr[i],CoordOut) == 0) {
+				iOut = i;
+			}
+		}
+	}
+	
+	/* Get the function */
+	ConvFunc CF = ConvFuncs[iIn][iOut];
+	
+	/* Call the function */
+	CF(Xin,Yin,Zin,n,Vx,Vy,Vz,Date,ut,Xout,Yout,Zout);
+	
+}

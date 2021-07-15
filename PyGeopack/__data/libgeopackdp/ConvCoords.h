@@ -3,6 +3,37 @@
 #include "DateTimeTools.h"
 #include "libgeopack.h"
 
+/* this will be used as a pointer to each of the ***to***UT functions*/
+typedef void (*ConvFunc) (double*,double*,double*,int,double*,double*,double*,
+						int*,float*,double*,double*,double*);
+
+
+/* This 2D array will be used to provide a conversion function 
+ * Annoyingly, it has 36 elements which need filling manually! */
+ConvFunc ConvFuncs[6][6];
+bool ConvFuncsLoaded = false;
+/* Indices:
+ * GSE = 0
+ * GSM = 1
+ * SM = 2
+ * GEO = 3
+ * MAG = 4
+ * GEI = 5 
+ * Where the first dimension is the input and the second corresponds to 
+ * to the output coordinates */
+void _PopulateConvFuncs();
+
+/* array of coordinate system abbreviations */
+const char *CoordAbr[6];
+
+/* Coordinate conversion  function */
+void ConvCoords(double *Xin, double *Yin, double *Zin, int n, 
+					double *Vx, double *Vy, double *Vz, 
+					int *Date, float *ut, 
+					double *Xout, double *Yout, double *Zout,
+					const char *CoordIn, const char *CoordOut);
+
+
 /***********************************************************************
  * GSEtoGSM
  * 
@@ -1081,6 +1112,5 @@ void SMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 					double *Vx, double *Vy, double *Vz, 
 					int *Date, float *ut, 
 					double *Xout, double *Yout, double *Zout);
-
 
 

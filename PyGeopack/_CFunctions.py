@@ -33,6 +33,26 @@ c_double_ptr = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
 c_int_ptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
 c_bool_ptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
 
+#coordinate convertsion function
+_CConvCoords = libgeopack.ConvCoords
+_CConvCoords.argtypes = [	c_double_ptr, 		#x GSE
+							c_double_ptr, 		#y GSE
+							c_double_ptr, 		#z GSE
+							c_int, 				#number of vectors
+							c_double_ptr, 		#SW Vx
+							c_double_ptr, 		#SW Vy
+							c_double_ptr, 		#SW Vz
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#UT array
+							c_double_ptr, 		#x GSM (out)
+							c_double_ptr, 		#y GSM (out)
+							c_double_ptr,		#z GSM (out)
+							c_char_p,			#CoordIn
+							c_char_p]			#CoordOut
+							
+_CConvCoords.restype = None
+
+
 #Convert GSE to GSM coordinates
 _CGSEtoGSMUT = libgeopack.GSEtoGSMUT
 _CGSEtoGSMUT.argtypes = [	c_double_ptr, 		#x GSE
