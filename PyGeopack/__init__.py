@@ -32,3 +32,20 @@ from .UpdateParameters import UpdateParameters
 from .GetDipoleTilt import GetDipoleTilt
 
 from .ReadTSData import ReadTSData
+
+from .GEOtoGSE import GEOtoGSE
+from .GEOtoSM import GEOtoSM
+from .GSEtoGEO import GSEtoGEO
+from .SMtoGEO import SMtoGEO
+from .GEItoGSE import GEItoGSE
+from .GSEtoGEI import GSEtoGEI
+from .GEItoGSM import GEItoGSM
+from .GSMtoGEI import GSMtoGEI
+from .GEItoSM import GEItoSM
+from .SMtoGEI import SMtoGEI
+from .GEItoMAG import GEItoMAG
+from .MAGtoGEI import MAGtoGEI
+from .GSMtoMAG import GSMtoMAG
+from .MAGtoGSM import MAGtoGSM
+from .SMtoMAG import SMtoMAG
+from .MAGtoSM import MAGtoSM
