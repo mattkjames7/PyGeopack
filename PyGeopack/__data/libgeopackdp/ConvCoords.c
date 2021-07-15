@@ -3845,11 +3845,18 @@ void ConvCoords(double *Xin, double *Yin, double *Zin, int n,
 			}
 		}
 	}
-	
-	/* Get the function */
-	ConvFunc CF = ConvFuncs[iIn][iOut];
-	
-	/* Call the function */
-	CF(Xin,Yin,Zin,n,Vx,Vy,Vz,Date,ut,Xout,Yout,Zout);
-	
+	if (iIn != iOut) {
+		/* Get the function */
+		ConvFunc CF = ConvFuncs[iIn][iOut];
+		
+		/* Call the function */
+		CF(Xin,Yin,Zin,n,Vx,Vy,Vz,Date,ut,Xout,Yout,Zout);
+	} else {
+		/* copy the values straight across */
+		for (i=0;i<n;i++) {
+			Xout[i] = Xin[i];
+			Yout[i] = Yin[i];
+			Zout[i] = Zin[i];
+		}
+	}	
 }
