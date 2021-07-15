@@ -99,7 +99,7 @@ void SandhuCoords(double *Xin, double *Yin, double *Zin, int n, int Date, float 
 
 	/* Perform the traces */
 	TraceField(Xin,Yin,Zin,n,dates,uts,Model,CoordIn,CoordOut,alt,MaxLen,
-			DSMax,Xout,Yout,Zout,s,R,Rn,Bx,By,Bz,nstep,FP, (bool) Verbose);
+			DSMax,Xout,Yout,Zout,s,R,Rn,Bx,By,Bz,nstep,FP, (bool) Verbose,0);
 
 	/* Temporary stuff for R */
 			

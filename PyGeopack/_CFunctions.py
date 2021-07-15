@@ -666,7 +666,8 @@ _CTraceField.argtypes = [	c_double_ptr,	#x coord
 							c_double_ptr, 	#output Bz
 							c_int_ptr, 		#output number of steps
 							c_double_ptr, 	#output footprint info
-							c_bool]			#Verbose 
+							c_bool,			#Verbose 
+							c_int ]			#TraceDir
 _CTraceField.restype = None
 
 _CInit = libgeopack.Init

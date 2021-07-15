@@ -38,7 +38,7 @@ class TraceField(object):
 	'''
 	
 	def __init__(self,Xin, Yin, Zin, Date, ut, Model='T96', CoordIn = 'GSM', CoordOut = 'GSM', 
-				alt=100.0, MaxLen=1000, DSMax=1.0,FlattenSingleTraces=True,Verbose=False,OutDtype='float64',**kwargs):
+				alt=100.0, MaxLen=1000, DSMax=1.0,FlattenSingleTraces=True,Verbose=False,OutDtype='float64',TraceDir='both',**kwargs):
 		'''
 		Traces along the magnetic field given a starting set of 
 		coordinates (or for multiple traces, arrays of starting 
@@ -70,6 +70,11 @@ class TraceField(object):
 			magnetic field, etc.)
 		Verbose	: Boolean, if True will display an indication of the 
 			progress made during traces.
+		TraceDir : int|str
+			if set to 0 or 'both' then the trace will run in both 
+			directions. Set to 1 to trace along the field direction
+			(from south to north), or set to -1 to trace in the opposite
+			direction to the magnetic field (north to south).
 		
 		Keyword arguments
 		=================
@@ -184,6 +189,9 @@ class TraceField(object):
 		_nstep = np.zeros(_n,dtype="int32")
 		_FP = np.zeros(_n*15,dtype="float64")
 		_Verb = np.bool(Verbose)
+		if TraceDir == 'both':
+			TraceDir = 0
+		_TraceDir = np.int32(TraceDir)
 
 		#add inputs into object
 		self.Date = _Date
@@ -194,7 +202,7 @@ class TraceField(object):
 		self.CoordIn = CoordIn
 		self.CoordOut = CoordOut
 		
-		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb)
+		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb, _TraceDir)
 
 		#reshape the footprints
 		_FP = _FP.reshape((_n,15))
