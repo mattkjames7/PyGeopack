@@ -37,8 +37,10 @@ class TraceField(object):
 	
 	'''
 	
-	def __init__(self,Xin, Yin, Zin, Date, ut, Model='T96', CoordIn = 'GSM', CoordOut = 'GSM', 
-				alt=100.0, MaxLen=1000, DSMax=1.0,FlattenSingleTraces=True,Verbose=False,OutDtype='float64',TraceDir='both',**kwargs):
+	def __init__(self,Xin,Yin,Zin,Date,ut,
+				Model='T96',CoordIn='GSM',CoordOut='GSM', 
+				alt=100.0,MaxLen=1000,DSMax=1.0,FlattenSingleTraces=True,
+				Verbose=False,OutDtype='float64',TraceDir='both',**kwargs):
 		'''
 		Traces along the magnetic field given a starting set of 
 		coordinates (or for multiple traces, arrays of starting 
@@ -46,30 +48,42 @@ class TraceField(object):
 		
 		Inputs
 		=======
-		Xin	: scalar or array containing the x component of the starting 
+		Xin : float
+			scalar or array containing the x component of the starting 
 			point(s).
-		Yin	: scalar or array containing the y component of the starting 
+		Yin : float
+			scalar or array containing the y component of the starting 
 			point(s).
-		Zin	: scalar or array containing the z component of the starting 
+		Zin : float
+			scalar or array containing the z component of the starting 
 			point(s).
-		Date	: Date (one for all traces) or array of dates (one for 
+		Date : int
+			Date (one for all traces) or array of dates (one for 
 			each trace), each an integer in the format yyyymmdd.
-		ut	: Time in hours either as a scalar (one for all traces) or 
+		ut : float
+			Time in hours either as a scalar (one for all traces) or 
 			an array (one time for each trace): ut = h + m/60 + s/3600.
-		Model	: String to say which model to use out of the following:
+		Model : str
+			String to say which model to use out of the following:
 			'T89'|'T96'|'T01'|'TS05' (see further below about models).
-		CoordIn	: String denoting system of input coordinates out of:
+		CoordIn : str
+			String denoting system of input coordinates out of:
 			'GSE'|'GSM'|'SM'.
-		CoordOut	: String denoting output coordinate system out of:
+		CoordOut : str
+			String denoting output coordinate system out of:
 			'GSE'|'GSM'|'SM'.
-		alt	:	Altitude in km to stop the trace, default is 100km.
-		MaxLen	: Maximum number of steps in the trace, default is 1000.
-		DSMax	: Maximum step length, default is 1.0 Re.
-		FlattenSingleTraces	: Boolean, set to True if performing only a
-			single trace to flatten all of the arrays (position, 
-			magnetic field, etc.)
-		Verbose	: Boolean, if True will display an indication of the 
-			progress made during traces.
+		alt : float
+			Altitude in km to stop the trace, default is 100km.
+		MaxLen : int
+			Maximum number of steps in the trace, default is 1000.
+		DSMax : float
+			Maximum step length, default is 1.0 Re.
+		FlattenSingleTraces	: bool
+			When set to True and if performing only a single trace to 
+			flatten all of the arrays (position, magnetic field, etc.)
+		Verbose	: bool
+			Boolean, if True will display an indication of the progress 
+			made during traces.
 		TraceDir : int|str
 			if set to 0 or 'both' then the trace will run in both 
 			directions. Set to 1 to trace along the field direction
@@ -159,85 +173,128 @@ class TraceField(object):
 		
 
 		#Convert input variables to appropriate numpy dtype:
-		_Xin = np.array(Xin).astype("float64")
-		_Yin = np.array(Yin).astype("float64")
-		_Zin = np.array(Zin).astype("float64")
-		_n = np.int32(_Xin.size)
+		self.Xin = np.array(Xin).astype("float64")
+		self.Yin = np.array(Yin).astype("float64")
+		self.Zin = np.array(Zin).astype("float64")
+		self.n = np.int32(self.Xin.size)
 		if np.size(Date) == 1:
-			_Date = np.zeros(_n,dtype='int32') + Date
+			self.Date = np.zeros(self.n,dtype='int32') + Date
 		else:
-			_Date = np.array(Date).astype('int32')
+			self.Date = np.array(Date).astype('int32')
 		if np.size(ut) == 1:
-			_ut = np.zeros(_n,dtype='float32') + np.float32(ut)
+			self.ut = np.zeros(self.n,dtype='float32') + np.float32(ut)
 		else:
-			_ut = np.array(ut).astype('float32')
-		_Model = ctypes.c_char_p(Model.encode('utf-8'))
-		_CoordIn = _CoordCode(CoordIn)
-		_CoordOut = _CoordCode(CoordOut)
-		_alt = np.float64(alt)
-		_MaxLen = np.int32(MaxLen)
-		_DSMax = np.float64(DSMax)
-		_Xout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_Yout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_Zout = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_s = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_R = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_Rnorm = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_Bx = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_By = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_Bz = np.zeros(_n*_MaxLen,dtype="float64") + np.nan
-		_nstep = np.zeros(_n,dtype="int32")
-		_FP = np.zeros(_n*15,dtype="float64")
-		_Verb = np.bool(Verbose)
+			self.ut = np.array(ut).astype('float32')
+		self.Model = Model
+		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
+		self.CoordIn = CoordIn
+		self.CoordInCode = _CoordCode(CoordIn)
+		self.CoordOut = CoordOut
+		self.CoordOutCode = _CoordCode(CoordOut)
+		self.alt = np.float64(alt)
+		self.MaxLen = np.int32(MaxLen)
+		self.DSMax = np.float64(DSMax)
+		self.x = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.y = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.z = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.s = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.R = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.Rnorm = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.Bx = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.By = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.Bz = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.nstep = np.zeros(self.n,dtype="int32")
+		self.FP = np.zeros(self.n*15,dtype="float64")
+		self.Verb = np.bool(Verbose)
 		if TraceDir == 'both':
 			TraceDir = 0
-		_TraceDir = np.int32(TraceDir)
-
-		#add inputs into object
-		self.Date = _Date
-		self.ut = _ut
-		self.Xin = _Xin
-		self.Yin = _Yin
-		self.Zin = _Zin
-		self.CoordIn = CoordIn
-		self.CoordOut = CoordOut
+		self.TraceDir = np.int32(TraceDir)
 		
-		_CTraceField(_Xin, _Yin, _Zin, _n, _Date, _ut, _Model, _CoordIn, _CoordOut, _alt, _MaxLen, _DSMax, _Xout, _Yout, _Zout, _s, _R, _Rnorm, _Bx, _By, _Bz, _nstep, _FP, _Verb, _TraceDir)
+		#call the C code
+		_CTraceField(self.Xin,self.Yin,self.Zin,self.n,self.Date,self.ut,
+					self.ModelCode,self.CoordInCode,self.CoordOutCode,
+					self.alt,self.MaxLen,self.DSMax,self.x,self.y,
+					self.z,self.s,self.R,self.Rnorm,self.Bx,self.By,
+					self.Bz,self.nstep,self.FP,self.Verb,self.TraceDir)
 
 		#reshape the footprints
-		_FP = _FP.reshape((_n,15))
+		self.FP = self.FP.reshape((self.n,15))
 		
 		fpnames = ['GlatN','GlatS','MlatN','MlatS',
 					'GlonN','GlonS','MlonN','MlonS',
 					'GltN','GltS','MltN','MltS',
 					'Lshell','MltE','FlLen']
 
-		self.n = _n
-		if _n == 1 and FlattenSingleTraces:
-			self.nstep = _nstep[0]
-			self.x = ((_Xout.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.y = ((_Yout.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.z = ((_Zout.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Bx = ((_Bx.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.By = ((_By.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Bz = ((_Bz.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.s = ((_s.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.R = ((_R.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Rnorm = ((_Rnorm.reshape((_n,MaxLen)))[0,:self.nstep]).astype(OutDtype)
+		if self.n == 1 and FlattenSingleTraces:
+			self.nstep = self.nstep[0]
+			self.x = ((self.x.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.y = ((self.y.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.z = ((self.z.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.Bx = ((self.Bx.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.By = ((self.By.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.Bz = ((self.Bz.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.s = ((self.s.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.R = ((self.R.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.Rnorm = ((self.Rnorm.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
 			for i in range(0,15):
-				setattr(self,fpnames[i],_FP[0,i])
+				setattr(self,fpnames[i],self.FP[0,i])
 			self.R = (np.sqrt(self.x**2 + self.y**2 + self.z**2)).astype(OutDtype)
 		else:
-			self.x = _Xout.reshape((_n,MaxLen)).astype(OutDtype)
-			self.y = _Yout.reshape((_n,MaxLen)).astype(OutDtype)
-			self.z = _Zout.reshape((_n,MaxLen)).astype(OutDtype)
-			self.Bx = _Bx.reshape((_n,MaxLen)).astype(OutDtype)
-			self.By = _By.reshape((_n,MaxLen)).astype(OutDtype)
-			self.Bz = _Bz.reshape((_n,MaxLen)).astype(OutDtype)
-			self.s = _s.reshape((_n,MaxLen)).astype(OutDtype)
-			self.R = _R.reshape((_n,MaxLen)).astype(OutDtype)
-			self.Rnorm = _Rnorm.reshape((_n,MaxLen)).astype(OutDtype)
-			self.nstep = _nstep.astype(OutDtype)
+			self.x = self.x.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.y = self.y.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.z = self.z.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.Bx = self.Bx.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.By = self.By.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.Bz = self.Bz.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.s = self.s.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.R = self.R.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.Rnorm = self.Rnorm.reshape((self.n,self.MaxLen)).astype(OutDtype)
+			self.nstep = self.nstep.astype(OutDtype)
 			for i in range(0,15):
-				setattr(self,fpnames[i],_FP[:,i])
+				setattr(self,fpnames[i],self.FP[:,i])
 			self.R = np.sqrt(self.x**2 + self.y**2 + self.z**2).astype(OutDtype)
+
+	def CalculateHalpha(self,I,Polarization='toroidal'):
+		'''
+		Calculate h_alpha (see Singer et al 1982)
+		
+		'''
+		
+		#get field line in SM coords
+		
+		#get starting positions near the equator
+		
+		#get two traces in opposite polarization directions
+		
+		#rescale s (distance along the field line) to match this field line
+		
+		#create splines
+		
+		#interpolate field lines to match original
+		
+		#calculate nearest points
+		
+		#get halphas
+		
+		#take mean of two halphas
+		
+		pass
+		
+	def GetTrace(self,I,Coord='SM'):
+		'''
+		Return traces in a given coordinate system
+		
+		'''
+		pass
+		
+	def Save(self,fname):
+		'''
+		Save the data in this object to file.
+		'''
+		pass
+		
+		
+		
+	
+		
+	

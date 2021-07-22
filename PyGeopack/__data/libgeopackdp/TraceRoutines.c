@@ -135,10 +135,10 @@ void NorthSouthFLs(double flx[],double fly[],double flz[], double *R, int N, dou
 
 	(*nn)=cn;
 	if (cn > 0) {
-		*Nflx = malloc(cn*sizeof(double));
-		*Nfly = malloc(cn*sizeof(double));
-		*Nflz = malloc(cn*sizeof(double));
-		*NR = malloc(cn*sizeof(double));
+		*Nflx = (double*) malloc(cn*sizeof(double));
+		*Nfly = (double*) malloc(cn*sizeof(double));
+		*Nflz = (double*) malloc(cn*sizeof(double));
+		*NR = (double*) malloc(cn*sizeof(double));
 		for (i=0;i<cn;i++) {
 			(*Nflx)[i]=flx[i];
 			(*Nfly)[i]=fly[i];
@@ -158,10 +158,10 @@ void NorthSouthFLs(double flx[],double fly[],double flz[], double *R, int N, dou
 	}
 	(*ns)=cs;
 	if (cs > 0) {
-		*Sflx = malloc(cs*sizeof(double));
-		*Sfly = malloc(cs*sizeof(double));
-		*Sflz = malloc(cs*sizeof(double));
-		*SR = malloc(cs*sizeof(double));
+		*Sflx = (double*) malloc(cs*sizeof(double));
+		*Sfly = (double*) malloc(cs*sizeof(double));
+		*Sflz = (double*) malloc(cs*sizeof(double));
+		*SR = (double*) malloc(cs*sizeof(double));
 
 		for (i=0;i<cs;i++) {
 			(*Sflx)[i]=flx[(cn+cs-1)-i];
