@@ -1,0 +1,23 @@
+# CFLAGS for CC
+CFLAGS=-lm 
+
+# Compiler
+CCo=g++ -fPIC -c $(CFLAGS)
+CC=g++ -fPIC $(CFLAGS)
+
+all: obj
+
+obj:
+	$(CCo) converttracecoords.cc -o converttracecoords.o
+	$(CCo) fieldlinedist.cc -o fieldlinedist.o
+	$(CCo) fieldlinemidpoint.cc -o 0fieldlinemidpoint.o
+	$(CCo) fieldliner.cc -o fieldliner.o
+	$(CCo) fieldlinernorm.cc -o fieldlinernorm.o
+	$(CCo) getmagequatorfp.cc -o getmagequatorfp.o
+	$(CCo) latlonlt.cc -o latlonlt.o
+	$(CCo) tracefield.cc -o tracefield.o
+	$(CCo) tracefieldline.cc -o tracefieldline.o
+	$(CCo) tracefootprints.cc -o tracefootprints.o
+		
+clean:
+	rm -v *.o
