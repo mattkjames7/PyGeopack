@@ -10,7 +10,7 @@ TsygData::TsygData(const char *fname) {
 	loaded_ = _LoadFile(fname);
 	
 	/* this bit is where one might call the populate months bit */
-	
+	PopulateMonthInds();
 }
 
 TsygData::~TsygData() {
@@ -60,63 +60,63 @@ bool TsygData::_LoadFile(const char *fname) {
 	
 	/* get the number of records */
 	fread(&n_,sizeof(int),1,f);
-	
+
 	/* load the rest of the data */
-	_ReadInt(f,n_,Date_);
-	_ReadFloat(f,n_,ut_);
-	_ReadInt(f,n_,Year_);
-	_ReadInt(f,n_,DayNo_);
-	_ReadInt(f,n_,Hr_);
-	_ReadInt(f,n_,Mn_);
-	_ReadDouble(f,n_,Bx_);
-	_ReadDouble(f,n_,By_);
-	_ReadDouble(f,n_,Bz_);
-	_ReadDouble(f,n_,Vx_);
-	_ReadDouble(f,n_,Vy_);
-	_ReadDouble(f,n_,Vz_);
-	_ReadDouble(f,n_,Den_);
-	_ReadDouble(f,n_,Temp_);
-	_ReadDouble(f,n_,SymH_);
-	_ReadInt(f,n_,IMFFlag_);
-	_ReadInt(f,n_,ISWFlag_);
-	_ReadDouble(f,n_,Tilt_);
-	_ReadDouble(f,n_,Pdyn_);
-	_ReadDouble(f,n_,W1_);
-	_ReadDouble(f,n_,W2_);
-	_ReadDouble(f,n_,W3_);
-	_ReadDouble(f,n_,W4_);
-	_ReadDouble(f,n_,W5_);
-	_ReadDouble(f,n_,W6_);
-	_ReadDouble(f,n_,G1_);
-	_ReadDouble(f,n_,G2_);
-	_ReadDouble(f,n_,Kp_);
+	_ReadInt(f,n_,&Date_);
+	_ReadFloat(f,n_,&ut_);
+	_ReadInt(f,n_,&Year_);
+	_ReadInt(f,n_,&DayNo_);
+	_ReadInt(f,n_,&Hr_);
+	_ReadInt(f,n_,&Mn_);
+	_ReadDouble(f,n_,&Bx_);
+	_ReadDouble(f,n_,&By_);
+	_ReadDouble(f,n_,&Bz_);
+	_ReadDouble(f,n_,&Vx_);
+	_ReadDouble(f,n_,&Vy_);
+	_ReadDouble(f,n_,&Vz_);
+	_ReadDouble(f,n_,&Den_);
+	_ReadDouble(f,n_,&Temp_);
+	_ReadDouble(f,n_,&SymH_);
+	_ReadInt(f,n_,&IMFFlag_);
+	_ReadInt(f,n_,&ISWFlag_);
+	_ReadDouble(f,n_,&Tilt_);
+	_ReadDouble(f,n_,&Pdyn_);
+	_ReadDouble(f,n_,&W1_);
+	_ReadDouble(f,n_,&W2_);
+	_ReadDouble(f,n_,&W3_);
+	_ReadDouble(f,n_,&W4_);
+	_ReadDouble(f,n_,&W5_);
+	_ReadDouble(f,n_,&W6_);
+	_ReadDouble(f,n_,&G1_);
+	_ReadDouble(f,n_,&G2_);
+	_ReadDouble(f,n_,&Kp_);
 	
 	/* close the file */
 	fclose(f);
-	
+
 	/* populate the utc array */
 	utc_ = new double[n_];
 	ContUT(n_,Date_,ut_,utc_);
 	return true;
 }
 
-void TsygData::_ReadInt(FILE *f, int n, int *out) {
-	out = new int[n];
-	fread(out,sizeof(int),n,f);
+void TsygData::_ReadInt(FILE *f, int n, int **out) {
+	*out = new int[n];
+	fread(*out,sizeof(int),n,f);
 }
 
-void TsygData::_ReadFloat(FILE *f, int n, float *out) {
-	out = new float[n];
-	fread(out,sizeof(float),n,f);
+void TsygData::_ReadFloat(FILE *f, int n, float **out) {
+	*out = new float[n];
+	fread(*out,sizeof(float),n,f);
 }
 
-void TsygData::_ReadDouble(FILE *f, int n, double *out) {
-	out = new double[n];
+void TsygData::_ReadDouble(FILE *f, int n, double **out) {
+	*out = new double[n];
 	float *tmp = new float[n];
 	fread(tmp,sizeof(float),n,f);
 	int i;
 	for (i=0;i<n;i++) {
-		out[i] = (double) tmp[i];
+		out[0][i] = (double) tmp[i];
 	}
 	delete[] tmp;
 }
@@ -131,16 +131,21 @@ void TsygData::PopulateMonthInds() {
 	nMonth_ = 12*(maxYr_-minYr_) + maxMn_ - minMn_ + 1;
 	MonthInds_ = new int[nMonth_];
 	Monthutc_ = new double[nMonth_];
-	
+
 	int tmp, tmpYr, tmpMn;
 	int i, j, p = 0;
+	tmpYr = minYr_;
+	tmpMn = minMn_;
+	
 	for (i=0;i<nMonth_;i++) {
 		tmp = tmpYr*10000 + tmpMn*100;
+
 		for (j=p;j<n_;j++) {
 			if (Date_[j] >= tmp) {
 				p = j;
 				MonthInds_[i] = j;
 				Monthutc_[i] = utc_[j];
+
 				tmpMn++;
 				if (tmpMn > 12) {
 					tmpMn = 1;
@@ -154,6 +159,7 @@ void TsygData::PopulateMonthInds() {
 
 
 int TsygData::_MonthStartInd(int Date) {
+
 	int yr, mn, ind;
 	yr = Date / 10000;
 	mn = (Date % 10000)/100;
@@ -162,16 +168,21 @@ int TsygData::_MonthStartInd(int Date) {
 	if (ind >= nMonth_){
 		ind = nMonth_-1;
 	}
+
 	return MonthInds_[ind];
 }
 
 double TsygData::InterpParam(double *x, int Date, float ut) {
+
 	/*First get the start ind for searching for this date*/
 	int ind = _MonthStartInd(Date);
 	int i, i0, i1;
 	double utc;
+
 	ContUT(1,&Date,&ut,&utc);
+
 	
+
 	/* check if the time provided is within the range of the data */
 	if (utc < utc_[0]) {
 		/* this would be from before the start of hte data */
@@ -181,7 +192,7 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 		return NAN;
 	}
 	
-	
+
 	/*now start search for nearest two indices*/
 	i = ind;
 	while ((i < n_ - 1) && (utc_[i] < utc)) {
@@ -189,7 +200,7 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 	}
 	i0 = i-1;
 	i1 = i;
-		
+
 
 	/*now to calculate time differences between two points and the first point witht he requested time*/
 	double dt, dtp;
@@ -201,6 +212,7 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 	m = (x[i1]-x[i0])/dt;
 	c = x[i0];
 	out = m*dtp + c;
+
 	return out;
 }
 

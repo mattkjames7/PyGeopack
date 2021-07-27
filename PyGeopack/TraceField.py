@@ -1,6 +1,6 @@
 import numpy as np
 from ._CFunctions import _CTraceField
-from .SetCustParam import SetCustParam
+#from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
 		

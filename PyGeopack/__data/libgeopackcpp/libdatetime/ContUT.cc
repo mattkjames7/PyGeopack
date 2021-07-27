@@ -130,19 +130,59 @@ void ContUT(int n, int *Date, float *ut, double *utc) {
 	int *ind = new int[n];
 	int ni;
 	double utcDay, utcYear;
-	for (i=0;i<nud;i++) {
-		/* locate the instances of this particular date */
-		WhereEq(n,Date,uDate[i],&ni,ind);
+	bool monotonic = true;
+	int cDate = -1;
+
+	for (i=0;i<n-1;i++) {
+		if (Date[i] > Date[i+1]) {
+			monotonic = false;
+		}
+	}
+
+	if (!monotonic) {
+		for (i=0;i<nud;i++) {
+			/* locate the instances of this particular date */
+			WhereEq(n,Date,uDate[i],&ni,ind);
+			
+			/* Get the utc for the start of the year */
+			utcYear = GetYearUTC(yrs[i]);
+			
+			/* now get the utc for the beginning of the day using the day number */
+			utcDay = utcYear + ((double) (dns[i] - 1))*24.0;
+			
+			/*loop through each one */
+			for (j=0;j<ni;j++) {
+				utc[ind[j]] += utcDay;
+			}
+		}
+	} else {
+		/* this way may be faster */
 		
-		/* Get the utc for the start of the year */
-		utcYear = GetYearUTC(yrs[i]);
-		
-		/* now get the utc for the beginning of the day using the day number */
-		utcDay = utcYear + ((double) (dns[i] - 1))*24.0;
-		
-		/*loop through each one */
-		for (j=0;j<ni;j++) {
-			utc[ind[j]] += utcDay;
+		j = 0;
+		utcYear = GetYearUTC(yrs[j]);
+		utcDay = utcYear + ((double) (dns[j] - 1))*24.0;
+		for (i=0;i<n;i++) {
+			if (Date[i] != uDate[j]) {
+				/* start from current j, try the next one */
+				for (j=j;j<nud;j++) {
+					if (uDate[j] == Date[i]) {
+						break;
+					}
+				}
+				/* if that fails (which it shouldn't) then start from 0 */
+				if (Date[i] != uDate[j]) {
+					for(j=0;j<nud;j++) {
+						if (uDate[j] == Date[i]) {
+							break;
+						}
+					}
+				}
+					
+				utcYear = GetYearUTC(yrs[j]);
+				utcDay = utcYear + ((double) (dns[j] - 1))*24.0;
+			}
+			utc[i] += utcDay;
+
 		}
 	}
 	

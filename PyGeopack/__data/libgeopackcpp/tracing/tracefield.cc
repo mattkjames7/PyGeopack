@@ -8,10 +8,10 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				const char *CoordIn, const char *CoordOut, 
 				double alt, int MaxLen, double DSMax, 
 				bool Verbose, int TraceDir,
-				double *Xout, double *Yout, double *Zout, 
-				double *s, double *R, double *Rnorm, 
+				double **Xout, double **Yout, double **Zout, 
+				double **s, double **R, double **Rnorm, 
 				int nalpha, double *alpha, double **halpha,
-				double *Bx, double *By, double *Bz, 
+				double **Bx, double **By, double **Bz, 
 				int *nstep, double **FP) {
 
 	int dirp = 1, dirn = -1;
@@ -87,29 +87,28 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			TraceFieldLine(X[i],Y[i],Z[i],iopt[i],parmod[i],ModelFunc,alt,
 							MaxLen,DSMax,TraceDir,
 							&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,
-							&Xout[i*MaxLen],&Yout[i*MaxLen],
-							&Zout[i*MaxLen],&nstep[i]);
+							Xout[i],Yout[i],Zout[i],&nstep[i]);
 
 			/*get B vectors along trace*/
-			ModelField(nstep[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],
+			ModelField(nstep[i],Xout[i],Yout[i],Zout[i],
 						&Date[i],&ut[i],true,Model,&iopt[i],&parmod[i],
 						&Vx[i],&Vy[i],&Vz[i],"GSM","GSM",
-						&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
+						Bx[i],By[i],Bz[i]);
 
 			/* Get the distance along the field line*/
-			FieldLineDist(nstep[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen]);
+			FieldLineDist(nstep[i],Xout[i],Yout[i],Zout[i],s[i]);
 
 			/* Get the radius of each point */
-			FieldLineR(nstep[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&R[i*MaxLen]);
+			FieldLineR(nstep[i],Xout[i],Yout[i],Zout[i],R[i]);
 
 			/* find trace footprints */
-			TraceFootprints(nstep[i],ut[i],&Xout[i*MaxLen],
-						&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],
-						&R[i*MaxLen],xfn,yfn,zfn,xfs,yfs,zfs,alt,
+			TraceFootprints(nstep[i],ut[i],Xout[i],
+						Yout[i],Zout[i],s[i],
+						R[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,
 						FP[i],MaxLen,TraceDir);
 
 			/* Get the Rnorm of each point */
-			FieldLineRnorm(nstep[i],&R[i*MaxLen],FP[i][12],&Rnorm[i*MaxLen]);
+			FieldLineRnorm(nstep[i],R[i],FP[i][12],Rnorm[i]);
 
 		} else {
 			/*fill with NaN*/
@@ -127,9 +126,8 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	}	
 	/*Convert everything to the desired output coords*/
 	for (i=0;i<n;i++) {
-		ConvertTraceCoords(nstep[i],CoordOut,&Xout[i*MaxLen],
-							&Yout[i*MaxLen],&Zout[i*MaxLen],&Bx[i*MaxLen],
-							&By[i*MaxLen],&Bz[i*MaxLen]);
+		ConvertTraceCoords(nstep[i],CoordOut,Xout[i],Yout[i],Zout[i],
+							Bx[i],By[i],Bz[i]);
 	}
 	
 

@@ -5,17 +5,17 @@ from . import Globals
 from ._CheckFirstImport import _CheckFirstImport
 _CheckFirstImport()
 
-from .FreeTSData import FreeTSData
+from .FreeParams import FreeParams
 from .GSEtoSM import GSEtoSM
 from .GSEtoGSM import GSEtoGSM
 from .MLTtoMLON import MLTtoMLON
 from .SMtoGSE import SMtoGSE
 from .GSEtoMAG import GSEtoMAG
 from .MLONtoMLT import MLONtoMLT
-from .LoadTSData import LoadTSData
+#from .LoadTSData import LoadTSData
 from .ModelField import ModelField
 from .MAGtoGSE import MAGtoGSE
-from .SetCustParam import SetCustParam
+#from .SetCustParam import SetCustParam
 from .GSMtoSM import GSMtoSM
 from .GetModelParams import GetModelParams
 from .MAGtoGEO import MAGtoGEO,MAGtoGEOLL

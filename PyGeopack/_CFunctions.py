@@ -5,22 +5,23 @@ import platform
 from . import Globals
 
 Arch = platform.architecture()[0]
-try:
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
-except:
-	print('importing libgeopackdb.so failed, attempting to recompile')
-	path = os.path.dirname(__file__)
-	if '/usr/local/' in path:
-		sudo = 'sudo '
-	else:
-		sudo = ''
+#try:
+libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackcpp/libgeopack.so")
+#except:
+	
+	# print('importing libgeopack.so failed, attempting to recompile')
+	# path = os.path.dirname(__file__)
+	# if '/usr/local/' in path:
+		# sudo = 'sudo '
+	# else:
+		# sudo = ''
 
-	CWD = os.getcwd()
-	os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
-	os.system(sudo+'make clean')
-	os.system(sudo+'make')
-	os.chdir(CWD)	
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
+	# CWD = os.getcwd()
+	# os.chdir(os.path.dirname(__file__)+"/__data/libgeopackcpp/")
+	# os.system(sudo+'make clean')
+	# os.system(sudo+'make')
+	# os.chdir(CWD)	
+	# libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackcpp/libgeopack.so")
 
 #define some dtypes
 c_char_p = ct.c_char_p
@@ -29,7 +30,17 @@ c_int = ct.c_int
 c_float = ct.c_float
 c_double = ct.c_double
 c_float_ptr = np.ctypeslib.ndpointer(ct.c_float,flags="C_CONTIGUOUS")
-c_double_ptr = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
+
+#this one is a hack found at: https://stackoverflow.com/a/32138619/15482422
+#it allows us to send None instead of an array which is treated as NULL
+c_double_ptr_base = np.ctypeslib.ndpointer(ct.c_double,flags="C_CONTIGUOUS")
+def _from_param(cls, obj):
+		if obj is None:
+			return obj
+		return c_double_ptr_base.from_param(obj)
+c_double_ptr = type('c_double_ptr',(c_double_ptr_base,),{'from_param':classmethod(_from_param)})
+
+c_double_ptr_ptr = np.ctypeslib.ndpointer(np.uintp,ndim=1,flags="C_CONTIGUOUS")
 c_int_ptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
 c_bool_ptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
 
@@ -608,89 +619,175 @@ _CMAGtoGEOUT_LL.argtypes = [c_double_ptr, 		#MAG longitude
 							c_double_ptr]		#GEO Latitude
 _CMAGtoGEOUT_LL.restype = None
 
-_CLoadTSData = libgeopack.LoadTSData
-_CLoadTSData.argtypes = []
-_CLoadTSData.restype = None
 
-_CFreeTSData = libgeopack.FreeTSData
-_CFreeTSData.argtypes = []
-_CFreeTSData.restype = None
-
-_CSetCustParam = libgeopack.SetCustParam
-_CSetCustParam.argtypes = [ct.c_int, c_float_ptr, ct.c_float, ct.c_float, ct.c_float, ct.c_float]
-_CSetCustParam.restype = None
-
+# get model parameters
 _CGetModelParams = libgeopack.GetModelParams
-_CGetModelParams.argtypes = [ct.c_int, ct.c_float, ct.c_char_p, c_int_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr, c_double_ptr]
+_CGetModelParams.argtypes = [	ct.c_int, 			#number of elements
+								c_int_ptr,			#Date
+								c_float_ptr,		#ut
+								ct.c_char_p, 		#Model name
+								c_double_ptr, 		#Vx input
+								c_double_ptr, 		#Vy input
+								c_double_ptr, 		#Vz input
+								c_double_ptr, 		#Kp input
+								c_double_ptr, 		#Pdyn input
+								c_double_ptr, 		#SymH input
+								c_double_ptr, 		#By input
+								c_double_ptr, 		#Bz input
+								c_double_ptr, 		#G1 input
+								c_double_ptr, 		#G2 input
+								c_double_ptr, 		#W1 input
+								c_double_ptr, 		#W2 input
+								c_double_ptr, 		#W3 input
+								c_double_ptr, 		#W4 input
+								c_double_ptr, 		#W5 input
+								c_double_ptr, 		#W6 input
+								c_double_ptr, 		#Vx output
+								c_double_ptr, 		#Vy output
+								c_double_ptr, 		#Vz output
+								c_double_ptr, 		#Kp output
+								c_double_ptr, 		#Pdyn output
+								c_double_ptr, 		#SymH output
+								c_double_ptr, 		#By output
+								c_double_ptr, 		#Bz output
+								c_double_ptr, 		#G1 output
+								c_double_ptr, 		#G2 output
+								c_double_ptr, 		#W1 output
+								c_double_ptr, 		#W2 output
+								c_double_ptr, 		#W3 output
+								c_double_ptr, 		#W4 output
+								c_double_ptr, 		#W5 output
+								c_double_ptr, 		#W6 output
+								c_double_ptr, 		#Dipole tilt
+								c_int_ptr,			#iopt array
+								c_double_ptr_ptr]	#parmod array
 _CGetModelParams.restype = None
 
 #obtain the model magnetic field
 _CModelField = libgeopack.ModelField
-_CModelField.argtypes = [	c_double_ptr, 	#x coord
-							c_double_ptr, 	#y coord
-							c_double_ptr, 	#z coord
-							c_int, 			#number of positions
-							c_int_ptr, 		#Date array
-							c_float_ptr, 	#ut array
-							c_int,			#a flag which tells the function whether there is one or more dates
-							c_char_p, 		#Model name
-							c_int, 			#input coords
-							c_int, 			#output coords
-							c_double_ptr, 	#output Bx
-							c_double_ptr, 	#output By
-							c_double_ptr]	#otuput Bz
+_CModelField.argtypes = [	c_int, 				#number of positions
+							c_double_ptr, 		#x coord
+							c_double_ptr, 		#y coord
+							c_double_ptr, 		#z coord
+							c_int_ptr, 			#Date array
+							c_float_ptr, 		#ut array
+							c_int,				#a flag which tells the function whether there is one or more dates
+							c_char_p, 			#Model name
+							c_int_ptr,			#iopt for each position
+							c_double_ptr_ptr,	#parmod for each position
+							c_double_ptr,		#Vx
+							c_double_ptr,		#Vy
+							c_double_ptr,		#Vz
+							c_char_p, 			#input coords
+							c_char_p, 			#output coords
+							c_double_ptr, 		#output Bx
+							c_double_ptr, 		#output By
+							c_double_ptr]		#output Bz
 _CModelField.restype = None
 
 #Trace field lines
 _CTraceField = libgeopack.TraceField
-_CTraceField.argtypes = [	c_double_ptr,	#x coord
-							c_double_ptr, 	#y coord
-							c_double_ptr, 	#z coord
-							c_int, 			#number of positions
-							c_int_ptr, 		#Date 
-							c_float_ptr, 	#UT
-							c_char_p,		#Model
-							c_int, 			#input coord system
-							c_int,			#output coord system
-							c_double, 		#termination altitude (km)
-							c_int,			#Maximum number of trace steps
-							c_double,		#Max step size
-							c_double_ptr, 	#output x positions
-							c_double_ptr, 	#output y positions
-							c_double_ptr, 	#output z positions
-							c_double_ptr, 	#output distance along field line
-							c_double_ptr, 	#output R
-							c_double_ptr, 	#output Rnorm
-							c_double_ptr, 	#output Bx
-							c_double_ptr, 	#output By
-							c_double_ptr, 	#output Bz
-							c_int_ptr, 		#output number of steps
-							c_double_ptr, 	#output footprint info
-							c_bool,			#Verbose 
-							c_int ]			#TraceDir
+_CTraceField.argtypes = [	c_double_ptr,		#x coord
+							c_double_ptr, 		#y coord
+							c_double_ptr, 		#z coord
+							c_int, 				#number of positions (n)
+							c_int_ptr, 			#Date 
+							c_float_ptr, 		#UT
+							c_char_p,			#Model
+							c_int_ptr,			#iopt array (n,)
+							c_double_ptr_ptr,	#parmod array (n,10)
+							c_double_ptr,		#Vx
+							c_double_ptr,		#Vy
+							c_double_ptr,		#Vz
+							c_char_p,			#input coord system
+							c_char_p,			#output coord system
+							c_double, 			#termination altitude (km)
+							c_int,				#Maximum number of trace steps
+							c_double,			#Max step size
+							c_bool,				#Verbose 
+							c_int,				#TraceDir
+							c_double_ptr_ptr, 	#output x positions
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions
+							c_double_ptr_ptr, 	#output distance along field line
+							c_double_ptr_ptr, 	#output R
+							c_double_ptr_ptr, 	#output Rnorm
+							c_int,				#the number of alphas
+							c_double_ptr,		#alpha (n_alpha,)
+							c_double_ptr_ptr,	#output h_alpha (n,MaxLen*n_alpha)
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz
+							c_int_ptr, 			#output number of steps
+							c_double_ptr_ptr] 	#output footprint info
+
 _CTraceField.restype = None
 
-_CInit = libgeopack.Init
-_CInit.argtypes = [ct.c_char_p]
+# Function to initialize the data object
+_CInit = libgeopack.InitParams
+_CInit.argtypes = [ct.c_char_p] #full file name
 
+# Function to delete parameters from memory
+_CFreeParams = libgeopack.FreeParams
+
+#function to return dipole tilt
 _CGetDipoleTilt = libgeopack.GetDipoleTiltUT
-_CGetDipoleTilt.argtypes = [ct.c_int,ct.c_float,ct.c_double,ct.c_double,ct.c_double]
-_CGetDipoleTilt.restype = ct.c_double
+_CGetDipoleTilt.argtypes = [	ct.c_int,		#Date
+								ct.c_float,		#ut
+								ct.c_double,	#Vx
+								ct.c_double,	#Vy
+								ct.c_double]	#Vz
+_CGetDipoleTilt.restype = ct.c_double			#tilt
 
-
+#this finds the intervals to calculate W params over
 _CFindIntervals = libgeopack.FindIntervals
-_CFindIntervals.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_int_ptr,c_int_ptr,c_int_ptr,c_int_ptr,c_int_ptr]
+_CFindIntervals.argtypes = [	ct.c_int,		#number of elements of data
+								c_double_ptr,	#SymH
+								c_double_ptr,	#Bz IMF
+								c_int_ptr,		#SW Flag
+								c_int_ptr,		#IMF flag
+								c_int_ptr,		#number of intervals
+								c_int_ptr,		#start indices
+								c_int_ptr]		#end indices
 _CFindIntervals.restype = None
 
-
+#calcualtes the W parameters
 _CCalculateW = libgeopack.CalculateW
-_CCalculateW.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_int_ptr,c_int_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr,c_float_ptr] 
+_CCalculateW.argtypes = [	ct.c_int,		#number of data elements
+							c_double_ptr,	#SymH
+							c_double_ptr,	#Bz
+							c_int_ptr,		#SW flag
+							c_int_ptr,		#IMF flag
+							c_double_ptr,	#V (SW speed)
+							c_double_ptr,	#Density
+							c_double_ptr,	#W1
+							c_double_ptr,	#W2
+							c_double_ptr,	#W3
+							c_double_ptr,	#W4
+							c_double_ptr,	#W5
+							c_double_ptr] 	#W6
 _CCalculateW.restype = None
 
+#fill in the Kp indices for all times
 _CFillInKp = libgeopack.FillInKp
-_CFillInKp.argtypes = [ct.c_int,c_int_ptr,c_float_ptr,c_float_ptr,c_float_ptr,ct.c_int,c_int_ptr,c_float_ptr,c_float_ptr]
+_CFillInKp.argtypes = [	ct.c_int,		#number of Kp indices
+						c_int_ptr,		#Kp dates
+						c_double_ptr,	#Kp ut0
+						c_double_ptr,	#Kp ut1
+						c_double_ptr,	#Kp value
+						ct.c_int,		#number of data elements
+						c_int_ptr,		#Date
+						c_double_ptr,	#ut
+						c_double_ptr]	#kp output
 _CFillInKp.restype = None
 
+#Calculate the G1 and G2 indices
 _CCalculateG = libgeopack.CalculateG
-_CCalculateG.argtypes = [ct.c_int,c_float_ptr,c_float_ptr,c_float_ptr,c_bool_ptr,c_float_ptr,c_float_ptr] 
+_CCalculateG.argtypes = [	ct.c_int,		#number of elements
+							c_double_ptr,	#By IMF
+							c_double_ptr,	#Bz IMF
+							c_double_ptr,	#V SW speed
+							c_bool_ptr,		#good (true == good)
+							c_double_ptr,	#G1
+							c_double_ptr] 	#G2
 _CCalculateG.restype = None

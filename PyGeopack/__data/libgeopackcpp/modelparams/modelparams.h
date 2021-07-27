@@ -14,7 +14,8 @@ extern TsygData *TData;
 
 
 extern "C" {
-	void InitParams(const char fname);
+	void InitParams(const char *fname);
+	void FreeParams();
 	
 	void GetModelParams(int n, int *Date, float *ut, const char *Model,
 							double *Vxin, double *Vyin, double *Vzin,
@@ -29,5 +30,5 @@ extern "C" {
 							double *G1, double *G2,
 							double *W1, double *W2, double *W3,
 							double *W4, double *W5, double *W6,
-							int *iopt, double **parmod);
+							double *tilt, int *iopt, double **parmod);
 }

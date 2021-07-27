@@ -20,10 +20,17 @@ obj:
 	$(CCo) withinmp.cc -o withinmp.o
 	$(CCo) dummyfunc.cc -o dummyfunc.o
 	$(CCo) ConvCoords.cc -o ConvCoords.o
-	
+	$(CCo) getdipoletilt.cc -o getdipoletilt.o
 	
 lib:
-	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so -lm fortran/*.o spline/*.o libdatetime/*.o modelparams/*.o *.o
+	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so -lm \
+		fortran/*.o \
+		spline/*.o \
+		libdatetime/*.o \
+		modelparams/*.o \
+		tools/*.o \
+		tracing/*.o \
+		*.o -lstdc++
 
 	
 
@@ -34,4 +41,5 @@ clean:
 	cd modelparams; make clean
 	cd tracing; make clean
 	cd tools; make clean
+	rm *.o
 	rm -v  *.so

@@ -45,9 +45,9 @@ class TsygData {
 		
 		/* These functions will read in data from the data file */
 		bool _LoadFile(const char*);
-		void _ReadInt(FILE*,int,int*);
-		void _ReadFloat(FILE*,int,float*);
-		void _ReadDouble(FILE*,int,double*);
+		void _ReadInt(FILE*,int,int**);
+		void _ReadFloat(FILE*,int,float**);
+		void _ReadDouble(FILE*,int,double**);
 	
 		/* for interpolation of parameters */
 		void PopulateMonthInds();

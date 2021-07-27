@@ -45,6 +45,8 @@ def _CTConv(x,ctype,nd=1):
 	elif ctype in arr:
 		if nd == 1:
 			o = np.array([x]).flatten().astype(dt)
+		elif nd == 2:
+			o = (x.__array_interface__['data'][0] + np.arange(x.shape[0])*x.strides[0]).astype(np.uintp)
 		else:
 			pass
 			

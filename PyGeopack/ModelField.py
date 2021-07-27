@@ -1,11 +1,11 @@
 import numpy as np
 from ._CFunctions import _CModelField
-from .SetCustParam import SetCustParam
+#from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
 from ._CTConv import _CTConv
 
-def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',OutDtype='float64',**kwargs):
+def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',**kwargs):
 	'''
 	Calculates the model magnetic field at a given position or array of
 	positions in space.

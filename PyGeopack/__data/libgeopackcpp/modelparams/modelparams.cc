@@ -1,8 +1,16 @@
 #include "modelparams.h"
+TsygData *TData;
 
 void InitParams(const char *fname) {
 	/* init the parameter object by loading saved file */
+	printf("Loading Model Parameter File:\n");
+	printf("%s\n",fname);
 	TData = new TsygData(fname);
+}
+
+void FreeParams() {
+	printf("Unloading Model Parameters\n");
+	delete TData;
 }
 
 void GetModelParams(int n, int *Date, float *ut, const char *Model,
@@ -18,9 +26,9 @@ void GetModelParams(int n, int *Date, float *ut, const char *Model,
 							double *G1, double *G2,
 							double *W1, double *W2, double *W3,
 							double *W4, double *W5, double *W6,
-							int *iopt, double **parmod) {
+							double *tilt, int *iopt, double **parmod) {
 
-	
+
 	TData->GetSWVelocity(n,Date,ut,Vxin,Vyin,Vzin,Vx,Vy,Vz);
 
 	TData->GetParameter(n,Date,ut,TData->Kp_,Kpin,Kp);
@@ -36,10 +44,10 @@ void GetModelParams(int n, int *Date, float *ut, const char *Model,
 	TData->GetParameter(n,Date,ut,TData->W4_,W4in,W4);
 	TData->GetParameter(n,Date,ut,TData->W5_,W5in,W5);
 	TData->GetParameter(n,Date,ut,TData->W6_,W6in,W6);
+	TData->GetParameter(n,Date,ut,TData->Tilt_,NULL,tilt);
 
 	TData->GetModelParams(n,Model,Kp,Pdyn,SymH,By,Bz,G1,G2,
 						W1,W2,W3,W4,W5,W6,iopt,parmod);
-
 			
 								
 }

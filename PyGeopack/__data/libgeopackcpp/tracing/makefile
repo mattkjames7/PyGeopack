@@ -10,7 +10,7 @@ all: obj
 obj:
 	$(CCo) converttracecoords.cc -o converttracecoords.o
 	$(CCo) fieldlinedist.cc -o fieldlinedist.o
-	$(CCo) fieldlinemidpoint.cc -o 0fieldlinemidpoint.o
+	$(CCo) fieldlinemidpoint.cc -o fieldlinemidpoint.o
 	$(CCo) fieldliner.cc -o fieldliner.o
 	$(CCo) fieldlinernorm.cc -o fieldlinernorm.o
 	$(CCo) getmagequatorfp.cc -o getmagequatorfp.o

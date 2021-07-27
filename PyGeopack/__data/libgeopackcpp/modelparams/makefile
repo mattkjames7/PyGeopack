@@ -13,6 +13,6 @@ obj:
 	$(CCo) tsygdata.cc -o tsygdata.o
 	$(CCo) modelparams.cc -o modelparams.o
 	$(CCo) checkv.cc -o checkv.o
-		
+	$(CCo) fillinkp.cc -o fillinkp.o
 clean:
 	rm -v *.o
