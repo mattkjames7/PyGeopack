@@ -3,7 +3,10 @@ from ._CFunctions import _CTraceField
 #from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
-		
+from .GetModelParams import GetModelParams
+from .GSMtoGSE import GSMtoGSE
+from .GSMtoSM import GSMtoSM
+from ._CTConv import _CTConv
 		
 class TraceField(object):
 	'''
@@ -37,10 +40,9 @@ class TraceField(object):
 	
 	'''
 	
-	def __init__(self,Xin,Yin,Zin,Date,ut,
-				Model='T96',CoordIn='GSM',CoordOut='GSM', 
+	def __init__(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM', 
 				alt=100.0,MaxLen=1000,DSMax=1.0,FlattenSingleTraces=True,
-				Verbose=False,OutDtype='float64',TraceDir='both',**kwargs):
+				Verbose=False,TraceDir='both',alpha=[0.0,90.0],**kwargs):
 		'''
 		Traces along the magnetic field given a starting set of 
 		coordinates (or for multiple traces, arrays of starting 
@@ -139,39 +141,6 @@ class TraceField(object):
 		'''
 
 
-		#look for custom parameters
-		keys = list(kwargs.keys())
-		CustP = False
-		CustFields = ['Kp','Pdyn','SymH','By','Bz','iopt','parmod','tilt','Vx','Vy','Vz']
-		for f in CustFields:
-			if f in keys:
-				CustP = True
-
-		#now we know if any exist, so let's add them
-		if (CustP):
-			Model = Model+'c' #this will let the C code know that we aren't just interpolating real values
-			iopt = kwargs.get('iopt',-1)
-			iopt = kwargs.get('Kp',-2)+1
-			
-			parmod = kwargs.get('parmod',np.zeros(10,dtype='float64')+np.nan)
-			Pdyn = kwargs.get('Pdyn',parmod[0])
-			SymH = kwargs.get('SymH',parmod[1])
-			By = kwargs.get('By',parmod[2])
-			Bz = kwargs.get('Bz',parmod[3])
-			parmod[0] = Pdyn
-			parmod[1] = SymH
-			parmod[2] = By
-			parmod[3] = Bz
-			
-			tilt = kwargs.get('tilt',np.nan)
-			
-			Vx = kwargs.get('Vx',np.nan)
-			Vy = kwargs.get('Vy',np.nan)
-			Vz = kwargs.get('Vz',np.nan)
-			
-			SetCustParam(iopt,parmod,tilt,Vx,Vy,Vz)
-		
-
 		#Convert input variables to appropriate numpy dtype:
 		self.Xin = np.array(Xin).astype("float64")
 		self.Yin = np.array(Yin).astype("float64")
@@ -188,38 +157,61 @@ class TraceField(object):
 		self.Model = Model
 		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
 		self.CoordIn = CoordIn
-		self.CoordInCode = _CoordCode(CoordIn)
-		self.CoordOut = CoordOut
-		self.CoordOutCode = _CoordCode(CoordOut)
+		self.CoordInCode =_CTConv(CoordIn,'c_char_p')
+		self.CoordOutCode =_CTConv("GSM",'c_char_p')
 		self.alt = np.float64(alt)
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
-		self.x = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.y = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.z = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.s = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.R = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.Rnorm = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.Bx = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.By = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
-		self.Bz = np.zeros(self.n*self.MaxLen,dtype="float64") + np.nan
+		self.x = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.y = np.zeros((self.n*self.MaxLen),dtype="float64") + np.nan
+		self.z = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Rnorm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bx = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.By = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bz = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.nstep = np.zeros(self.n,dtype="int32")
-		self.FP = np.zeros(self.n*15,dtype="float64")
+		self.FP = np.zeros((self.n,15),dtype="float64")
 		self.Verb = np.bool(Verbose)
 		if TraceDir == 'both':
 			TraceDir = 0
 		self.TraceDir = np.int32(TraceDir)
+		self.nalpha = np.int32(np.size(alpha))
+		self.alpha = np.array(alpha).astype('float64')
+		self.halpha = np.zeros((self.n,self.MaxLen*self.nalpha),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
+		
+		_x = _CTConv(self.x,'c_double_ptr',nd=2)
+		_y = _CTConv(self.y,'c_double_ptr',nd=2)
+		_z = _CTConv(self.z,'c_double_ptr',nd=2)
+		_s = _CTConv(self.s,'c_double_ptr',nd=2)
+		_R = _CTConv(self.R,'c_double_ptr',nd=2)
+		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)
+		_Bx = _CTConv(self.Bx,'c_double_ptr',nd=2)
+		_By = _CTConv(self.By,'c_double_ptr',nd=2)
+		_Bz = _CTConv(self.Bz,'c_double_ptr',nd=2)
+		_FP = _CTConv(self.FP,'c_double_ptr',nd=2)
+		_halpha = _CTConv(self.halpha,'c_double_ptr',nd=2)
+		
+		#get model parameters
+		self.params = GetModelParams(self.Date,self.ut,Model,**kwargs)
+		_Parmod = _CTConv(self.params['parmod'],'c_double_ptr',nd=2)
 		
 		#call the C code
-		_CTraceField(self.Xin,self.Yin,self.Zin,self.n,self.Date,self.ut,
-					self.ModelCode,self.CoordInCode,self.CoordOutCode,
-					self.alt,self.MaxLen,self.DSMax,self.x,self.y,
-					self.z,self.s,self.R,self.Rnorm,self.Bx,self.By,
-					self.Bz,self.nstep,self.FP,self.Verb,self.TraceDir)
+		_CTraceField(self.Xin,self.Yin,self.Zin,self.n,
+					self.Date,self.ut,self.ModelCode,
+					self.params['iopt'],_Parmod,
+					self.params['Vx'],self.params['Vy'],self.params['Vz'],
+					self.CoordInCode,self.CoordOutCode,
+					self.alt,self.MaxLen,self.DSMax,
+					self.Verb,self.TraceDir,
+					_x,_y,_z,
+					_s,_R,_Rnorm,
+					self.nalpha,self.alpha,_halpha,
+					_Bx,_By,_Bz,
+					self.nstep,_FP)
 
 		#reshape the footprints
-		self.FP = self.FP.reshape((self.n,15))
-		
 		fpnames = ['GlatN','GlatS','MlatN','MlatS',
 					'GlonN','GlonS','MlonN','MlonS',
 					'GltN','GltS','MltN','MltS',
@@ -227,32 +219,22 @@ class TraceField(object):
 
 		if self.n == 1 and FlattenSingleTraces:
 			self.nstep = self.nstep[0]
-			self.x = ((self.x.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.y = ((self.y.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.z = ((self.z.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Bx = ((self.Bx.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.By = ((self.By.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Bz = ((self.Bz.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.s = ((self.s.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.R = ((self.R.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
-			self.Rnorm = ((self.Rnorm.reshape((self.n,self.MaxLen)))[0,:self.nstep]).astype(OutDtype)
+			self.x = self.x[0]
+			self.y = self.y[0]
+			self.z = self.z[0]
+			self.Bx = self.Bx[0]
+			self.By = self.By[0]
+			self.Bz = self.Bz[0]
+			self.s = self.s[0]
+			self.R = self.R[0]
+			self.Rnorm = self.Rnorm[0]
+			self.halpha = (self.halpha.reshape((self.n,self.nalpha,self.MaxLen)))[0]
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[0,i])
-			self.R = (np.sqrt(self.x**2 + self.y**2 + self.z**2)).astype(OutDtype)
 		else:
-			self.x = self.x.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.y = self.y.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.z = self.z.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.Bx = self.Bx.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.By = self.By.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.Bz = self.Bz.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.s = self.s.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.R = self.R.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.Rnorm = self.Rnorm.reshape((self.n,self.MaxLen)).astype(OutDtype)
-			self.nstep = self.nstep.astype(OutDtype)
+			self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[:,i])
-			self.R = np.sqrt(self.x**2 + self.y**2 + self.z**2).astype(OutDtype)
 
 	def CalculateHalpha(self,I,Polarization='toroidal'):
 		'''

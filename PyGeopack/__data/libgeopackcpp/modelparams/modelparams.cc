@@ -49,5 +49,36 @@ void GetModelParams(int n, int *Date, float *ut, const char *Model,
 	TData->GetModelParams(n,Model,Kp,Pdyn,SymH,By,Bz,G1,G2,
 						W1,W2,W3,W4,W5,W6,iopt,parmod);
 			
+	/* fill NANs with default values */
+	int i, j;
+	for (i=0;i<n;i++) {
+		if (isnan(parmod[i][0])) {
+			/* default dynamic pressure is 2 */
+			parmod[i][0] = 2.0;
+		}
+	}
+	for (j=1;j<10;j++) {
+		/* default for everything else is 0.0 */
+		for (i=0;i<n;i++) {
+			if (isnan(parmod[i][j])) {
+				parmod[i][j] = 0.0;
+			}
+		}
+	}
+	for (i=0;i<n;i++) {
+		/* if NAN then we should fill with a default value */
+		if (isnan(Vx[i])) {
+			/* mean of Vx ~ -428.0 km/s */
+			Vx[i] = -428.0;
+		}
+		if (isnan(Vy[i])) {
+			/* mean of Vy ~ -1.4 km/s */
+			Vy[i] = 1.5;
+		}
+		if (isnan(Vz[i])) {
+			/* mean of Vz ~ 0.0 km/s */
+			Vz[i] = 0.0;
+		}
+	}
 								
 }
