@@ -163,7 +163,7 @@ class TraceField(object):
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
 		self.x = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.y = np.zeros((self.n*self.MaxLen),dtype="float64") + np.nan
+		self.y = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.z = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan

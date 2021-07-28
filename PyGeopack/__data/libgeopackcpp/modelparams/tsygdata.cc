@@ -257,6 +257,9 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vx[i] = Vxin[i];
+			if (isnan(Vx[i])) {
+				Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
+			}
 		}
 	}
 	
@@ -269,6 +272,9 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vy[i] = Vyin[i];
+			if (isnan(Vy[i])) {
+				Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
+			}
 		}
 	}
 	
@@ -281,10 +287,13 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vz[i] = Vzin[i];
+			if (isnan(Vz[i])) {
+				Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
+			}
 		}
 	}
 		
-	
+		
 }
 
 void TsygData::GetModelParams(int n, const char *Model,

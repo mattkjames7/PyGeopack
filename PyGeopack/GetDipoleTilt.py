@@ -24,22 +24,23 @@ def GetDipoleTilt(Date,ut,V=None):
 	_ut = np.array([ut]).flatten().astype('float32')
 		
 
-	
+	n = _Date.size
 	#V should be a tuple of (Vx,Vy,Vz)
 	if V is None:
-		Vx = np.zeros(_Date.size,dtype='float64') + np.nan
-		Vy = np.zeros(_Date.size,dtype='float64') + np.nan
-		Vz = np.zeros(_Date.size,dtype='float64') + np.nan
+		Vx = np.zeros(n,dtype='float64') + np.nan
+		Vy = np.zeros(n,dtype='float64') + np.nan
+		Vz = np.zeros(n,dtype='float64') + np.nan
 	else:
 		Vx,Vy,Vz = V
-		Vx = Vx.astype('float64')
-		Vy = Vy.astype('float64')
-		Vz = Vz.astype('float64')
+		Vx = (np.zeros(n,dtype='float64') + np.float64(Vx))
+		Vy = (np.zeros(n,dtype='float64') + np.float64(Vy))
+		Vz = (np.zeros(n,dtype='float64') + np.float64(Vz))
+
 
 	#loop through each one
-	n = _Date.size
+	
 	psi = np.zeros(n,dtype='float64')
 	for i in range(0,n):
-		psi[i] = _CGetDipoleTilt(Date[i],ut[i],Vx[i],Vy[i],Vz[i])
+		psi[i] = _CGetDipoleTilt(_Date[i],_ut[i],Vx[i],Vy[i],Vz[i])
 
 	return psi
