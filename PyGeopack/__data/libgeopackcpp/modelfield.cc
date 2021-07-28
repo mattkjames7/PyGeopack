@@ -119,10 +119,10 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 		}
 
 		/*now to convert the vectors to the desired output coordinates*/
-		if (strcmp(CoordIn,"GSE") == 0) {
+		if (strcmp(CoordOut,"GSE") == 0) {
 			/*GSE Out*/
 			gswgse_08_(&Bxgsm[i],&Bygsm[i],&Bzgsm[i],&Bx[i],&By[i],&Bz[i],&dirp);
-		} else if (strcmp(CoordIn,"SM") == 0) {
+		} else if (strcmp(CoordOut,"SM") == 0) {
 			/*SM Out*/
 			smgsw_08_(&Bx[i],&By[i],&Bz[i],&Bxgsm[i],&Bygsm[i],&Bzgsm[i],&dirn);
 		} else {
