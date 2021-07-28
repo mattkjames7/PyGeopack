@@ -324,7 +324,7 @@ void TsygData::GetModelParams(int n, const char *Model,
 				 parmod[i][j] = 0.0;
 			}
 		}
-	} else if (strcmp(Model,"T96") == 0) {
+	} else if (strcmp(Model,"T01") == 0) {
 		/* T01 - Pdyn,SymH, By, Bz */
 		for (i=0;i<n;i++) {
 			 iopt[i] = 0;
@@ -338,7 +338,7 @@ void TsygData::GetModelParams(int n, const char *Model,
 				 parmod[i][j] = 0.0;
 			}
 		}
-	} else if (strcmp(Model,"T96") == 0) {
+	} else if (strcmp(Model,"TS05") == 0) {
 		/* TS05 - Pdyn,SymH, By, Bz */
 		for (i=0;i<n;i++) {
 			 iopt[i] = 0;

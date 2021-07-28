@@ -4,7 +4,8 @@ import ctypes
 from ._CTConv import _CTConv
 from .GetModelParams import GetModelParams
 
-def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',**kwargs):
+def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', 
+			CoordIn='GSM', CoordOut='GSM', ReturnParams=False ,**kwargs):
 	'''
 	Calculates the model magnetic field at a given position or array of
 	positions in space.
@@ -72,8 +73,7 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 			
 	'''
 
-	#get the model parameters
-	params = GetModelParams(Date,ut,Model,**kwargs)
+
 
 
 	#Convert input variables to appropriate numpy dtype:
@@ -90,10 +90,16 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 	_Bx = np.zeros(_n,dtype="float64")
 	_By = np.zeros(_n,dtype="float64")
 	_Bz = np.zeros(_n,dtype="float64")
+
+	#get the model parameters
+	params = GetModelParams(_Date,_ut,Model,**kwargs)
 	_Parmod = _CTConv(params['parmod'],'c_double_ptr',nd=2)
 	
 	_CModelField(_n, _Xin, _Yin, _Zin, _Date, _ut, _SameTime, 
 			_Model, params['iopt'], _Parmod, params['Vx'], params['Vy'],
 			params['Vz'], _CoordIn, _CoordOut, _Bx, _By, _Bz)
 
-	return _Bx,_By,_Bz
+	if ReturnParams:
+		return _Bx, _By, _Bz, params
+	else:
+		return _Bx,_By,_Bz
