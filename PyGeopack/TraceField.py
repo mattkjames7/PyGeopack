@@ -162,15 +162,15 @@ class TraceField(object):
 		self.alt = np.float64(alt)
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
-		self.x = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.y = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.z = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.xgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.Rnorm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bx = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.By = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bz = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
 		self.nstep = np.zeros(self.n,dtype="int32")
 		self.FP = np.zeros((self.n,15),dtype="float64")
 		self.Verb = np.bool(Verbose)
@@ -181,15 +181,15 @@ class TraceField(object):
 		self.alpha = np.array(alpha).astype('float64')
 		self.halpha = np.zeros((self.n,self.MaxLen*self.nalpha),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
 		
-		_x = _CTConv(self.x,'c_double_ptr',nd=2)
-		_y = _CTConv(self.y,'c_double_ptr',nd=2)
-		_z = _CTConv(self.z,'c_double_ptr',nd=2)
+		_x = _CTConv(self.xgsm,'c_double_ptr',nd=2)
+		_y = _CTConv(self.ygsm,'c_double_ptr',nd=2)
+		_z = _CTConv(self.zgsm,'c_double_ptr',nd=2)
 		_s = _CTConv(self.s,'c_double_ptr',nd=2)
 		_R = _CTConv(self.R,'c_double_ptr',nd=2)
 		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)
-		_Bx = _CTConv(self.Bx,'c_double_ptr',nd=2)
-		_By = _CTConv(self.By,'c_double_ptr',nd=2)
-		_Bz = _CTConv(self.Bz,'c_double_ptr',nd=2)
+		_Bx = _CTConv(self.Bxgsm,'c_double_ptr',nd=2)
+		_By = _CTConv(self.Bygsm,'c_double_ptr',nd=2)
+		_Bz = _CTConv(self.Bzgsm,'c_double_ptr',nd=2)
 		_FP = _CTConv(self.FP,'c_double_ptr',nd=2)
 		_halpha = _CTConv(self.halpha,'c_double_ptr',nd=2)
 		
@@ -217,17 +217,18 @@ class TraceField(object):
 					'GltN','GltS','MltN','MltS',
 					'Lshell','MltE','FlLen']
 
+
+		#calculate vectors in GSE and SM
+		self._CoordConvTrace()
+		
+		
+		#flatten things and unpack footprints
 		if self.n == 1 and FlattenSingleTraces:
-			self.nstep = self.nstep[0]
-			self.x = self.x[0]
-			self.y = self.y[0]
-			self.z = self.z[0]
-			self.Bx = self.Bx[0]
-			self.By = self.By[0]
-			self.Bz = self.Bz[0]
-			self.s = self.s[0]
-			self.R = self.R[0]
-			self.Rnorm = self.Rnorm[0]
+			flat = ['nstep','xgsm','ygsm','zgsm','xgse','ygse','zgse',
+					'xsm','ysm','zsm','Bxgsm','Bygsm','Bzgsm','Bxgse',
+					'Bygse','Bzgse','Bxsm','Bysm','Bzsm','s','R','Rnorm']
+			for f in flat:
+				self.__dict__[f] = self.__dict__[f][0]
 			self.halpha = (self.halpha.reshape((self.n,self.nalpha,self.MaxLen)))[0]
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[0,i])
@@ -235,6 +236,48 @@ class TraceField(object):
 			self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[:,i])
+
+		
+	
+	
+	def _CoordConvTrace(self):
+		
+		#GSE
+		self.xgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan	
+		
+		#SM	
+		self.xsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan		
+		
+		
+		
+		for i in range(0,self.n):
+			ns = self.nstep[i]
+			V = [self.params['Vx'],self.params['Vy'],self.params['Vz']]
+			x = self.xgsm[i][:ns]
+			y = self.ygsm[i][:ns]
+			z = self.zgsm[i][:ns]
+			Bx = self.Bxgsm[i][:ns]
+			By = self.Bygsm[i][:ns]
+			Bz = self.Bzgsm[i][:ns]
+
+			self.xgse[i][:ns],self.ygse[i][:ns],self.zgse[i][:ns] = \
+				GSMtoGSE(x,y,z,self.Date[i],self.ut[i],V=V)
+			self.xsm[i][:ns],self.ysm[i][:ns],self.zsm[i][:ns] = \
+				GSMtoSM(x,y,z,self.Date[i],self.ut[i],V=V)
+			self.Bxgse[i][:ns],self.Bygse[i][:ns],self.Bzgse[i][:ns] = \
+				GSMtoGSE(Bx,By,Bz,self.Date[i],self.ut[i],V=V)
+			self.Bxsm[i][:ns],self.Bysm[i][:ns],self.Bzsm[i][:ns] = \
+				GSMtoSM(Bx,By,Bz,self.Date[i],self.ut[i],V=V)
 
 	def CalculateHalpha(self,I,Polarization='toroidal'):
 		'''

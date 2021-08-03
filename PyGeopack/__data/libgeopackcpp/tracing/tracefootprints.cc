@@ -7,6 +7,7 @@ void TraceFootprints(	int nstep, float ut,
 						double *s, double *R, 
 						double xfn, double yfn, double zfn, 
 						double xfs, double yfs, double zfs, 
+						double *xfe, double *yfe, double *zfe, 
 						double alt, double *FP, int MaxLen, int TraceDir) {
 
     const double Re = 6371.2;
@@ -48,13 +49,17 @@ void TraceFootprints(	int nstep, float ut,
 
 	if ((RFN <= MaxR) && (RFS <= MaxR)) {
 		/* Calculate the position of the equatorial footprint */
-		GetMagEquatorFP(x,y,z,s,R,nstep,&Lshell,&MltE);
+		GetMagEquatorFP(x,y,z,s,R,nstep,xfe,yfe,zfe,&Lshell,&MltE);
 		FlLen = s[nstep-1];
 	} else {
 		/* Don't provide FlLen and Lshell and MltE if the field line is open*/
 		Lshell = NAN;
 		MltE = NAN;
 		FlLen = NAN;
+		xfe[0] = NAN;
+		yfe[0] = NAN;
+		zfe[0] = NAN;
+		
 	}
 		
 	/* place all the footprints in the output array*/

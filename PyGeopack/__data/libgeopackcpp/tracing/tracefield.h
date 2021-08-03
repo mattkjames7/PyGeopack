@@ -14,6 +14,7 @@
 #include "fieldlinernorm.h"
 #include "tracefootprints.h"
 #include "converttracecoords.h"
+#include "calculatehalpha.h"
 #endif
 
 extern "C" {

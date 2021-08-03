@@ -18,6 +18,7 @@ obj:
 	$(CCo) tracefield.cc -o tracefield.o
 	$(CCo) tracefieldline.cc -o tracefieldline.o
 	$(CCo) tracefootprints.cc -o tracefootprints.o
+	$(CCo) calculatehalpha.cc -o calculatehalpha.o
 		
 clean:
 	rm -v *.o

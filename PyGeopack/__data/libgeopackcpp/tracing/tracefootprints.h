@@ -16,4 +16,5 @@ void TraceFootprints(	int nstep, float ut,
 						double *s, double *R, 
 						double xfn, double yfn, double zfn, 
 						double xfs, double yfs, double zfs, 
+						double *xfe, double *yfe, double *zfe,
 						double alt, double *FP, int MaxLen, int TraceDir);

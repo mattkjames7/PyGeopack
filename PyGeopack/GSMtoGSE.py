@@ -17,7 +17,7 @@ def GSMtoGSE(Xin, Yin, Zin, Date, ut, V=None):
 	
 	Returns
 	=======
-	Xout,You,Zout	: x, y and z coordinates in R_E
+	Xout,Yout,Zout	: x, y and z coordinates in R_E
 	
 	'''
 	#Convert input variables to appropriate numpy dtype:

@@ -12,5 +12,6 @@
 
 void GetMagEquatorFP(	double *x, double *y, double *z, 
 						double *s, double *R, int n, 
+						double *xfe, double *yfe, double *zfe, 
 						double *Lshell, double *MltE);
 

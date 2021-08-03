@@ -20,6 +20,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	int Year, DyNo, Hr, Mn, Sc, i, j;
 	ModelFuncPtr ModelFunc;
 	double xfn,yfn,zfn,xfs,yfs,zfs,Ms,utd;
+	double xfe,yfe,zfe;
 	double tilt;
 	double X[n], Y[n], Z[n];
 	bool update, inMP;
@@ -68,7 +69,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		if (strcmp(CoordIn,"GSE") == 0) {
 			/*GSE in*/
 			gswgse_08_(&X[i],&Y[i],&Z[i],&Xin[i],&Yin[i],&Zin[i],&dirn);
-		} else if (strcmp(CoordIn,"GSM") == 0) {
+		} else if (strcmp(CoordIn,"SM") == 0) {
 			/*SM in*/
 			smgsw_08_(&Xin[i],&Yin[i],&Zin[i],&X[i],&Y[i],&Z[i],&dirp);
 		} else {
@@ -104,11 +105,21 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			/* find trace footprints */
 			TraceFootprints(nstep[i],ut[i],Xout[i],
 						Yout[i],Zout[i],s[i],
-						R[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,
-						FP[i],MaxLen,TraceDir);
+						R[i],xfn,yfn,zfn,xfs,yfs,zfs,
+						&xfe,&yfe,&zfe,
+						alt,FP[i],MaxLen,TraceDir);
 
 			/* Get the Rnorm of each point */
 			FieldLineRnorm(nstep[i],R[i],FP[i][12],Rnorm[i]);
+			
+			/* now to try and calculate halpha */
+			if ((nalpha > 0) & (TraceDir == 0)) {
+				CalculateHalphas(nalpha,alpha,nstep[i],
+						Xout[i],Yout[i],Zout[i],Bx[i],By[i],Bz[i],
+						ModelFunc,iopt[i],parmod[i],alt,MaxLen,DSMax, 
+						xfe,yfe,zfe,
+						halpha[i]);
+			}
 
 		} else {
 			/*fill with NaN*/
