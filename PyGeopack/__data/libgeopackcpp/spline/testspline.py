@@ -87,11 +87,11 @@ def testspline(fig=None,maps=[1,1,0,0]):
 		ax = fig
 	
 	n0 = np.int32(10)
-	x0 = (np.linspace(0.0,2*np.pi,n0) + 0.1*np.random.randn(n0)).astype('float64')
+	x0 = (np.linspace(0.0,2*np.pi,n0) + 0.1*np.random.randn(n0)).astype('float64') + 5
 	y0 = np.sin(x0).astype('float64')
 	
 	n1 = np.int32(100)
-	x1 = np.linspace(-0.5,7.0,n1).astype('float64')
+	x1 = np.linspace(-0.5,7.0,n1).astype('float64') + 5
 	y1 = np.zeros(n1,dtype='float64')
 	
 	spline(n0,x0,y0,n1,x1,y1)
