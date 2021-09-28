@@ -1,5 +1,5 @@
 # CFLAGS for CC
-CFLAGS=-lm 
+CFLAGS=-lm -fopenmp
 
 # Compiler
 CCo=g++ -fPIC -c $(CFLAGS)
@@ -15,12 +15,14 @@ obj:
 	cd modelparams; make all
 	cd tracing; make all
 	cd tools; make all
+	cd matrix; make all
 	
 	$(CCo) modelfield.cc -o modelfield.o
 	$(CCo) withinmp.cc -o withinmp.o
 	$(CCo) dummyfunc.cc -o dummyfunc.o
 	$(CCo) ConvCoords.cc -o ConvCoords.o
 	$(CCo) getdipoletilt.cc -o getdipoletilt.o
+	$(CCo) recalc.cc -o recalc.o
 	
 lib:
 	gfortran -fPIC -fno-automatic -ffree-line-length-none -shared -o libgeopack.so -lm \
@@ -30,7 +32,8 @@ lib:
 		modelparams/*.o \
 		tools/*.o \
 		tracing/*.o \
-		*.o -lstdc++
+		matrix/*.o \
+		*.o -lstdc++ -lgomp
 
 	
 
@@ -41,5 +44,6 @@ clean:
 	cd modelparams; make clean
 	cd tracing; make clean
 	cd tools; make clean
+	cd matrix; make clean
 	rm *.o
 	rm -v  *.so

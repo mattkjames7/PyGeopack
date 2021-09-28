@@ -1,6 +1,7 @@
 #include "tracefield.h"
 
-
+/* this could be come a wrapper function where I/O is converted to
+ * a few typedefs */
 void TraceField(double *Xin, double *Yin, double *Zin, int n, 
 				int *Date, float *ut, const char *Model, 
 				int *iopt, double **parmod, 
@@ -17,11 +18,10 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	int dirp = 1, dirn = -1;
 
 	/* move all of the declarations here, before the loop*/
-	int Year, DyNo, Hr, Mn, Sc, i, j;
+	int i, j;
 	ModelFuncPtr ModelFunc;
-	double xfn,yfn,zfn,xfs,yfs,zfs,Ms,utd;
+	double xfn,yfn,zfn,xfs,yfs,zfs;
 	double xfe,yfe,zfe;
-	double tilt;
 	double X[n], Y[n], Z[n];
 	bool update, inMP;
 
@@ -46,25 +46,10 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			printf("\rTracing field line %d of %d (%6.2f)%%",i+1,n,((float) (i+1)*100.0)/n);
 		}
 
-		/*convert date into Year and DayNo*/
-		DayNo(1,&Date[i],&Year,&DyNo);
-
-		/*convert decimal UT to Hr, Mn, Sc*/
-		utd = (double) ut[i];
-		DectoHHMM(1,&utd,&Hr,&Mn,&Sc,&Ms);
-
-		update = false;
-		if (i == 0) {
-			update = true;
-		} else if ((Date[i] != Date[i-1]) || (ut[i] != ut[i-1])) {
-			update = true;
-		}
-
-		if (update) {
-			/*get params and recalc08*/
-			recalc_08_(&Year,&DyNo,&Hr,&Mn,&Sc, &Vx[i], &Vy[i], &Vz[i]);
-		}
+		/* call recalc */
+		Recalc(Date[i],ut[i],Vx[i],Vy[i],Vz[i]);
 		
+			
 		/*Convert input coordinates to GSM*/
 		if (strcmp(CoordIn,"GSE") == 0) {
 			/*GSE in*/
@@ -144,3 +129,35 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 
 
 }
+
+TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
+						bool Verbose, int TraceDir) { 
+	TraceCFG tcfg = {alt,MaxLen,DSMax,Verbose,TraceDir};
+
+	return tcfg;
+}
+
+SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+						int *Date, float *ut, const char *Model, 
+						int *iopt, double **parmod, 
+						double *Vx, double *Vy, double *Vz,
+						const char *CoordIn, const char *CoordOut, 
+						double alt, int MaxLen, double DSMax, 
+						bool Verbose, int TraceDir ) {
+							
+	ModelCFG mcfg = GetModelCFG(n,Date,ut,true,Model,iopt,parmod,Vx,Vy,
+								Vz,CoordIn,CoordOut);
+	
+	TraceCFG tcfg = GetTraceCFG(alt,MaxLen,DSMax,Verbose,TraceDir);
+	
+	return SimpleFieldTrace(Xin,Yin,Zin,n,mcfg,tcfg);
+}
+						
+SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+								ModelCFG mcfg, TraceCFG tcfg) {
+	
+	/* create a simple trace object */
+	SimpleTrace T;
+							
+}								
+	

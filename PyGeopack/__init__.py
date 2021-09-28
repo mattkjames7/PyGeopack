@@ -54,4 +54,4 @@ from .ConvCoords import ConvCoords
 
 
 #temporary test function
-from .TestHalpha import TestHalpha
+from .TestHalpha import TestHalpha,TestHalpha2,TestHalpha3,PlotHalpha,PlotHalpha2

@@ -15,4 +15,4 @@ lib:
 	$(CC) -shared -o libspline.so libspline.o spline.o
 	
 clean:
-	rm -v *.o
+	rm -v *.o *.so

@@ -86,7 +86,7 @@ def testspline(fig=None,maps=[1,1,0,0]):
 	else:
 		ax = fig
 	
-	n0 = np.int32(10)
+	n0 = np.int32(4)
 	x0 = (np.linspace(0.0,2*np.pi,n0) + 0.1*np.random.randn(n0)).astype('float64') + 5
 	y0 = np.sin(x0).astype('float64')
 	

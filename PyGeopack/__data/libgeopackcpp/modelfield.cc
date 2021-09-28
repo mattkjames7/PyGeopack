@@ -9,22 +9,13 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 					double *Bx, double *By, double *Bz) {
 
 	/* declare a bunch of variables to use */
-	int CurrDate;
-	double CurrUT;
-	int Year, DyNo, Hr, Mn, Sc, i, ipar;
+	int i, ipar;
 	int dirp = 1, dirn = -1;
-	double X[n],Y[n],Z[n], tilt, Ms;
+	double X[n],Y[n],Z[n], tilt;
 	double Bxgsm[n],Bygsm[n],Bzgsm[n];
 	double intx, inty, intz, extx, exty, extz;
 	bool inMP;
 
-	/* these onese will tell us whether we need to run recalc or not */
-	int pDate = -1;
-	float put = -1.0;
-	double pVx=-1.0, pVy=-1.0, pVz=-1.0;
-	bool recalc;
-
-	
 	/*get model function and parmod*/
 	ModelFuncPtr ModelFunc;
 	if (strcmp(Model,"T89") == 0){
@@ -53,37 +44,12 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 			ipar = i;
 		}
 
-
-		/* Get the current date and time  */
-		CurrDate = Date[ipar];
-		CurrUT = (double) ut[ipar];
+		/* call recalc */
+		Recalc(Date[ipar],ut[ipar],Vx[ipar],Vy[ipar],Vz[ipar]);
 		
-
-		recalc = false;
-		/* check if the time is different to the previous iteration */
-		if ((CurrDate != pDate) || (CurrUT != put)) {
-			/*convert date into Year and DayNo*/
-			DayNo(1,&CurrDate,&Year,&DyNo);
-			
-			/*convert decimal UT to Hr, Mn, Sc*/
-			DectoHHMM(1,&CurrUT,&Hr,&Mn,&Sc,&Ms);
-			
-			/*set the flag to call recalc*/
-			recalc = true;
-		}
-
-
-		if ((Vx[ipar] != pVx) || (Vy[ipar] != pVy) || (Vz[ipar] != pVz)) {
-			recalc = true;
-		}
-
+		/* get the tilt */
+		tilt = getpsi_();
 		
-		/*get params and recalc08*/
-		if (recalc) {
-			recalc_08_(&Year,&DyNo,&Hr,&Mn,&Sc, &Vx[ipar], &Vy[ipar], &Vz[ipar]);
-			tilt = getpsi_();
-		}
-
 		/*Convert input coordinates to GSM*/
 		
 		if (strcmp(CoordIn,"GSE") == 0) {
@@ -138,4 +104,35 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 	
 }
 
+
+ModelCFG GetModelCFG(	int n, int *Date, float *ut, bool SameTime,
+						const char *Model, int *iopt, double **parmod,
+						double *Vx, double *Vy, double *Vz,
+						const char *CoordIn, const char *CoordOut) {
+	
+	
+	/*get model function and parmod*/
+	ModelFuncPtr ModelFunc;
+	if (strcmp(Model,"T89") == 0){
+		ModelFunc = &t89c_;
+	} else if (strcmp(Model,"T96") == 0) {
+		ModelFunc = &t96_;
+	} else if (strcmp(Model,"T01") == 0) {
+		ModelFunc = &t01_01_;
+	} else if (strcmp(Model,"TS05") == 0) {
+		ModelFunc = &t04_s_;
+	} else if (strcmp(Model,"IGRF") == 0) {
+		ModelFunc = &DummyFunc;
+	} else { 
+		printf("Model %s not found\nDefaulting to T96",Model);
+		ModelFunc = &t96_;
+	}	
+	
+	/* create a struct to store model config */
+	ModelCFG cfg = {n,Date,ut,SameTime,ModelFunc,iopt,parmod,Vx,Vy,Vz,
+			CoordIn,CoordOut};
+
+	return cfg;
+	
+}
 

@@ -8,8 +8,24 @@
 #include "libdatetime/hhmm.h"
 #include "withinmp.h"
 #include "dummyfunc.h"
+#include "recalc.h"
 #endif
 using namespace std;
+
+typedef struct ModelCFG{
+	int n;
+	int *Date;
+	float *ut;
+	bool SameTime;
+	ModelFuncPtr model;
+	int *iopt;
+	double **parmod;
+	double *Vx;
+	double *Vy;
+	double *Vz;
+	const char *CoordIn;
+	const char *CoordOut;
+} ModelCFG;
 
 /***********************************************************************
  * ModelField
@@ -24,4 +40,21 @@ extern "C" {
 						double *Vx, double *Vy, double *Vz,
 						const char *CoordIn, const char *CoordOut, 
 						double *Bx, double *By, double *Bz);
+	
+	void ModelFieldWrap(int n, double *Xin, double *Yin, double *Zin,  
+						int *Date, float *ut, bool SameTime,
+						const char *Model, int *iopt, double **parmod,
+						double *Vx, double *Vy, double *Vz,
+						const char *CoordIn, const char *CoordOut, 
+						double *Bx, double *By, double *Bz);
+	
+	
 }
+
+ModelCFG GetModelCFG(	int n, int *Date, float *ut, bool SameTime,
+						const char *Model, int *iopt, double **parmod,
+						double *Vx, double *Vy, double *Vz,
+						const char *CoordIn, const char *CoordOut); 
+
+void ModelFieldNew(	int n, double *Xin, double *Yin, double *Zin, 
+					ModelCFG cfg,double *Bx, double *By, double *Bz);
