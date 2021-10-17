@@ -50,7 +50,9 @@ void _Tom96C(double *Xin, double *Yin, double *Zin, int n, int Date, float ut, d
 
 	
 	/*Convert input coordinates to GSM*/
-	double X[n],Y[n],Z[n];
+	double* X = (double*)malloc(n * sizeof(double));
+	double* Y = (double*)malloc(n * sizeof(double));
+	double* Z = (double*)malloc(n * sizeof(double));
 	/*SM in*/
 	for (i=0;i<n;i++) {
 		smgsw_08_(&Xin[i],&Yin[i],&Zin[i],&X[i],&Y[i],&Z[i],&dirp);
@@ -58,7 +60,9 @@ void _Tom96C(double *Xin, double *Yin, double *Zin, int n, int Date, float ut, d
 	}
 
 	/*call relevant model code*/
-	double Bxgsm[n],Bygsm[n],Bzgsm[n];
+	double* Bxgsm = (double*)malloc(n * sizeof(double));
+	double* Bygsm = (double*)malloc(n * sizeof(double));
+	double* Bzgsm = (double*)malloc(n * sizeof(double));
 	double intx, inty, intz, extx, exty, extz;
 	for (i=0;i<n;i++) {
 		igrf_gsw_08_(&X[i],&Y[i],&Z[i],&intx,&inty,&intz);
@@ -72,6 +76,13 @@ void _Tom96C(double *Xin, double *Yin, double *Zin, int n, int Date, float ut, d
 	for (i=0;i<n;i++) {
 		smgsw_08_(&Bx[i],&By[i],&Bz[i],&Bxgsm[i],&Bygsm[i],&Bzgsm[i],&dirn);
 	}
+	
+	free(X);
+	free(Y);
+	free(Z);
+	free(Bxgsm);
+	free(Bygsm);
+	free(Bzgsm);
 
 	return;	
 }

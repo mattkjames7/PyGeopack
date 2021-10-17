@@ -2,6 +2,7 @@
 #define __TraceRoutines_h__
 #include <stdio.h>
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include "ModelField.h"
 #include "libgeopack.h"

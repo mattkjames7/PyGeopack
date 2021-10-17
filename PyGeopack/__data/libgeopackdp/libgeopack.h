@@ -60,7 +60,6 @@ typedef void (*InternalFuncPtr) (double*,double*,double*,double*,double*,double*
 
 extern const double Re;
 
-char DataFile[256];
 
 #define min(a,b) ({ \
 	__typeof__ (a) _a = (a);\
@@ -71,8 +70,7 @@ char DataFile[256];
 	__typeof__ (a) _a = (a);\
 	__typeof__ (b) _b = (b);\
 	_a > _b ? _a : _b;})
-	
-CustParam CustP;
+
 
 #endif
 
@@ -80,7 +78,7 @@ void LoadTSData();
 	void FreeTSData();
 	void SetCustParam(int iopt, float *parmod, float tilt, float Vx, float Vy, float Vz);
 	void GetModelParams(int Date, float ut, const char *Model, int *iopt, double *parmod, double *tilt, double *Vx, double *Vy, double *Vz);
-	void Init(const char *filename);
+	void Init(const char* filename, size_t SizeInBites);
 	double GetDipoleTilt(int Year, int Doy, int Hr, int Mn, double Vx, double Vy, double Vz);
 	double GetDipoleTiltUT(int Date, float ut, double Vx, double Vy, double Vz);
 	void GetSWVelocity(int Date, float ut, const char *Model, double *Vx, double *Vy, double * Vz);

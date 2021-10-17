@@ -40,7 +40,7 @@ void GSEtoGSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 
 
@@ -99,7 +99,9 @@ void GSEtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -183,7 +185,7 @@ void GSMtoGSE(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc,
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 
 	/*Set up geopack arrays using recalc*/
@@ -207,7 +209,9 @@ void GSMtoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -315,7 +319,9 @@ void GSMtoSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -424,7 +430,9 @@ void SMtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -535,7 +543,9 @@ void GSEtoSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -647,7 +657,9 @@ void GSEtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -757,7 +769,9 @@ void SMtoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -870,7 +884,9 @@ void MAGtoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -965,7 +981,7 @@ void MLONtoMLT(	double MLon, double Vx, double Vy, double Vz, int recalc,
 	magsm_08_(&X0,&Y0,&Z0,&X1,&Y1,&Z1,&dirp);
 	//smgsw_08_(&X1,&Y1,&Z1,&X0,&Y0,&Z0,&dirp);
 	//MLT[0] =  atan2f(-Y0,-X0)*180.0/(M_PI*15.0);
-	MLT[0] =  fmod(atan2f(-Y1,-X1)*180.0/(M_PI*15.0) + 24.0,24.0);
+	MLT[0] =  fmod(atan2(-Y1,-X1)*180.0/(M_PI*15.0) + 24.0,24.0);
 	
 	return;
 }
@@ -1018,7 +1034,7 @@ void MLTtoMLON(	double MLT, double Vx, double Vy, double Vz, int recalc,
 	//smgsw_08_(&X1,&Y1,&Z1,&X0,&Y0,&Z0,&dirn);
 	magsm_08_(&X1,&Y1,&Z1,&X0,&Y0,&Z0,&dirn);
 	//MLon[0] =  atan2f(-Y0,-X0)*180.0/(M_PI);
-	MLon[0] =  atan2f(-Y1,-X1)*180.0/(M_PI);
+	MLon[0] =  atan2(-Y1,-X1)*180.0/(M_PI);
 	
 	return;
 }
@@ -1032,7 +1048,9 @@ void MLONtoMLTUT(	double *MLon, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1088,7 +1106,9 @@ void MLTtoMLONUT(	double *MLT, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1173,7 +1193,7 @@ void GEOtoMAG(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1205,7 +1225,7 @@ void GEOtoMAG_LL(	double Lon, double Lat,
 				&X1,&Y1,&Z1);
 	
 	/* convert back to lat and lon*/			
-	MLon[0] = atan2f(Y1,X1)*180.0/M_PI;
+	MLon[0] = atan2(Y1,X1)*180.0/M_PI;
 	MLat[0] = asin(Z1)*180.0/M_PI;
 	
 	return;
@@ -1222,7 +1242,9 @@ void GEOtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1278,7 +1300,9 @@ void GEOtoMAGUT_LL(	double *Lon, double *Lat, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1362,7 +1386,7 @@ void MAGtoGEO(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1394,7 +1418,7 @@ void MAGtoGEO_LL(	double MLon, double MLat,
 				&X1,&Y1,&Z1);
 	
 	/* convert back to lat and lon*/			
-	Lon[0] = atan2f(Y1,X1)*180.0/M_PI;
+	Lon[0] = atan2(Y1,X1)*180.0/M_PI;
 	Lat[0] = asin(Z1)*180.0/M_PI;
 	
 	return;
@@ -1412,7 +1436,9 @@ void MAGtoGEOUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1468,7 +1494,9 @@ void MAGtoGEOUT_LL(	double *MLon, double *MLat, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1557,7 +1585,7 @@ void GEItoGEO(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1581,7 +1609,9 @@ void GEItoGEOUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1667,7 +1697,7 @@ void GEOtoGEI(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1691,7 +1721,9 @@ void GEOtoGEIUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1780,7 +1812,7 @@ void GSMtoGEO(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1804,7 +1836,9 @@ void GSMtoGEOUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -1890,7 +1924,7 @@ void GEOtoGSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -1914,7 +1948,9 @@ void GEOtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2004,7 +2040,7 @@ void GSEtoGEO(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2030,7 +2066,9 @@ void GSEtoGEOUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2116,7 +2154,7 @@ void GEOtoGSE(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2142,7 +2180,9 @@ void GEOtoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2231,7 +2271,7 @@ void SMtoGEO(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2257,7 +2297,9 @@ void SMtoGEOUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2343,7 +2385,7 @@ void GEOtoSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2369,7 +2411,9 @@ void GEOtoSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2456,7 +2500,7 @@ void GSEtoGEI(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
 	
@@ -2483,7 +2527,9 @@ void GSEtoGEIUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2569,7 +2615,7 @@ void GEItoGSE(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
 	
@@ -2596,7 +2642,9 @@ void GEItoGSEUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2681,7 +2729,7 @@ void GSMtoGEI(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2707,7 +2755,9 @@ void GSMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2793,7 +2843,7 @@ void GEItoGSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -2819,7 +2869,9 @@ void GEItoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -2904,7 +2956,7 @@ void SMtoGEI(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
 	
@@ -2931,7 +2983,9 @@ void SMtoGEIUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3017,7 +3071,7 @@ void GEItoSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt0, Yt0, Zt0, Xt1, Yt1, Zt1;
 	
@@ -3044,7 +3098,9 @@ void GEItoSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3136,7 +3192,7 @@ void MAGtoGEI(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -3162,7 +3218,9 @@ void MAGtoGEIUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3248,7 +3306,7 @@ void GEItoMAG(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -3274,7 +3332,9 @@ void GEItoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3361,7 +3421,7 @@ void MAGtoGSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -3387,7 +3447,9 @@ void MAGtoGSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3473,7 +3535,7 @@ void GSMtoMAG(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	double Xt, Yt, Zt;
 	
@@ -3499,7 +3561,9 @@ void GSMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3587,7 +3651,7 @@ void MAGtoSM(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -3611,7 +3675,9 @@ void MAGtoSMUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
@@ -3697,7 +3763,7 @@ void SMtoMAG(	double Xin, double Yin, double Zin,
 				int Year, int DayNo, int Hr, int Mn, int Sc, 
 				double *Xout, double *Yout, double *Zout) {
 
-	int i;
+	//int i;
 	int dirp = 1, dirn = -1;
 	
 	/*Set up geopack arrays using recalc*/
@@ -3721,7 +3787,9 @@ void SMtoMAGUT(	double *Xin, double *Yin, double *Zin, int n,
 	float put = -1.0; /* previous time */
 	int i, recalc;
 	double vx, vy, vz, vxp, vyp, vzp; /* current and previous velocity*/
-	
+	vxp = -1e32;
+	vyp = -1e32;
+	vzp = -1e32;
 	
 	/* loop through each date/time/position */
 	for (i=0;i<n;i++) {
