@@ -113,7 +113,8 @@ C
       DO 150 N=1,K
          P=P*PP
          A(N)=P
-150      B(N)=P*N
+         B(N)=P*N
+150   CONTINUE 
 
       P=1.D0
       D=0.D0
@@ -153,7 +154,8 @@ C
             D2=Z
             P2=Q
             Z=DP
-190        Q=PM
+            Q=PM
+190      CONTINUE 
          D=S*D+C*P
          P=S*P
          IF(M.EQ.1) GOTO 200
@@ -232,7 +234,8 @@ C
       DO 150 N=1,K
          P=P*PP
          A(N)=P
-150      B(N)=P*N
+         B(N)=P*N
+150   CONTINUE 
 
       P=1.D0
       D=0.D0
@@ -272,7 +275,8 @@ C
             D2=Z
             P2=Q
             Z=DP
-190        Q=PM
+            Q=PM
+190      CONTINUE 
          D=S*D+C*P
          P=S*P
          IF(M.EQ.1) GOTO 200
@@ -935,9 +939,11 @@ c
       DO 20 N=1,14
          N2=2*N-1
          N2=N2*(N2-2)
-         DO 20 M=1,N
+         DO 21 M=1,N
             MN=N*(N-1)/2+M
-20    REC(MN)=DFLOAT((N-M)*(N+M-2))/DFLOAT(N2)
+            REC(MN)=DFLOAT((N-M)*(N+M-2))/DFLOAT(N2)
+21       CONTINUE 
+20    CONTINUE 
 C
       IF (IY.LT.1970) GOTO 50          !INTERPOLATE BETWEEN 1965 - 1970
       IF (IY.LT.1975) GOTO 60          !INTERPOLATE BETWEEN 1970 - 1975
@@ -969,7 +975,8 @@ C
       F1=1.D0-F2
       DO 55 N=1,105
          G(N)=G65(N)*F1+G70(N)*F2
-55       H(N)=H65(N)*F1+H70(N)*F2
+         H(N)=H65(N)*F1+H70(N)*F2
+55    CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1970 - 1975:
@@ -978,7 +985,8 @@ C
       F1=1.D0-F2
       DO 65 N=1,105
          G(N)=G70(N)*F1+G75(N)*F2
-65       H(N)=H70(N)*F1+H75(N)*F2
+         H(N)=H70(N)*F1+H75(N)*F2
+65    CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1975 - 1980:
@@ -987,7 +995,8 @@ C
       F1=1.D0-F2
       DO 75 N=1,105
          G(N)=G75(N)*F1+G80(N)*F2
-75       H(N)=H75(N)*F1+H80(N)*F2
+         H(N)=H75(N)*F1+H80(N)*F2
+75    CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1980 - 1985:
@@ -996,7 +1005,8 @@ C
       F1=1.D0-F2
       DO 85 N=1,105
          G(N)=G80(N)*F1+G85(N)*F2
-85       H(N)=H80(N)*F1+H85(N)*F2
+         H(N)=H80(N)*F1+H85(N)*F2
+85    CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1985 - 1990:
@@ -1005,7 +1015,8 @@ C
       F1=1.D0-F2
       DO 95 N=1,105
          G(N)=G85(N)*F1+G90(N)*F2
-95       H(N)=H85(N)*F1+H90(N)*F2
+         H(N)=H85(N)*F1+H90(N)*F2
+95    CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1990 - 1995:
@@ -1014,7 +1025,8 @@ C
       F1=1.D0-F2
       DO 105 N=1,105
          G(N)=G90(N)*F1+G95(N)*F2
-105      H(N)=H90(N)*F1+H95(N)*F2
+         H(N)=H90(N)*F1+H95(N)*F2
+105   CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 1995 - 2000:
@@ -1023,7 +1035,8 @@ C
       F1=1.D0-F2
       DO 115 N=1,105   !  THE 2000 COEFFICIENTS (G00) GO THROUGH THE ORDER 13, NOT 10
          G(N)=G95(N)*F1+G00(N)*F2
-115      H(N)=H95(N)*F1+H00(N)*F2
+         H(N)=H95(N)*F1+H00(N)*F2
+115   CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 2000 - 2005:
@@ -1032,7 +1045,8 @@ C
       F1=1.D0-F2
       DO 125 N=1,105
          G(N)=G00(N)*F1+G05(N)*F2
-125      H(N)=H00(N)*F1+H05(N)*F2
+         H(N)=H00(N)*F1+H05(N)*F2
+125   CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 2005 - 2010:
@@ -1041,7 +1055,8 @@ C
       F1=1.-F2
       DO 135 N=1,105
          G(N)=G05(N)*F1+G10(N)*F2
-135      H(N)=H05(N)*F1+H10(N)*F2
+         H(N)=H05(N)*F1+H10(N)*F2
+135   CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 2010 - 2015:
@@ -1050,7 +1065,8 @@ C
       F1=1.-F2
       DO 145 N=1,105
          G(N)=G10(N)*F1+G15(N)*F2
-145      H(N)=H10(N)*F1+H15(N)*F2
+         H(N)=H10(N)*F1+H15(N)*F2
+145   CONTINUE 
       GOTO 300
 C
 C       INTERPOLATE BETWEEN 2015 - 2020:
@@ -1059,7 +1075,8 @@ C
       F1=1.-F2
       DO 155 N=1,105
          G(N)=G15(N)*F1+G20(N)*F2
-155      H(N)=H15(N)*F1+H20(N)*F2
+         H(N)=H15(N)*F1+H20(N)*F2
+155   CONTINUE 
       GOTO 300
 C
 C   COEFFICIENTS FOR A GIVEN YEAR HAVE BEEN CALCULATED; NOW MULTIPLY
@@ -1072,13 +1089,15 @@ C
          G(MN)=G(MN)*S
          H(MN)=H(MN)*S
          P=S
-         DO 250 M=2,N
+         DO 251 M=2,N
             AA=1.D0
             IF (M.EQ.2) AA=2.D0
             P=P*DSQRT(AA*DFLOAT(N-M+1)/DFLOAT(N+M-2))
             MNN=MN+M-1
             G(MNN)=G(MNN)*P
-250         H(MNN)=H(MNN)*P
+            H(MNN)=H(MNN)*P
+251      CONTINUE 
+250   CONTINUE 
 
            G_10=-G(2)
            G_11= G(3)
