@@ -3,24 +3,16 @@ import ctypes as ct
 import os
 import platform
 from . import Globals
+from ._SourceCompilation import getLibFilename, compileSource
 
 Arch = platform.architecture()[0]
-try:
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
-except:
-	print('importing libgeopackdb.so failed, attempting to recompile')
-	path = os.path.dirname(__file__)
-	if '/usr/local/' in path:
-		sudo = 'sudo '
-	else:
-		sudo = ''
 
-	CWD = os.getcwd()
-	os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
-	os.system(sudo+'make clean')
-	os.system(sudo+'make')
-	os.chdir(CWD)	
-	libgeopack = ct.CDLL(os.path.dirname(__file__)+"/__data/libgeopackdp/libgeopackdp.so")
+try:
+	libgeopack = ct.CDLL(getLibFilename())
+except:
+	print('Importing '+getLibFilename(isShort=True)+' failed, attempting to recompile')
+	compileSource()
+	libgeopack = ct.CDLL(getLibFilename())
 
 #define some dtypes
 c_char_p = ct.c_char_p
