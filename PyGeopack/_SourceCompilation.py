@@ -1,8 +1,5 @@
 import os
 import subprocess
-import numpy as np
-from . import Globals
-import ctypes as ct
 
 def compileSource():
     """Runs a script to compile the source files."""
@@ -14,13 +11,11 @@ def compileSource():
         else:
             sudo = ''
 
-        print("libgeopackdp.so not found - attempting compilation!")
         CWD = os.getcwd()
         os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
         os.system(sudo+'make')
         os.chdir(CWD)
     elif(os.name=='nt'):
-        print("libgeopackdp.dll not found - attempting compilation!")
         CWD = os.getcwd()
         os.chdir(os.path.dirname(__file__)+"/__data/libgeopackdp/")
         compile = subprocess.Popen("compile.bat")
@@ -71,4 +66,5 @@ def getLibFilename(isShort=False):
 def checkLibExists():
     """Check if library file exist, and start compilation script if not."""
     if not os.path.isfile(getLibFilename()):
+        print(getLibFilename(isShort=True)+" not found - attempting compilation!")
         compileSource()
