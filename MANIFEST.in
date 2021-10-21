@@ -2,6 +2,7 @@ include PyGeopack/__data/libgeopackdp/*.c
 include PyGeopack/__data/libgeopackdp/*.f
 include PyGeopack/__data/libgeopackdp/*.f95
 include PyGeopack/__data/libgeopackdp/*.h
+include PyGeopack/__data/libgeopackdp/*.cc
 include PyGeopack/__data/libgeopackdp/makefile
 include PyGeopack/__data/libgeopackdp/compile.bat
 include PyGeopack/__data/libgeopackdp/libgeopackdp.so
