@@ -15,3 +15,35 @@ void RotMatrix(double *A, double *B, double *R) {
 	R[7] = r.data[2][1];
 	R[8] = r.data[2][2];
 }
+
+
+void RotMatrices(int n, double *Ax, double *Ay, double *Az,
+				double *Bx, double *By, double *Bz,
+				double *R) {
+
+	int i, j, k, p;
+	int shapes[n];
+
+	for (i=0;i<n;i++) {
+		shapes[i*2] = 3;
+		shapes[i*2 + 1] = 3;
+		printf("A[%d]: %f %f %f\n",i,Ax[i],Ay[i],Az[i]);
+		printf("B[%d]: %f %f %f\n",i,Bx[i],By[i],Bz[i]);
+	}
+	MatrixArray r(n,shapes);
+	
+	GetRotationMatrices(n,Ax,Ay,Az,Bx,By,Bz,r);
+	
+	p = 0;
+	for (i=0;i<n;i++) {
+		r.matrix[i]->PrintMatrix("R:");
+		for (j=0;j<3;j++) {
+			for (k=0;k<3;k++) {
+				R[p] = r.matrix[i]->data[j][k];
+				p++;
+			}
+		}
+	}
+
+	delete[] R;
+}

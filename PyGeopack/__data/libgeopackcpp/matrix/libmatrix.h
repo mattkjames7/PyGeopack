@@ -12,4 +12,7 @@
 
 extern "C" {
 	void RotMatrix(double *A, double *B, double *R) ;
+	void RotMatrices(int n, double *Ax, double *Ay, double *Az,
+				double *Bx, double *By, double *Bz,
+				double *R) ;
 }

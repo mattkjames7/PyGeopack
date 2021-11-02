@@ -42,6 +42,7 @@ void GetRotationMatrix(double *A, double *B, Matrix &R) {
 void GetRotationMatrix(double Ax, double Ay, double Az,
 						double Bx, double By, double Bz, Matrix &R) {
 	
+	
 	/* turn A and B into matrices */
 	Matrix A = Matrix(3,1);
 	Matrix B = Matrix(3,1);
@@ -84,7 +85,9 @@ void GetRotationMatrices(int n, double *Ax, double *Ay, double *Az,
 				double *Bx, double *By, double *Bz, MatrixArray &R) {
 	
 	int i;
+	printf("here\n");
 	for (i=0;i<n;i++) {
+		printf("here\n");
 		GetRotationMatrix(Ax[i],Ay[i],Az[i],Bx[i],By[i],Bz[i],*R.matrix[i]);				
 	}
 	
