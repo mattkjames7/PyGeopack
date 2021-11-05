@@ -296,6 +296,69 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 		
 }
 
+void TsygData::GetModelParams(	int n, int *Date, float *ut, 
+								const char *Model, int *iopt, double **parmod) {
+	int i, j;
+	if (strcmp(Model,"T89") == 0) {
+		/* T89 - just need iopt = Kp + 1 */
+		for (i=0;i<n;i++) {
+			iopt[i] = (int) (InterpParam(Kp_,Date[i],ut[i]) + 1);
+			if (iopt[i] < 1) {
+				iopt[i] = 1;
+			}
+			if (iopt[i] > 7) {
+				iopt[i] = 7;
+			}
+			for (j=0;j<10;j++) {
+				parmod[i][j] = 0.0;
+			}
+		}
+	} else if (strcmp(Model,"T96") == 0) {
+		/* T96 - Pdyn,SymH, By, Bz */
+		for (i=0;i<n;i++) {
+			 iopt[i] = 0;
+			 parmod[i][0] = InterpParam(Pdyn_,Date[i],ut[i]);
+			 parmod[i][1] = InterpParam(SymH_,Date[i],ut[i]);
+			 parmod[i][2] = InterpParam(By_,Date[i],ut[i]);
+			 parmod[i][3] = InterpParam(Bz_,Date[i],ut[i]);
+			 for (j=4;j<10;j++) {
+				 parmod[i][j] = 0.0;
+			}
+		}
+	} else if (strcmp(Model,"T01") == 0) {
+		/* T01 - Pdyn,SymH, By, Bz */
+		for (i=0;i<n;i++) {
+			 iopt[i] = 0;
+			 parmod[i][0] = InterpParam(Pdyn_,Date[i],ut[i]);
+			 parmod[i][1] = InterpParam(SymH_,Date[i],ut[i]);
+			 parmod[i][2] = InterpParam(By_,Date[i],ut[i]);
+			 parmod[i][3] = InterpParam(Bz_,Date[i],ut[i]);
+			 parmod[i][4] = InterpParam(G1_,Date[i],ut[i]);
+			 parmod[i][5] = InterpParam(G2_,Date[i],ut[i]);
+			 for (j=6;j<10;j++) {
+				 parmod[i][j] = 0.0;
+			}
+		}
+	} else if (strcmp(Model,"TS05") == 0) {
+		/* TS05 - Pdyn,SymH, By, Bz */
+		for (i=0;i<n;i++) {
+			 iopt[i] = 0;
+			 parmod[i][0] = InterpParam(Pdyn_,Date[i],ut[i]);
+			 parmod[i][1] = InterpParam(SymH_,Date[i],ut[i]);
+			 parmod[i][2] = InterpParam(By_,Date[i],ut[i]);
+			 parmod[i][3] = InterpParam(Bz_,Date[i],ut[i]);
+			 parmod[i][4] = InterpParam(W1_,Date[i],ut[i]);
+			 parmod[i][5] = InterpParam(W2_,Date[i],ut[i]);
+			 parmod[i][6] = InterpParam(W3_,Date[i],ut[i]);
+			 parmod[i][7] = InterpParam(W4_,Date[i],ut[i]);
+			 parmod[i][8] = InterpParam(W5_,Date[i],ut[i]);
+			 parmod[i][9] = InterpParam(W6_,Date[i],ut[i]);
+		}
+	}
+}
+							
+
+
 void TsygData::GetModelParams(int n, const char *Model,
 							double *Kp, double *Pdyn, double *SymH,
 							double *By, double *Bz, 

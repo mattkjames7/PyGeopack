@@ -33,6 +33,8 @@ class TsygData {
 							double *W1, double *W2, double *W3,
 							double *W4, double *W5, double *W6,
 							int *iopt, double **parmod);	
+		void GetModelParams(int n, const char *Model,
+							int *iopt, double **parmod);	
 		void GetVx(int n, int *Date, float *ut, double *Vx);
 		void GetVy(int n, int *Date, float *ut, double *Vy);
 		void GetVz(int n, int *Date, float *ut, double *Vz);

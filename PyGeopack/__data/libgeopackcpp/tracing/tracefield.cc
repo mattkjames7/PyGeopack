@@ -153,11 +153,19 @@ SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n,
 	return SimpleFieldTrace(Xin,Yin,Zin,n,mcfg,tcfg);
 }
 						
-SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
-								ModelCFG mcfg, TraceCFG tcfg) {
+//SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+								//ModelCFG mcfg, TraceCFG tcfg) {
 	
-	/* create a simple trace object */
-	SimpleTrace T;
+	///* create a simple trace object */
+	//SimpleTrace T;
+	//T.n = n;
+	
+	
+	
+	///* loop through each trace */
+	//for (i=0;i<n;i++) {
+//}
+	
 							
-}								
+//}								
 	
