@@ -1,6 +1,8 @@
 #include "ConvCoords.h"
 
-
+ConvFunc ConvFuncs[6][6];
+bool ConvFuncsLoaded = false;
+const char *CoordAbr[6];
 /***********************************************************************
  * NAME : 			void GSEtoGSM(	Xin, Yin, Zin, Vx, Vy, Vz, recalc,
  *									Year, DyNo, Hr, Mn, Sc, 

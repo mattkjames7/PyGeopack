@@ -16,7 +16,7 @@
 #include "converttracecoords.h"
 #include "calculatehalpha.h"
 #include "../recalc.h"
-
+#include "trace.h"
 #endif
 
 typedef struct TraceCFG {
@@ -61,8 +61,20 @@ extern "C" {
 						int nalpha, double *alpha, double **halpha,
 						double **Bx, double **By, double **Bz, 
 						int *nstep, double **FP);
+						
+						
+	void MinimalTrace(int n, double *xin, double *Yin, double *Zin,
+					double *Date, double *ut, 
+					const char *CoordIn, const char *CoordOut,
+					double *nstep,
+					double **xgsm, double **ygsm, double **zgsm, 
+					double **bxgsm, double **bygsm, double **bzgsm);					
 }
 
+
+
+						
+			
 
 TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
 						bool Verbose, int TraceDir);

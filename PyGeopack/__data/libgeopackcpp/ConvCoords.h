@@ -1,3 +1,5 @@
+#ifndef __CONVCOORDS_H__
+#define __CONVCOORDS_H__
 #include <stdio.h>
 #include <math.h>
 #include "libgeopack.h"
@@ -22,8 +24,8 @@ void XXXtoYYYUT(	double *Xin, double *Yin, double *Zin, int n,
 
 /* This 2D array will be used to provide a conversion function 
  * Annoyingly, it has 36 elements which need filling manually! */
-ConvFunc ConvFuncs[6][6];
-bool ConvFuncsLoaded = false;
+extern ConvFunc ConvFuncs[6][6];
+extern bool ConvFuncsLoaded;
 /* Indices:
  * GSE = 0
  * GSM = 1
@@ -36,8 +38,8 @@ bool ConvFuncsLoaded = false;
 void _PopulateConvFuncs();
 
 /* array of coordinate system abbreviations */
-const char *CoordAbr[6];
-
+extern const char *CoordAbr[6];
+#endif
 
 extern "C" {
 	/* Coordinate conversion  function */

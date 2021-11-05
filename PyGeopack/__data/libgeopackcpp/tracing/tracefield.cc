@@ -169,3 +169,37 @@ SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n,
 							
 //}								
 	
+void MinimalTrace(int n, double *xin, double *yin, double *zin,
+					int *Date, float *ut, const char *Model,
+					const char *CoordIn, const char *CoordOut,
+					int *nstep,
+					double **x, double **y, double **z, 
+					double **bx, double **by, double **bz) {
+	
+	/* create the trace object */
+	Trace T;
+	
+	/* input the position */
+	T.InputPos(n,xin,yin,zin,Date,ut,CoordIn);
+	
+	/* set which model we are using */
+	T.SetModel(Model);
+	
+	/* model parameters (automatically get from TData) */
+	T.SetModelParams();
+	
+	/* trace in gsm coords */
+	if (strcmp(CoordOut,"GSE") == 0) {
+		/*trace then convert to GSE */
+		T.TraceGSM(nstep);
+		T.TraceGSE(x,y,z,bx,by,bz);
+	} else if (strcmp(CoordOut,"SM") == 0) {
+		/* trace then convert to SM */
+		T.TraceGSM(nstep);
+		T.TraceSM(x,y,z,bx,by,bz);
+	} else {
+		/* output directly to the pointers above */
+		T.TraceGSM(nstep,x,y,z,bx,by,bz);
+	}
+						
+}

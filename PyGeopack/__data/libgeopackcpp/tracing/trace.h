@@ -59,7 +59,8 @@ class Trace {
 		
 			
 		/* trace function to do basic trace in GSW coords */
-		void TraceGSM(double**,double**,double**,double**,double**,double**);
+		void TraceGSM(int*,double**,double**,double**,double**,double**,double**);
+		void TraceGSM(int*);
 		void TraceGSM();
 		
 		
@@ -90,6 +91,7 @@ class Trace {
 		void CalculateHalpha(double*);
 	
 		/* return things*/
+		void GetTraceNstep(int*);
 		void GetTraceGSM(double**,double**,double**);
 		void GetTraceGSM(double**,double**,double**,double**,double**,double**);
 		void GetTraceGSE(double**,double**,double**);
@@ -121,6 +123,7 @@ class Trace {
 		bool hasRnorm_,allocRnorm_;
 		bool hasHalpha_,allocHalpha_, allocHalpha3D_;
 		bool setModel_;
+		bool allocNstep_;
 		
 		/* input coords */
 		int n_;

@@ -9,7 +9,6 @@
 #include "withinmp.h"
 #include "dummyfunc.h"
 #include "recalc.h"
-#endif
 using namespace std;
 
 typedef struct ModelCFG{
@@ -26,6 +25,7 @@ typedef struct ModelCFG{
 	const char *CoordIn;
 	const char *CoordOut;
 } ModelCFG;
+#endif
 
 /***********************************************************************
  * ModelField

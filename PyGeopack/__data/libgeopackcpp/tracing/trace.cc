@@ -24,6 +24,7 @@ Trace::Trace() {
 	allocHalpha_ = false;
 	allocHalpha3D_ = false;
 	setModel_ = false;
+	allocNstep_ = false;
 	
 	/* default trace parameters */
 	SetTraceCFG();
@@ -108,6 +109,11 @@ Trace::~Trace() {
 		delete[] bxsm_;
 		delete[] bysm_;
 		delete[] bzsm_;
+	}
+	
+	/* nstep */
+	if (allocNstep_) {
+		delete[] nstep_;
 	}
 	
 	/* field line footprints */
@@ -314,7 +320,7 @@ void Trace::SetModelParams() {
 	}
 	
 	/* calculate them */
-	TData->GetModelParams(n_,Model_,iopt_,parmod_);
+	TData->GetModelParams(n_,Date_,ut_,Model_,iopt_,parmod_);
 	
 	allocModelParams_ = true;
 	inputModelParams_ = true;
@@ -345,11 +351,13 @@ void Trace::SetTraceCFG() {
 	
 }
 
-void Trace::TraceGSM(	double **xgsm, double **ygsm, double **zgsm,
+void Trace::TraceGSM(	int *nstep,
+						double **xgsm, double **ygsm, double **zgsm,
 						double **bxgsm, double **bygsm, double **bzgsm) {
 	
 	/* link the pointers within the object to those supplied by this 
 	 * function					*/
+	nstep_ = nstep;
 	xgsm_ = xgsm;					
 	ygsm_ = ygsm;					
 	zgsm_ = zgsm;					
@@ -360,10 +368,11 @@ void Trace::TraceGSM(	double **xgsm, double **ygsm, double **zgsm,
 	/* call the tracing code */
 	_TraceGSM();
 }
-
-void Trace::TraceGSM() {
+void Trace::TraceGSM(	int *nstep) {
 	
-	/* no pointers provided: allocate them*/
+	/* link the pointers within the object to those supplied by this 
+	 * function					*/
+	nstep_ = nstep;
 	xgsm_ = new double*[n_];					
 	ygsm_ = new double*[n_];					
 	zgsm_ = new double*[n_];					
@@ -380,6 +389,37 @@ void Trace::TraceGSM() {
 		bzgsm_[i] = new double[MaxLen_];		
 	}		
 	allocGSM_ = true;
+	
+	
+	/* call the tracing code */
+	_TraceGSM();	
+
+}
+
+void Trace::TraceGSM() {
+	
+	/* no pointers provided: allocate them*/
+	if (!allocNstep_) {
+		nstep_ = new int[n_];
+		allocNstep_ = true;
+	}
+	xgsm_ = new double*[n_];					
+	ygsm_ = new double*[n_];					
+	zgsm_ = new double*[n_];					
+	bxgsm_ = new double*[n_];					
+	bygsm_ = new double*[n_];					
+	bzgsm_ = new double*[n_];
+	int i;
+	for (i=0;i<n_;i++) {
+		xgsm_[i] = new double[MaxLen_];					
+		ygsm_[i] = new double[MaxLen_];					
+		zgsm_[i] = new double[MaxLen_];					
+		bxgsm_[i] = new double[MaxLen_];					
+		bygsm_[i] = new double[MaxLen_];					
+		bzgsm_[i] = new double[MaxLen_];		
+	}		
+	allocGSM_ = true;
+	
 	
 	/* call the tracing code */
 	_TraceGSM();
@@ -814,4 +854,11 @@ void Trace::GetTraceFootprints(double **FP) {
 			FP[i][j] = FP_[i][j];
 		}
 	}	
+}
+
+void Trace::GetTraceNstep(int *nstep) {
+	int i;
+	for (i=0;i<n_;i++) {
+		nstep[i] = nstep_[i];
+	}
 }
