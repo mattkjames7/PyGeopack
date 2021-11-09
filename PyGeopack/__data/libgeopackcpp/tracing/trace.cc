@@ -351,6 +351,152 @@ void Trace::SetTraceCFG() {
 	
 }
 
+void Trace::SetAlpha(int nalpha, double *alpha) {
+	
+	/*NOTE: for each alpha, there will be two traces - one for the 
+	 * supplied value and one for alpha + 180 */
+	/* set the alpha pointer */
+	nalpha_ = nalpha;
+	//alpha_ = alpha;
+	alpha0_ = new double[nalpha_];
+	alpha1_ = new double[nalpha_];
+	allocAlpha_ = true;
+	double dtor = M_PI/180.0;
+	int i;
+	for (i=0;i<nalpha;i++) {
+		alpha0_[i] = alpha[i]*dtor;
+		alpha1_[i] = fmod(alpha[i]*dtor + M_PI,2*M_PI);
+	}
+
+}
+
+Trace Trace::TracePosition(int i, double x, double y, double z) {
+	/* return a new trace object at the supplied position using the
+	 * parameters at time i */
+	Trace T;
+	
+	/* input position and time - I am pretty certain that the midpoints
+	 * of the field lines are stored in SM coords */
+	T.InputPos(1,&x,&y,&z,&Date_[i],&ut_[i],"SM",&Vx_[i],&Vy_[i],&Vz_[i]);
+	
+	/* set the model up */
+	T.SetModel(Model_);
+	T.SetModelParams(&iopt_[i],&parmod_[i]);
+	T.SetTraceCFG(alt_,MaxLen_,DSMax_,false,0);
+	
+	/* run the GSM trace */
+	T.TraceGSM();
+	
+	/* now convert to SM */
+	T.TraceSM();
+	
+	/* calculate S*/
+	T.CalculateTraceDist();
+	
+	return T;
+	
+}
+
+
+void Trace::_CalculateTraceHalpha(	int i, int j, double Delta, double *halpha) {
+
+	/* some variables needed */
+	double xe0,ye0,ze0,xe1,ye1,ze1;
+	
+	/* get the trace starting points first */
+	_CalculateHalphaStartPoints(i,j,&xe0,&ye0,&ze0,&xe1,&ye1,&ze1);
+
+	/* do two traces */
+	Trace T0 = TracePosition(i,xe0,ye0,ze0);
+	Trace T1 = TracePosition(i,xe1,ye1,ze1);
+
+	/* calculate rotation matrices */
+	MatrixArray R = TraceRotationMatrices(*this,i);
+			
+	/* get the closest points to each step of the original trace*/
+	double *xc0 = new double[nstep_[i]];
+	double *yc0 = new double[nstep_[i]];
+	double *zc0 = new double[nstep_[i]];
+	double *xc1 = new double[nstep_[i]];
+	double *yc1 = new double[nstep_[i]];
+	double *zc1 = new double[nstep_[i]];
+	TraceClosestPos(*this,T0,T1,i,R,xc0,yc0,zc0,xc1,yc1,zc1);
+			
+	/* calculate distances and then halpha */
+	double d, dx, dy, dz, h0, h1;
+	int k;
+	for (k=0;k<nstep_[i];k++) {
+		dx = xsm_[i][k] - xc0[k];
+		dy = ysm_[i][k] - yc0[k];
+		dz = zsm_[i][k] - zc0[k];
+		d = sqrt(dx*dx + dy*dy + dz*dz);
+		h0 = d/Delta;
+		
+		dx = xsm_[i][k] - xc1[k];
+		dy = ysm_[i][k] - yc1[k];
+		dz = zsm_[i][k] - zc1[k];
+		d = sqrt(dx*dx + dy*dy + dz*dz);
+		h1 = d/Delta;
+		
+		halpha[k] = 0.5*(h0 + h1);
+	}
+	
+	/* free up memory */
+	delete[] xc0;
+	delete[] yc0;
+	delete[] zc0;
+	delete[] xc1;
+	delete[] yc1;
+	delete[] zc1;
+}
+
+void Trace::_CalculateHalpha(double Delta) {
+	
+
+	/* loop through each trace and alpha combination */
+	int i, j;
+	for (i=0;i<n_;i++) {
+
+		for (j=0;j<nalpha_;j++) {
+	
+			_CalculateTraceHalpha(i,j,Delta,Halpha3D_[i][j]);
+		}
+	}
+}
+			
+
+void Trace::_CalculateHalphaStartPoints(int i, int j,
+							double *xe0, double *ye0, double *ze0,
+							double *xe1, double *ye1, double *ze1) {
+	
+	/* calculate the tracing start points for each alpha */
+	
+	/* we should probably tweak this value at some point - it is the 
+	 * distance from the midpoint of the original field line to the
+	 * start point of the new trace in Re */
+	double Delta = 0.1;
+	
+	double dt, dp, beta, dx, dy;
+	/* dt and dp are the toroidal and poloidal components of Delta */
+	dt = Delta*cos(alpha0_[j]);
+	dp = Delta*sin(alpha0_[j]);
+	
+	/* rotate based on the local time */
+	beta = atan2(-xfe_[i],-yfe_[i]);
+	dx = dp*cos(beta) - dt*sin(beta);
+	dy = dp*sin(beta) + dt*cos(beta);
+	
+	/* set the start points of the new field lines */
+	xe0[0] = xfe_[i] + dx;
+	ye0[0] = yfe_[i] + dy;
+	ze0[0] = zfe_[i];
+	xe1[0] = xfe_[i] - dx;
+	ye1[0] = yfe_[i] - dy;
+	ze1[0] = zfe_[i];
+
+}
+
+
 void Trace::TraceGSM(	int *nstep,
 						double **xgsm, double **ygsm, double **zgsm,
 						double **bxgsm, double **bygsm, double **bzgsm) {

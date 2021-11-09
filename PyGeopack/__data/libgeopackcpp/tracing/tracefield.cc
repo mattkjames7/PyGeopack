@@ -130,44 +130,44 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 
 }
 
-TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
-						bool Verbose, int TraceDir) { 
-	TraceCFG tcfg = {alt,MaxLen,DSMax,Verbose,TraceDir};
+//TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
+						//bool Verbose, int TraceDir) { 
+	//TraceCFG tcfg = {alt,MaxLen,DSMax,Verbose,TraceDir};
 
-	return tcfg;
-}
-
-SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
-						int *Date, float *ut, const char *Model, 
-						int *iopt, double **parmod, 
-						double *Vx, double *Vy, double *Vz,
-						const char *CoordIn, const char *CoordOut, 
-						double alt, int MaxLen, double DSMax, 
-						bool Verbose, int TraceDir ) {
-							
-	ModelCFG mcfg = GetModelCFG(n,Date,ut,true,Model,iopt,parmod,Vx,Vy,
-								Vz,CoordIn,CoordOut);
-	
-	TraceCFG tcfg = GetTraceCFG(alt,MaxLen,DSMax,Verbose,TraceDir);
-	
-	return SimpleFieldTrace(Xin,Yin,Zin,n,mcfg,tcfg);
-}
-						
-//SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
-								//ModelCFG mcfg, TraceCFG tcfg) {
-	
-	///* create a simple trace object */
-	//SimpleTrace T;
-	//T.n = n;
-	
-	
-	
-	///* loop through each trace */
-	//for (i=0;i<n;i++) {
+	//return tcfg;
 //}
+
+//SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+						//int *Date, float *ut, const char *Model, 
+						//int *iopt, double **parmod, 
+						//double *Vx, double *Vy, double *Vz,
+						//const char *CoordIn, const char *CoordOut, 
+						//double alt, int MaxLen, double DSMax, 
+						//bool Verbose, int TraceDir ) {
+							
+	//ModelCFG mcfg = GetModelCFG(n,Date,ut,true,Model,iopt,parmod,Vx,Vy,
+								//Vz,CoordIn,CoordOut);
+	
+	//TraceCFG tcfg = GetTraceCFG(alt,MaxLen,DSMax,Verbose,TraceDir);
+	
+	//return SimpleFieldTrace(Xin,Yin,Zin,n,mcfg,tcfg);
+//}
+						
+////SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+								////ModelCFG mcfg, TraceCFG tcfg) {
+	
+	/////* create a simple trace object */
+	////SimpleTrace T;
+	////T.n = n;
+	
+	
+	
+	/////* loop through each trace */
+	////for (i=0;i<n;i++) {
+////}
 	
 							
-//}								
+////}								
 	
 void MinimalTrace(int n, double *xin, double *yin, double *zin,
 					int *Date, float *ut, const char *Model,

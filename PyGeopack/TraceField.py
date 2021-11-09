@@ -1,5 +1,5 @@
 import numpy as np
-from ._CFunctions import _CTraceField
+from ._CFunctions import _CTraceField,_CMinimalTrace
 #from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
@@ -7,6 +7,54 @@ from .GetModelParams import GetModelParams
 from .GSMtoGSE import GSMtoGSE
 from .GSMtoSM import GSMtoSM
 from ._CTConv import _CTConv
+		
+class MinimalTrace(object):
+	def __init__(self,Xin,Yin,Zin,Date,ut,Model='T96',
+				CoordIn='GSM',CoordOut='GSM'):
+
+	#Convert input variables to appropriate numpy dtype:
+		self.Xin = np.array(Xin).astype("float64")
+		self.Yin = np.array(Yin).astype("float64")
+		self.Zin = np.array(Zin).astype("float64")
+		self.n = np.int32(self.Xin.size)
+		if np.size(Date) == 1:
+			self.Date = np.zeros(self.n,dtype='int32') + Date
+		else:
+			self.Date = np.array(Date).astype('int32')
+		if np.size(ut) == 1:
+			self.ut = np.zeros(self.n,dtype='float32') + np.float32(ut)
+		else:
+			self.ut = np.array(ut).astype('float32')
+		self.MaxLen = 1000
+		self.Model = Model
+		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
+		self.CoordIn = CoordIn
+		self.CoordOut = CoordOut
+		self.CoordInCode =_CTConv(CoordIn,'c_char_p')
+		self.CoordOutCode =_CTConv(CoordOut,'c_char_p')		
+		self.x = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.y = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.z = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bx = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.By = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bz = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+
+		self.nstep = np.zeros(self.n,dtype="int32")
+
+		_x = _CTConv(self.x,'c_double_ptr',nd=2)
+		_y = _CTConv(self.y,'c_double_ptr',nd=2)
+		_z = _CTConv(self.z,'c_double_ptr',nd=2)
+		_Bx = _CTConv(self.Bx,'c_double_ptr',nd=2)
+		_By = _CTConv(self.By,'c_double_ptr',nd=2)
+		_Bz = _CTConv(self.Bz,'c_double_ptr',nd=2)
+		
+		_CMinimalTrace(self.n,self.Xin,self.Yin,self.Zin,
+						self.Date,self.ut,self.ModelCode,
+						self.CoordInCode,self.CoordOutCode,
+						self.nstep,
+						_x,_y,_z,
+						_Bx,_By,_Bz)
+
 		
 class TraceField(object):
 	'''
@@ -262,7 +310,7 @@ class TraceField(object):
 		
 		for i in range(0,self.n):
 			ns = self.nstep[i]
-			V = [self.params['Vx'],self.params['Vy'],self.params['Vz']]
+			V = [self.params['Vx'][i],self.params['Vy'][i],self.params['Vz'][i]]
 			x = self.xgsm[i][:ns]
 			y = self.ygsm[i][:ns]
 			z = self.zgsm[i][:ns]

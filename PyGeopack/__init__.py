@@ -19,7 +19,7 @@ from .MAGtoGSE import MAGtoGSE
 from .GSMtoSM import GSMtoSM
 from .GetModelParams import GetModelParams
 from .MAGtoGEO import MAGtoGEO,MAGtoGEOLL
-from .TraceField import TraceField
+from .TraceField import TraceField,MinimalTrace
 from .SMtoGSM import SMtoGSM
 from .GSMtoGSE import GSMtoGSE
 from .GEOtoMAG import GEOtoMAG,GEOtoMAGLL

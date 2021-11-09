@@ -14,8 +14,11 @@
 #include "tracefootprints.h"
 #include "converttracecoords.h"
 #include "../withinmp.h"
+#include "../matrix/matrixarray.h"
+#include "traceclosestpos.h"
+#include "tracerotationmatrices.h"
 
-#endif
+
 
 /***********************************************************************
  * This object will store a bunch of field traces within it.
@@ -57,6 +60,10 @@ class Trace {
 		void SetTraceCFG(double,int,double,bool,int);
 		void SetTraceCFG();
 		
+		/* polarization stuff */
+		void SetAlpha(int,double*);
+		void SetAlpha(int,double*,double*);
+		void SetAlpha(int,double*,double***);
 			
 		/* trace function to do basic trace in GSW coords */
 		void TraceGSM(int*,double**,double**,double**,double**,double**,double**);
@@ -105,26 +112,9 @@ class Trace {
 		void GetTraceHalpha(double*);	/* python will use this */
 		void GetTraceHalpha(double***); /* no idea how to link this to python*/
 		
-		
+		Trace TracePosition(int,double,double,double);
 	
-	private:
-		/* booleans to tell the object what has been done */
-		bool inputPos_;
-		bool inputModelParams_,allocModelParams_;
-		bool traceConfigured_;
-		bool allocV_;
-		bool tracedGSM_,allocGSM_;
-		bool tracedGSE_,allocGSE_;
-		bool tracedSM_,allocSM_;
-		bool allocEndpoints_;
-		bool hasFootprints_,allocFootprints_;
-		bool hasDist_,allocDist_;
-		bool hasR_,allocR_;
-		bool hasRnorm_,allocRnorm_;
-		bool hasHalpha_,allocHalpha_, allocHalpha3D_;
-		bool setModel_;
-		bool allocNstep_;
-		
+
 		/* input coords */
 		int n_;
 		double *x0_, *y0_, *z0_;  
@@ -161,11 +151,33 @@ class Trace {
 		double *xfn_, *yfn_, *zfn_;
 		double *xfs_, *yfs_, *zfs_;
 		double *xfe_, *yfe_, *zfe_;
+
+	private:
+		/* booleans to tell the object what has been done */
+		bool inputPos_;
+		bool inputModelParams_,allocModelParams_;
+		bool traceConfigured_;
+		bool allocV_;
+		bool tracedGSM_,allocGSM_;
+		bool tracedGSE_,allocGSE_;
+		bool tracedSM_,allocSM_;
+		bool allocEndpoints_;
+		bool hasFootprints_,allocFootprints_;
+		bool hasDist_,allocDist_;
+		bool hasR_,allocR_;
+		bool hasRnorm_,allocRnorm_;
+		bool hasHalpha_,allocHalpha_, allocHalpha3D_;
+		bool setModel_;
+		bool allocNstep_;
+		bool allocAlpha_;
 		
+
+		
+
 	
 		/* field length, R, Rnorm, Halpha, Footprints */
 		int nalpha_;
-		double *alpha_;
+		double *alpha0_, *alpha1_;
 		double **S_;
 		double **R_;
 		double **Rnorm_;
@@ -182,5 +194,16 @@ class Trace {
 		void _TraceGSE();
 		void _TraceSM();
 
-	
+		/* halpha functions */
+		void _CalculateHalpha(double);
+		void _CalculateTraceHalpha(int,int,double,double*);
+		void _CalculateHalphaStartPoints(int i, int j,
+							double *xe0, double *ye0, double *ze0,
+							double *xe1, double *ye1, double *ze1);
 };
+
+
+
+#endif
+
+class Trace;

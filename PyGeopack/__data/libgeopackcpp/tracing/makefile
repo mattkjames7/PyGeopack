@@ -20,6 +20,8 @@ obj:
 	$(CCo) tracefootprints.cc -o tracefootprints.o
 	$(CCo) calculatehalpha.cc -o calculatehalpha.o
 	$(CCo) trace.cc -o trace.o
+	$(CCo) traceclosestpos.cc -o traceclosestpos.o
+	$(CCo) tracerotationmatrices.cc -o tracerotationmatrices.o
 		
 clean:
 	rm -v *.o

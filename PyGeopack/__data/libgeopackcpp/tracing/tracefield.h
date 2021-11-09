@@ -62,13 +62,13 @@ extern "C" {
 						double **Bx, double **By, double **Bz, 
 						int *nstep, double **FP);
 						
-						
-	void MinimalTrace(int n, double *xin, double *Yin, double *Zin,
-					double *Date, double *ut, 
-					const char *CoordIn, const char *CoordOut,
-					double *nstep,
-					double **xgsm, double **ygsm, double **zgsm, 
-					double **bxgsm, double **bygsm, double **bzgsm);					
+
+	void MinimalTrace(int n, double *xin, double *yin, double *zin,
+						int *Date, float *ut, const char *Model,
+						const char *CoordIn, const char *CoordOut,
+						int *nstep,
+						double **x, double **y, double **z, 
+						double **bx, double **by, double **bz);		
 }
 
 
@@ -76,16 +76,16 @@ extern "C" {
 						
 			
 
-TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
-						bool Verbose, int TraceDir);
+//TraceCFG GetTraceCFG(	double alt, int MaxLen, double DSMax, 
+						//bool Verbose, int TraceDir);
 
-SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
-						int *Date, float *ut, const char *Model, 
-						int *iopt, double **parmod, 
-						double *Vx, double *Vy, double *Vz,
-						const char *CoordIn, const char *CoordOut, 
-						double alt, int MaxLen, double DSMax, 
-						bool Verbose, int TraceDir );
+//SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+						//int *Date, float *ut, const char *Model, 
+						//int *iopt, double **parmod, 
+						//double *Vx, double *Vy, double *Vz,
+						//const char *CoordIn, const char *CoordOut, 
+						//double alt, int MaxLen, double DSMax, 
+						//bool Verbose, int TraceDir );
 						
-SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
-								ModelCFG mcfg, TraceCFG tcfg);
+//SimpleTrace SimpleFieldTrace( double *Xin, double *Yin, double *Zin, int n, 
+								//ModelCFG mcfg, TraceCFG tcfg);

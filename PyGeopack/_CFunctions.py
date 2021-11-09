@@ -44,7 +44,7 @@ c_double_ptr_ptr = np.ctypeslib.ndpointer(np.uintp,ndim=1,flags="C_CONTIGUOUS")
 c_int_ptr = np.ctypeslib.ndpointer(ct.c_int,flags="C_CONTIGUOUS")
 c_bool_ptr = np.ctypeslib.ndpointer(ct.c_bool,flags="C_CONTIGUOUS")
 
-#coordinate convertsion function
+#coordinate conversion function
 _CConvCoords = libgeopack.ConvCoords
 _CConvCoords.argtypes = [	c_double_ptr, 		#x GSE
 							c_double_ptr, 		#y GSE
@@ -685,6 +685,27 @@ _CModelField.argtypes = [	c_int, 				#number of positions
 							c_double_ptr]		#output Bz
 _CModelField.restype = None
 
+
+#Minimal trace function (very few options)
+_CMinimalTrace = libgeopack.MinimalTrace
+_CMinimalTrace.restype = None
+_CMinimalTrace.argtypes = [	c_int,			#number of traces
+							c_double_ptr,	#x coords
+							c_double_ptr,	#y coords
+							c_double_ptr,	#z coords
+							c_int_ptr, 			#Date 
+							c_float_ptr, 		#UT
+							c_char_p,			#Model
+							c_char_p,			#input coord system
+							c_char_p,			#output coord system							
+							c_int_ptr, 			#output number of steps
+							c_double_ptr_ptr, 	#output x positions
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions							
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr] 	#output Bz
+							
 #Trace field lines
 _CTraceField = libgeopack.TraceField
 _CTraceField.argtypes = [	c_double_ptr,		#x coord
