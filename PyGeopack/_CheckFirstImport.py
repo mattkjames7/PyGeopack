@@ -39,6 +39,8 @@ def _CheckFirstImport():
 	if os.path.isfile(Globals.DataFile):
 		DataFileCT = ct.c_char_p(Globals.DataFile.encode('utf-8'))
 		_CInit(DataFileCT)
+	else:
+		_CInit(ct.c_char_p("".encode('utf-8')))
 	
 #	DataFile = os.path.dirname(__file__)+"/__data/libgeopack/data/TSdata.bin"
 #	if not os.path.isfile(DataFile):

@@ -231,6 +231,7 @@ void Trace::InputPos(	int n, double *x, double *y, double *z,
 		TData->GetVy(n,Date,ut,Vy_);
 		TData->GetVz(n,Date,ut,Vz_);
 		allocV_ = true;
+
 	}
 	
 	/* allocate the memory to store the input coords */
@@ -596,6 +597,7 @@ void Trace::_CalculateHalphaStartPoints(int i, int j,
 	xe1[0] = xfe_[i] - dx;
 	ye1[0] = yfe_[i] - dy;
 	ze1[0] = zfe_[i];
+	printf("%d %d: (%5.3f,%5.3f,%5.3f) (%5.3f,%5.3f,%5.3f)  \n",i,j,xe0[0],ye0[0],ze0[0],xe1[0],ye1[0],ze1[0]);
 
 }
 
@@ -886,7 +888,7 @@ void Trace::_CalculateTraceDist() {
 			dx = xgsm_[i][j] - xgsm_[i][j-1];
 			dy = ygsm_[i][j] - ygsm_[i][j-1];
 			dz = zgsm_[i][j] - zgsm_[i][j-1];
-			S_[i][j] = sqrt(dx*dx + dy*dy + dz*dz);
+			S_[i][j] = S_[i][j-1] + sqrt(dx*dx + dy*dy + dz*dz);
 		}
 	}
 	hasDist_ = true;

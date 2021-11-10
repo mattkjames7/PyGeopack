@@ -216,23 +216,24 @@ void FullTrace(	int n, double *xin, double *yin, double *zin,
 				double **s, double **r, double **rnorm, double **FP,
 				int nalpha, double *alpha, double *halpha) {
 	
+
 	/* create the trace object */
 	Trace T;
-	
+
 	/* input the position */
 	T.InputPos(n,xin,yin,zin,Date,ut,CoordIn);
-	
+
 	/* set which model we are using */
 	T.SetModel(Model);
-	
+
 	/* model parameters (automatically get from TData) */
 	T.SetModelParams();
-	
+
 	/*trace then convert to GSE and SM */
 	T.TraceGSM(nstep,xgsm,ygsm,zgsm,bxgsm,bygsm,bzgsm);
 	T.TraceGSE(xgse,ygse,zgse,bxgse,bygse,bzgse);
 	T.TraceSM(xsm,ysm,zsm,bxsm,bysm,bzsm);
-	
+
 	/* some other bits and bobs - the order is quite important here*/
 	T.CalculateTraceDist(s);
 	T.CalculateTraceR(r);

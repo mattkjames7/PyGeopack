@@ -57,7 +57,7 @@ class MinimalTrace(object):
 
 class FullTrace(object):
 	def __init__(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM',
-					alpha=[0.0,90.0]):
+					alpha=[0.0,90.0],FlattenSingleTraces=True):
 
 	#Convert input variables to appropriate numpy dtype:
 		self.Xin = np.array(Xin).astype("float64")

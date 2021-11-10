@@ -5,12 +5,14 @@ TsygData::TsygData(const char *fname) {
 	/* initialize the number of elements */
 	n_ = 0;
 	loaded_ = false;
-	
+
 	/* call the function which reads the file */
 	loaded_ = _LoadFile(fname);
-	
+
 	/* this bit is where one might call the populate months bit */
-	PopulateMonthInds();
+	if (loaded_) {
+		PopulateMonthInds();
+	}
 }
 
 TsygData::~TsygData() {
@@ -218,30 +220,45 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 
 
 void TsygData::GetVx(int n, int *Date, float *ut, double *Vx) {
-	
+
 	int i;
-	for (i=0;i<n;i++) {
-		Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
-	}	
-	
+	if (loaded_) {
+		for (i=0;i<n;i++) {
+			Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
+		}	
+	} else {
+		for (i=0;i<n;i++) {
+			Vx[i] = -400.0;
+		}	
+	}
 }
 
 void TsygData::GetVy(int n, int *Date, float *ut, double *Vy) {
 	
 	int i;
-	for (i=0;i<n;i++) {
-		Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
+	if (loaded_) {
+		for (i=0;i<n;i++) {
+			Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
+		}	
+	} else {
+		for (i=0;i<n;i++) {
+			Vy[i] = 0.0;
+		}	
 	}	
-	
 }
 
 void TsygData::GetVz(int n, int *Date, float *ut, double *Vz) {
 	
 	int i;
-	for (i=0;i<n;i++) {
-		Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
-	}	
-	
+	if (loaded_) {
+		for (i=0;i<n;i++) {
+			Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
+		}	
+	} else {
+		for (i=0;i<n;i++) {
+			Vz[i] = 0.0;
+		}	
+	}
 }
 
 void TsygData::GetSWVelocity(int n, int *Date, float *ut,
@@ -250,45 +267,39 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 	int i;
 	if (Vxin == NULL) {
 		/* get Vx from the data file */
-		for (i=0;i<n;i++) {
-			Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
-		}
+		GetVx(n,Date,ut,Vx);
 	} else { 
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vx[i] = Vxin[i];
 			if (isnan(Vx[i])) {
-				Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
+				GetVx(1,&Date[i],&ut[i],&Vx[i]);
 			}
 		}
 	}
 	
 	if (Vyin == NULL) {
 		/* get Vx from the data file */
-		for (i=0;i<n;i++) {
-			Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
-		}
+		GetVy(n,Date,ut,Vy);
 	} else { 
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vy[i] = Vyin[i];
 			if (isnan(Vy[i])) {
-				Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
+				GetVy(1,&Date[i],&ut[i],&Vy[i]);
 			}
 		}
 	}
 	
 	if (Vzin == NULL) {
 		/* get Vx from the data file */
-		for (i=0;i<n;i++) {
-			Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
-		}
+		GetVz(n,Date,ut,Vz);
 	} else { 
 		/* copy it across */
 		for (i=0;i<n;i++) {
 			Vz[i] = Vzin[i];
 			if (isnan(Vz[i])) {
-				Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
+				GetVz(1,&Date[i],&ut[i],&Vz[i]);
 			}
 		}
 	}
@@ -298,8 +309,18 @@ void TsygData::GetSWVelocity(int n, int *Date, float *ut,
 
 void TsygData::GetModelParams(	int n, int *Date, float *ut, 
 								const char *Model, int *iopt, double **parmod) {
+
 	int i, j;
-	if (strcmp(Model,"T89") == 0) {
+	if (!loaded_) {
+		/* no data loaded, use defaults */
+		for (i=0;i<n;i++) {
+			iopt[i] = 1;
+			parmod[i][0] = 2.0;
+			for (j=1;j<10;j++) {
+				parmod[i][j] = 0.0;
+			}
+		}
+	} else if (strcmp(Model,"T89") == 0) {
 		/* T89 - just need iopt = Kp + 1 */
 		for (i=0;i<n;i++) {
 			iopt[i] = (int) (InterpParam(Kp_,Date[i],ut[i]) + 1);
