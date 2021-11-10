@@ -32,7 +32,7 @@ Trace::Trace() {
 }
 
 Trace::~Trace() {
-	printf("!!!!!!!!!!Trace destructor!!!!!!!!!!!!\n");
+
 	/* check for each allocated variable and delete it*/
 	int i, j;
 	
@@ -209,13 +209,13 @@ void Trace::InputPos(	int n, double *x, double *y, double *z,
 		printf("Input positions already set, ignoring...\n");
 		return;
 	}
-	printf("%d %f %f %f %d %f\n",n,x[0],y[0],z[0],Date[0],ut[0]);
+
 	/* set the velocity vectors */
 	if (!allocV_) {
 		Vx_ = new double[n];
 		Vy_ = new double[n];
 		Vz_ = new double[n];
-		printf("alloced V\n"); 
+
 		TData->GetVx(n,Date,ut,Vx_);
 		TData->GetVy(n,Date,ut,Vy_);
 		TData->GetVz(n,Date,ut,Vz_);
@@ -405,24 +405,19 @@ Trace Trace::TracePosition(int i, double x, double y, double z) {
 
 void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 
-	printf("boo\n");
 	/* some variables needed */
 	double xe0,ye0,ze0,xe1,ye1,ze1;
-	printf("boo\n");
+
 	/* get the trace starting points first */
 	_CalculateHalphaStartPoints(i,j,&xe0,&ye0,&ze0,&xe1,&ye1,&ze1);
-	printf("boo\n");
 
-	printf("boo %d %d\n",i,j);
 	/* calculate rotation matrices */
 	MatrixArray R = TraceRotationMatrices(nstep_[i],bxsm_[i],bysm_[i],bzsm_[i]);
-	printf("Returned R\n");
-
-	printf("boo\n");	
 
 	/* do two traces */
 	Trace T0 = TracePosition(i,xe0,ye0,ze0);
 	Trace T1 = TracePosition(i,xe1,ye1,ze1);
+	
 	/* get the closest points to each step of the original trace*/
 	double *xc0 = new double[nstep_[i]];
 	double *yc0 = new double[nstep_[i]];
@@ -430,13 +425,16 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 	double *xc1 = new double[nstep_[i]];
 	double *yc1 = new double[nstep_[i]];
 	double *zc1 = new double[nstep_[i]];
-	printf("here\n");
-	TraceClosestPos(*this,T0,T1,i,R,xc0,yc0,zc0,xc1,yc1,zc1);
-	printf("boo\n");	
+
+	TraceClosestPos(	R,
+						nstep_[i],xsm_[i],ysm_[i],zsm_[i],
+						T0.nstep_[0],T0.xsm_[0],T0.ysm_[0],T0.zsm_[0],
+						T1.nstep_[0],T1.xsm_[0],T1.ysm_[0],T1.zsm_[0],
+						xc0,yc0,zc0,xc1,yc1,zc1);
+
 	/* calculate distances and then halpha */
 	double d, dx, dy, dz, h0, h1;
 	int k;
-	printf("boo\n");
 	for (k=0;k<nstep_[i];k++) {
 		dx = xsm_[i][k] - xc0[k];
 		dy = ysm_[i][k] - yc0[k];
@@ -452,7 +450,6 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 		
 		halpha[k] = 0.5*(h0 + h1);
 	}
-	printf("boo\n");
 	/* free up memory */
 	delete[] xc0;
 	delete[] yc0;
@@ -460,11 +457,9 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 	delete[] xc1;
 	delete[] yc1;
 	delete[] zc1;
-	printf("boo\n");
 }
 
 void Trace::_CalculateHalpha() {
-	printf("_halpha\n");
 
 	/* loop through each trace and alpha combination */
 	int i, j, k, I, J;
@@ -472,7 +467,6 @@ void Trace::_CalculateHalpha() {
 		I = i*(nalpha_*MaxLen_);
 		for (j=0;j<nalpha_;j++) {
 			J = j*MaxLen_;
-			printf("halpha: %d %d \n",I,J);
 			_CalculateTraceHalpha(i,j,Halpha3D_[i][j]);
 			for (k=0;k<MaxLen_;k++) {
 				Halpha_[I + J + k] = Halpha3D_[i][j][k];
@@ -498,7 +492,7 @@ bool Trace::_CheckHalpha() {
 }
 		
 void Trace::CalculateHalpha() {
-	printf("halpha\n");
+
 	if (!_CheckHalpha()) {
 		return;
 	}
@@ -515,11 +509,10 @@ void Trace::CalculateHalpha() {
 	}
 	
 	_CalculateHalpha();
-	printf("halpha\n");
 }
 
 void Trace::CalculateHalpha(double *halpha) {
-	printf("halpha\n");
+
 	if (!_CheckHalpha()) {
 		return;
 	}
@@ -536,11 +529,10 @@ void Trace::CalculateHalpha(double *halpha) {
 	}
 	
 	_CalculateHalpha();
-	printf("halpha\n");
 }
 
 void Trace::CalculateHalpha(double ***halpha3d) {
-	printf("halpha\n");
+
 	if (!_CheckHalpha()) {
 		return;
 	}
@@ -550,11 +542,10 @@ void Trace::CalculateHalpha(double ***halpha3d) {
 	Halpha3D_ = halpha3d;
 	
 	_CalculateHalpha();
-	printf("halpha\n");
 }
 
 void Trace::CalculateHalpha(double *halpha, double ***halpha3d) {
-	printf("halpha\n");
+
 	if (!_CheckHalpha()) {
 		return;
 	}
@@ -564,7 +555,6 @@ void Trace::CalculateHalpha(double *halpha, double ***halpha3d) {
 	Halpha3D_ = halpha3d;
 	
 	_CalculateHalpha();
-	printf("halpha\n");
 }
 
 void Trace::_CalculateHalphaStartPoints(int i, int j,

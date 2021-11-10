@@ -1,37 +1,39 @@
 #include "traceclosestpos.h"
 
-void TraceClosestPos(Trace T, Trace T0, Trace T1, int I,
-					MatrixArray &R,
-					double *xc0, double *yc0, double *zc0,
-					double *xc1, double *yc1, double *zc1) {
-	
-	/* get the number of elements */
-	int n = T.nstep_[I];
-	int n0 = T0.nstep_[0];
-	int n1 = T1.nstep_[0];
-	
+
+
+void TraceClosestPos(	MatrixArray &R,
+						int n, double *x, double *y, double *z,
+						int n0, double *x0, double *y0, double *z0,
+						int n1, double *x1, double *y1, double *z1,
+						double *xc0, double *yc0, double *zc0,
+						double *xc1, double *yc1, double *zc1) {
+
 				
 	/* calculate the closest position for each step */
 	int i;
 	for (i=0;i<n;i++) {
-		_ClosestPos(i,I,*R.matrix[i],T,T0,T1,&xc0[i],&yc0[i],&zc0[i],&xc1[i],&yc1[i],&zc1[i]);
+		_ClosestPos(	i,*R.matrix[i],
+						n,x,y,z,
+						n0,x0,y0,z0,
+						n1,x1,y1,z1,
+						&xc0[i],&yc0[i],&zc0[i],
+						&xc1[i],&yc1[i],&zc1[i]);
 	}
 						
 }
 
-void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
-				double *xc0, double *yc0, double *zc0,
-				double *xc1, double *yc1, double *zc1) {
+void _ClosestPos(	int i, Matrix &R,
+					int n, double *x, double *y, double *z,
+					int n0, double *x0, double *y0, double *z0,
+					int n1, double *x1, double *y1, double *z1,
+					double *xc0, double *yc0, double *zc0,
+					double *xc1, double *yc1, double *zc1) {
 	
 	/* get the position to rotate */
-	double Px = T.xsm_[I][i];
-	double Py = T.ysm_[I][i];
-	double Pz = T.zsm_[I][i];
-	
-	/* get the number of elements */
-	int n = T.nstep_[I];
-	int n0 = T0.nstep_[0];
-	int n1 = T1.nstep_[0];
+	double Px = x[i];
+	double Py = y[i];
+	double Pz = z[i];
 
 	/* allocate some arrays to store the rotated traces in */
 	double *rx = new double[n];
@@ -45,9 +47,10 @@ void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
 	double *rz1 = new double[n];
 
 	/* rotate the traces replace these */
-	_RotateTrace(n,T,I,Px,Py,Pz,R,rx,ry,rz);
-	_RotateTrace(n0,T0,0,Px,Py,Pz,R,rx0,ry0,rz0);
-	_RotateTrace(n1,T1,0,Px,Py,Pz,R,rx1,ry1,rz1);
+	_RotateTrace(n,x,y,z,Px,Py,Pz,R,rx,ry,rz);
+	_RotateTrace(n,x0,y0,z0,Px,Py,Pz,R,rx0,ry0,rz0);
+	_RotateTrace(n,x1,y1,z1,Px,Py,Pz,R,rx1,ry1,rz1);
+
 
 	double Prx = rx[i];
 	double Pry = ry[i];
@@ -64,9 +67,6 @@ void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
 	/* get the closest point where z' = 0 */
 	_ClosestPosSpline(nc0,cx0,cy0,cz0,xc0,yc0,zc0);
 	_ClosestPosSpline(nc1,cx1,cy1,cz1,xc1,yc1,zc1);
-	int j;
-	for (j=0;j<4;j++) {
-	}
 
 	/* clean up */
 	delete[] rx;
@@ -80,7 +80,8 @@ void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
 	delete[] rz1;
 }
 
-void _RotateTrace(	int n, Trace T, int I, 
+
+void _RotateTrace(	int n, double *x, double *y, double *z, 
 					double Px, double Py, double Pz,
 					Matrix &R,
 					double *rx, double *ry, double *rz) {
@@ -90,9 +91,9 @@ void _RotateTrace(	int n, Trace T, int I,
 	Matrix r(1,3);
 	for (i=0;i<n;i++) {
 		/* set vector to be rotated */
-		v.data[0][0] = T.xsm_[I][i] - Px;
-		v.data[0][1] = T.ysm_[I][i] - Py;
-		v.data[0][2] = T.zsm_[I][i] - Pz;
+		v.data[0][0] = x[i] - Px;
+		v.data[0][1] = y[i] - Py;
+		v.data[0][2] = z[i] - Pz;
 		
 		/* rotate */
 		MatrixDot(v,R,false,false,r);

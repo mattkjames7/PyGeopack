@@ -1,13 +1,13 @@
 # CFLAGS for CC
-CFLAGS=-lm -fopenmp -Wall -lgfortran
+CFLAGS=-lm -fopenmp -Wall
 
 # Compiler
 CC=g++  -fPIC $(CFLAGS) 
 
 
 all:
-	$(CC) test.cc ../*.o ../*/*.o -o test
-	$(CC) testrotate.cc ../*.o ../*/*.o -o testrotate
+	$(CC) test.cc ../*.o ../*/*.o -o test  -lgfortran
+	$(CC) testrotate.cc ../*.o ../*/*.o -o testrotate  -lgfortran
 
 
 clean:

@@ -5,7 +5,7 @@ int main(int argc, char *argv[]) {
 
 	
 	/* intialize the parameters for the model */
-	InitParams(argv[argc-1]);
+	//InitParams(argv[argc-1]);
 	
 	/* set up the initial tracing position etc. */
 	int Date[] = {20120101};
@@ -16,6 +16,16 @@ int main(int argc, char *argv[]) {
 	const char *Model = "T96";
 	const char *CoordIn = "GSM";
 	int n = 1;
+	double Vx = -400.0;
+	double Vy = 0.0;
+	double Vz = 0.0;
+	int iopt = 1;
+	double *parmod = new double[10];
+	int i;
+	parmod[0] = 2.0;
+	for (i=1;i<10;i++) {
+		parmod[i] = 0.0;
+	}
 	
 	/* create the trace object */
 	printf("Creating trace object \n");
@@ -23,11 +33,11 @@ int main(int argc, char *argv[]) {
 	
 	/* input stuff */
 	printf("Input position and model \n");
-	T.InputPos(n,xin,yin,zin,Date,ut,CoordIn);
+	T.InputPos(n,xin,yin,zin,Date,ut,CoordIn,&Vx,&Vy,&Vz);
 	T.SetModel(Model);
 	
 	printf("Setting parameters\n");
-	T.SetModelParams();
+	T.SetModelParams(&iopt,&parmod);
 	
 	/* do the field traces */
 	printf("Trace\n");
@@ -52,5 +62,5 @@ int main(int argc, char *argv[]) {
 	T.CalculateHalpha();
 	
 	/* free params */
-	FreeParams();
+	//FreeParams();
 }

@@ -11,5 +11,4 @@
 #endif
 
 
-MatrixArray TraceRotationMatrices(Trace T, int I);
 MatrixArray TraceRotationMatrices(int n, double *xin, double *yin, double *zin);

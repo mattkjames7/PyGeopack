@@ -11,16 +11,21 @@
 #endif
 class Trace;
 
-void TraceClosestPos(Trace T, Trace T0, Trace T1, int I,
-					MatrixArray &R,
-					double *xc0, double *yc0, double *zc0,
-					double *xc1, double *yc1, double *zc1) ;
+void TraceClosestPos(	MatrixArray &R,
+						int n, double *x, double *y, double *z,
+						int n0, double *x0, double *y0, double *z0,
+						int n1, double *x1, double *y1, double *z1,
+						double *xc0, double *yc0, double *zc0,
+						double *xc1, double *yc1, double *zc1);
 					
-void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
-				double *xc0, double *yc0, double *zc0,
-				double *xc1, double *yc1, double *zc1);
+void _ClosestPos(	int i, Matrix &R,
+					int n, double *x, double *y, double *z,
+					int n0, double *x0, double *y0, double *z0,
+					int n1, double *x1, double *y1, double *z1,
+					double *xc0, double *yc0, double *zc0,
+					double *xc1, double *yc1, double *zc1);
 				
-void _RotateTrace(	int n, Trace T, int I, 
+void _RotateTrace(	int n, double *x, double *y, double *z, 
 					double Px, double Py, double Pz,
 					Matrix &R,
 					double *rx, double *ry, double *rz);
