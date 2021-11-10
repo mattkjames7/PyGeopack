@@ -45,7 +45,7 @@ class Trace {
 		~Trace();
 		
 		/* copy constructor */
-		Trace(const Trace &);
+	//	Trace(const Trace &);
 		
 		/* this will take in the input positions where the traces start*/
 		void InputPos(int,double*,double*,double*,int*,float*,const char*, double*, double*, double*);
@@ -61,9 +61,8 @@ class Trace {
 		void SetTraceCFG();
 		
 		/* polarization stuff */
-		void SetAlpha(int,double*);
-		void SetAlpha(int,double*,double*);
-		void SetAlpha(int,double*,double***);
+		void SetAlpha(int,double*,double);
+
 			
 		/* trace function to do basic trace in GSW coords */
 		void TraceGSM(int*,double**,double**,double**,double**,double**,double**);
@@ -96,6 +95,8 @@ class Trace {
 		/* calculate halpha */
 		void CalculateHalpha();
 		void CalculateHalpha(double*);
+		void CalculateHalpha(double***);
+		void CalculateHalpha(double*,double***);
 	
 		/* return things*/
 		void GetTraceNstep(int*);
@@ -170,7 +171,7 @@ class Trace {
 		bool setModel_;
 		bool allocNstep_;
 		bool allocAlpha_;
-		
+		bool allocEqFP_;
 
 		
 
@@ -178,6 +179,7 @@ class Trace {
 		/* field length, R, Rnorm, Halpha, Footprints */
 		int nalpha_;
 		double *alpha0_, *alpha1_;
+		double Delta_;
 		double **S_;
 		double **R_;
 		double **Rnorm_;
@@ -195,8 +197,9 @@ class Trace {
 		void _TraceSM();
 
 		/* halpha functions */
-		void _CalculateHalpha(double);
-		void _CalculateTraceHalpha(int,int,double,double*);
+		bool _CheckHalpha();
+		void _CalculateHalpha();
+		void _CalculateTraceHalpha(int,int,double*);
 		void _CalculateHalphaStartPoints(int i, int j,
 							double *xe0, double *ye0, double *ze0,
 							double *xe1, double *ye1, double *ze1);
@@ -206,4 +209,3 @@ class Trace {
 
 #endif
 
-class Trace;

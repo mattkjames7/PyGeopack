@@ -94,7 +94,7 @@ void TraceFootprintsSM(	int nstep, float ut,
 	double RFN, RFS;
 	RFN = sqrt(pow(xfn,2.0) + pow(yfn,2.0) + pow(zfn,2.0));
 	RFS = sqrt(pow(xfs,2.0) + pow(yfs,2.0) + pow(zfs,2.0));
-	
+
 	double MlatN,MlatS,GlatN,GlatS;
 	double MlonN,MlonS,GlonN,GlonS;
 	double MltN,MltS,MltE,GltN,GltS;
@@ -140,7 +140,7 @@ void TraceFootprintsSM(	int nstep, float ut,
 		zfe[0] = NAN;
 		
 	}
-		
+
 	/* place all the footprints in the output array*/
 	FP[0] = GlatN;
 	FP[1] = GlatS;
@@ -157,5 +157,5 @@ void TraceFootprintsSM(	int nstep, float ut,
 	FP[12] = Lshell;
 	FP[13] = MltE;
 	FP[14] = FlLen;
-	
+
 }

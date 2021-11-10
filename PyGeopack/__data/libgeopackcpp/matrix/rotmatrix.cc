@@ -85,10 +85,8 @@ void GetRotationMatrices(int n, double *Ax, double *Ay, double *Az,
 				double *Bx, double *By, double *Bz, MatrixArray &R) {
 	
 	int i;
-	printf("here\n");
 	for (i=0;i<n;i++) {
-		printf("here\n");
-		GetRotationMatrix(Ax[i],Ay[i],Az[i],Bx[i],By[i],Bz[i],*R.matrix[i]);				
+		GetRotationMatrix(Ax[i],Ay[i],Az[i],Bx[i],By[i],Bz[i],*R.matrix[i]);	
 	}
 	
 }

@@ -6,7 +6,7 @@ CCo=g++ -fPIC -c $(CFLAGS)
 CC=g++ -fPIC $(CFLAGS)
 
 
-all: obj lib
+all: obj lib tests
 
 obj:
 	cd fortran;	make all
@@ -35,6 +35,8 @@ lib:
 		matrix/*.o \
 		*.o -lstdc++ -lgomp
 
+tests:
+	cd test; make all
 	
 
 clean:
@@ -45,5 +47,6 @@ clean:
 	cd tracing; make clean
 	cd tools; make clean
 	cd matrix; make clean
+	cd test; make clean
 	rm *.o
 	rm -v  *.so

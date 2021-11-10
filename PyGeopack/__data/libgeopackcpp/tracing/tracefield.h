@@ -27,25 +27,25 @@ typedef struct TraceCFG {
 	int TraceDir;	
 } TraceCFG;
 
-typedef struct SimpleTrace {
-	int n;
-	int *nstep;
-	double **x;
-	double **y;
-	double **z;
-	double **Bx;
-	double **By;
-	double **Bz;
-} SimpleTrace;
+//typedef struct SimpleTrace {
+	//int n;
+	//int *nstep;
+	//double **x;
+	//double **y;
+	//double **z;
+	//double **Bx;
+	//double **By;
+	//double **Bz;
+//} SimpleTrace;
 
-typedef struct FullTrace {
-	int n;
-	SimpleTrace GSM;
-	SimpleTrace GSE;
-	SimpleTrace SM;
-	ModelCFG mcfg;
-	TraceCFG tcfg;
-} FullTrace;
+//typedef struct FullTrace {
+	//int n;
+	//SimpleTrace GSM;
+	//SimpleTrace GSE;
+	//SimpleTrace SM;
+	//ModelCFG mcfg;
+	//TraceCFG tcfg;
+//} FullTrace;
 
 extern "C" {
 
@@ -69,6 +69,18 @@ extern "C" {
 						int *nstep,
 						double **x, double **y, double **z, 
 						double **bx, double **by, double **bz);		
+						
+	void FullTrace(	int n, double *xin, double *yin, double *zin,
+				int *Date, float *ut, const char *Model,
+				const char *CoordIn, int *nstep,
+				double **xgsm, double **ygsm, double **zgsm, 
+				double **bxgsm, double **bygsm, double **bzgsm,
+				double **xgse, double **ygse, double **zgse, 
+				double **bxgse, double **bygse, double **bzgse,
+				double **xsm, double **ysm, double **zsm, 
+				double **bxsm, double **bysm, double **bzsm,
+				double **s, double **r, double **rnorm, double **FP,
+				int nalpha, double *alpha, double *halpha);
 }
 
 

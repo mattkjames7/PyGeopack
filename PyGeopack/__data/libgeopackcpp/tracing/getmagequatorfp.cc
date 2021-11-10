@@ -67,6 +67,7 @@ void GetMagEquatorFPSM(	double *xsm, double *ysm, double *zsm,
 
 	/*Convert to SM */
 	//smgsw_08_(xfe,yfe,zfe,&x[Imx],&y[Imx],&z[Imx],&dirn);
+
 	xfe[0] = xsm[Imx];
 	yfe[0] = ysm[Imx];
 	zfe[0] = zsm[Imx];
@@ -77,16 +78,16 @@ void GetMagEquatorFPSM(	double *xsm, double *ysm, double *zsm,
 		MltE[0] = fmod(atan2(-yfe[0],-xfe[0])*12.0/M_PI + 24.0,24.0);
 	} else {
 		/*convert to SM and check that it is within 10 degrees of SM x-y plane*/
-		
 		rho = sqrt(xfe[0]*xfe[0] + yfe[0]*yfe[0]);
 		a = acos(rho/Rmx)*180.0/M_PI;
+
 		if (a > 10.0) {
 			/* at this point use the midpoint along the field line */
 			FieldLineMidPoint(xsm,ysm,zsm,s,n,xfe,yfe,zfe);
+
 			//smgsw_08_(xfe,yfe,zfe,&xt,&yt,&zt,&dirn);
 			Lshell[0] = sqrt(xfe[0]*xfe[0] + yfe[0]*yfe[0] + zfe[0]*zfe[0]);
 			MltE[0] = fmod(atan2(-yfe[0],-xfe[0])*12.0/M_PI + 24.0,24.0);
-			
 		} else { 
 			/*just use the largest R*/
 			Lshell[0] = R[Imx];

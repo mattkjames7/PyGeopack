@@ -705,6 +705,44 @@ _CMinimalTrace.argtypes = [	c_int,			#number of traces
 							c_double_ptr_ptr, 	#output Bx
 							c_double_ptr_ptr, 	#output By
 							c_double_ptr_ptr] 	#output Bz
+
+#Full trace function (default options)
+_CFullTrace = libgeopack.FullTrace
+_CFullTrace.restype = None
+_CFullTrace.argtypes = [	c_int,			#number of traces
+							c_double_ptr,	#x coords
+							c_double_ptr,	#y coords
+							c_double_ptr,	#z coords
+							c_int_ptr, 			#Date 
+							c_float_ptr, 		#UT
+							c_char_p,			#Model
+							c_char_p,			#input coord system
+							c_int_ptr, 			#output number of steps
+							c_double_ptr_ptr, 	#output x positions (GSM)
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions							
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz
+							c_double_ptr_ptr, 	#output x positions (GSE)
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions							
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz
+							c_double_ptr_ptr, 	#output x positions (SM)
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions							
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz
+							c_double_ptr_ptr, 	#output distance along field line
+							c_double_ptr_ptr, 	#output R
+							c_double_ptr_ptr, 	#output Rnorm
+							c_double_ptr_ptr, 	#output footprint
+							c_int,				#the number of alphas
+							c_double_ptr,		#alpha (n_alpha,)
+							c_double_ptr,]	#output h_alpha (n*MaxLen*n_alpha)							
 							
 #Trace field lines
 _CTraceField = libgeopack.TraceField

@@ -1,5 +1,5 @@
 import numpy as np
-from ._CFunctions import _CTraceField,_CMinimalTrace
+from ._CFunctions import _CTraceField,_CMinimalTrace,_CFullTrace
 #from .SetCustParam import SetCustParam
 import ctypes
 from ._CoordCode import _CoordCode
@@ -55,6 +55,122 @@ class MinimalTrace(object):
 						_x,_y,_z,
 						_Bx,_By,_Bz)
 
+class FullTrace(object):
+	def __init__(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM',
+					alpha=[0.0,90.0]):
+
+	#Convert input variables to appropriate numpy dtype:
+		self.Xin = np.array(Xin).astype("float64")
+		self.Yin = np.array(Yin).astype("float64")
+		self.Zin = np.array(Zin).astype("float64")
+		self.n = np.int32(self.Xin.size)
+		if np.size(Date) == 1:
+			self.Date = np.zeros(self.n,dtype='int32') + Date
+		else:
+			self.Date = np.array(Date).astype('int32')
+		if np.size(ut) == 1:
+			self.ut = np.zeros(self.n,dtype='float32') + np.float32(ut)
+		else:
+			self.ut = np.array(ut).astype('float32')
+		self.MaxLen = 1000
+		self.Model = Model
+		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
+		self.CoordIn = CoordIn
+		self.CoordInCode =_CTConv(CoordIn,'c_char_p')
+		self.xgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.xgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.xsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+
+		self.nstep = np.zeros(self.n,dtype="int32")
+
+		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Rnorm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+
+		self.nalpha = np.int32(np.size(alpha))
+		self.alpha = np.array(alpha).astype('float64')
+		self.halpha = np.zeros((self.n*self.MaxLen*self.nalpha,),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
+		self.FP = np.zeros((self.n,15),dtype="float64")
+
+		_xgsm = _CTConv(self.xgsm,'c_double_ptr',nd=2)
+		_ygsm = _CTConv(self.ygsm,'c_double_ptr',nd=2)
+		_zgsm = _CTConv(self.zgsm,'c_double_ptr',nd=2)
+
+		_Bxgsm = _CTConv(self.Bxgsm,'c_double_ptr',nd=2)
+		_Bygsm = _CTConv(self.Bygsm,'c_double_ptr',nd=2)
+		_Bzgsm = _CTConv(self.Bzgsm,'c_double_ptr',nd=2)
+		
+		_xgse = _CTConv(self.xgse,'c_double_ptr',nd=2)
+		_ygse = _CTConv(self.ygse,'c_double_ptr',nd=2)
+		_zgse = _CTConv(self.zgse,'c_double_ptr',nd=2)
+
+		_Bxgse = _CTConv(self.Bxgse,'c_double_ptr',nd=2)
+		_Bygse = _CTConv(self.Bygse,'c_double_ptr',nd=2)
+		_Bzgse = _CTConv(self.Bzgse,'c_double_ptr',nd=2)
+		
+		_xsm = _CTConv(self.xsm,'c_double_ptr',nd=2)
+		_ysm = _CTConv(self.ysm,'c_double_ptr',nd=2)
+		_zsm = _CTConv(self.zsm,'c_double_ptr',nd=2)
+
+		_Bxsm = _CTConv(self.Bxsm,'c_double_ptr',nd=2)
+		_Bysm = _CTConv(self.Bysm,'c_double_ptr',nd=2)
+		_Bzsm = _CTConv(self.Bzsm,'c_double_ptr',nd=2)
+		
+		
+		_s = _CTConv(self.s,'c_double_ptr',nd=2)
+		_R = _CTConv(self.R,'c_double_ptr',nd=2)
+		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)		
+		_FP = _CTConv(self.FP,'c_double_ptr',nd=2)
+		
+		_CFullTrace(self.n,self.Xin,self.Yin,self.Zin,
+						self.Date,self.ut,self.ModelCode,
+						self.CoordInCode,
+						self.nstep,
+						_xgsm,_ygsm,_zgsm,
+						_Bxgsm,_Bygsm,_Bzgsm,
+						_xgse,_ygse,_zgse,
+						_Bxgse,_Bygse,_Bzgse,
+						_xsm,_ysm,_zsm,
+						_Bxsm,_Bysm,_Bzsm,
+						_s,_R,_Rnorm,_FP,
+						self.nalpha,self.alpha,self.halpha)
+
+		#reshape the footprints
+		fpnames = ['GlatN','GlatS','MlatN','MlatS',
+					'GlonN','GlonS','MlonN','MlonS',
+					'GltN','GltS','MltN','MltS',
+					'Lshell','MltE','FlLen']
+
+		
+		#flatten things and unpack footprints
+		if self.n == 1 and FlattenSingleTraces:
+			flat = ['nstep','xgsm','ygsm','zgsm','xgse','ygse','zgse',
+					'xsm','ysm','zsm','Bxgsm','Bygsm','Bzgsm','Bxgse',
+					'Bygse','Bzgse','Bxsm','Bysm','Bzsm','s','R','Rnorm']
+			for f in flat:
+				self.__dict__[f] = self.__dict__[f][0]
+			self.halpha = (self.halpha.reshape((self.n,self.nalpha,self.MaxLen)))[0]
+			for i in range(0,15):
+				setattr(self,fpnames[i],self.FP[0,i])
+		else:
+			self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
+			for i in range(0,15):
+				setattr(self,fpnames[i],self.FP[:,i])
 		
 class TraceField(object):
 	'''

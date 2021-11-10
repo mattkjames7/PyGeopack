@@ -134,7 +134,7 @@ Matrix::Matrix(const Matrix &obj) {
 	if (Matrix::DeleteData) {
 		int i;
 		for (i=0;i<Matrix::shape[0];i++) {
-			delete Matrix::data[i];
+			delete[] Matrix::data[i];
 		}
 		delete[] Matrix::data;
 	}

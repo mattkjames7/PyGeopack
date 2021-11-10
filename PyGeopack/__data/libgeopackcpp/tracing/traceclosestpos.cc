@@ -43,11 +43,12 @@ void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
 	double *rx1 = new double[n];
 	double *ry1 = new double[n];
 	double *rz1 = new double[n];
-	
-	/* rotate the traces */
+
+	/* rotate the traces replace these */
 	_RotateTrace(n,T,I,Px,Py,Pz,R,rx,ry,rz);
 	_RotateTrace(n0,T0,0,Px,Py,Pz,R,rx0,ry0,rz0);
 	_RotateTrace(n1,T1,0,Px,Py,Pz,R,rx1,ry1,rz1);
+
 	double Prx = rx[i];
 	double Pry = ry[i];
 	double Prz = rz[i];
@@ -56,13 +57,17 @@ void _ClosestPos(int i, int I, Matrix &R, Trace T, Trace T0, Trace T1,
 	int nc0, nc1;
 	double cx0[4], cy0[4], cz0[4];
 	double cx1[4], cy1[4], cz1[4];
+
 	_Closest4Pos(Prx,Pry,Prz,rx0,ry0,rz0,n0,&nc0,cx0,cy0,cz0);
 	_Closest4Pos(Prx,Pry,Prz,rx1,ry1,rz1,n1,&nc1,cx1,cy1,cz1);
-	
+
 	/* get the closest point where z' = 0 */
 	_ClosestPosSpline(nc0,cx0,cy0,cz0,xc0,yc0,zc0);
 	_ClosestPosSpline(nc1,cx1,cy1,cz1,xc1,yc1,zc1);
-	
+	int j;
+	for (j=0;j<4;j++) {
+	}
+
 	/* clean up */
 	delete[] rx;
 	delete[] ry;
