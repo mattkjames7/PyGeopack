@@ -241,7 +241,7 @@ void FullTrace(	int n, double *xin, double *yin, double *zin,
 	
 	/* the probably dodgy bit...halpha*/
 	T.SetAlpha(nalpha,alpha,0.1);
-	//T.CalculateHalpha(halpha);
+	T.CalculateHalpha(halpha);
 	
 	
 	

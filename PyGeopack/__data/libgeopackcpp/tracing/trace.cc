@@ -3,6 +3,7 @@
 Trace::Trace() {
 	/* initialize all of the boolean parameters */
 	inputPos_ = false;
+	allocV_ = false;
 	inputModelParams_ = false;
 	allocModelParams_ = false;
 	traceConfigured_ = false;
@@ -26,6 +27,9 @@ Trace::Trace() {
 	setModel_ = false;
 	allocNstep_ = false;
 	allocEqFP_ = false;
+	allocEndpoints_ = false;
+	allocMP_ = false;
+	allocAlpha_ = false;
 	/* default trace parameters */
 	SetTraceCFG();
 	
@@ -34,7 +38,7 @@ Trace::Trace() {
 Trace::~Trace() {
 
 	/* check for each allocated variable and delete it*/
-	int i, j;
+	int i, j, k = 0;
 	
 	/* starting positions */
 	if (inputPos_) {
@@ -44,14 +48,14 @@ Trace::~Trace() {
 		delete[] Date_;
 		delete[] ut_;
 	}
-	
+
 	/* SW velocity */
 	if (allocV_) {
 		delete[] Vx_;
 		delete[] Vy_;
 		delete[] Vz_;
 	}
-	
+
 	/* parameters */
 	if (allocModelParams_) {
 		for (i=0;i<n_;i++) {
@@ -60,8 +64,11 @@ Trace::~Trace() {
 		delete[] parmod_;
 		delete[] iopt_;
 	}
-	
+
 	/* traces */
+	if (allocMP_) {
+		delete[] inMP_;
+	}
 	if (allocGSM_) {
 		for (i=0;i<n_;i++) {
 			delete[] xgsm_[i];
@@ -110,12 +117,12 @@ Trace::~Trace() {
 		delete[] bysm_;
 		delete[] bzsm_;
 	}
-	
+
 	/* nstep */
 	if (allocNstep_) {
 		delete[] nstep_;
 	}
-	
+
 	/* field line footprints */
 	if (allocFootprints_) {
 		for (i=0;i<n_;i++) {
@@ -123,7 +130,7 @@ Trace::~Trace() {
 		}
 		delete[] FP_;
 	}
-	
+
 	/* field line distance */
 	if (allocDist_) {
 		for (i=0;i<n_;i++) {
@@ -131,7 +138,7 @@ Trace::~Trace() {
 		}
 		delete[] S_;
 	}
-	
+
 	/* radial distance */
 	if (allocR_) {
 		for (i=0;i<n_;i++) {
@@ -139,7 +146,7 @@ Trace::~Trace() {
 		}
 		delete[] R_;
 	}
-			
+
 	/* r norm distance */
 	if (allocRnorm_) {
 		for (i=0;i<n_;i++) {
@@ -147,8 +154,12 @@ Trace::~Trace() {
 		}
 		delete[] Rnorm_;
 	}
-			
+
 	/* h alpha*/
+	if (allocAlpha_) {
+		delete[] alpha0_;
+		delete[] alpha1_;
+	}
 	if (allocHalpha_) {
 		delete[] Halpha_;
 	}
@@ -161,7 +172,7 @@ Trace::~Trace() {
 		}
 		delete[] Halpha3D_;
 	}
-			
+
 	/* footprint/endpoints */
 	if (allocEndpoints_) {
 		delete[] xfn_;
@@ -170,7 +181,7 @@ Trace::~Trace() {
 		delete[] xfs_;
 		delete[] yfs_;
 		delete[] zfs_;
-	}		
+	}	
 	if (allocEqFP_) {
 		delete[] xfe_;
 		delete[] yfe_;
@@ -507,7 +518,9 @@ void Trace::CalculateHalpha() {
 			Halpha3D_[i][j] = new double[MaxLen_];
 		}
 	}
-	
+	allocHalpha_ = true;
+	allocHalpha3D_ = true;
+
 	_CalculateHalpha();
 }
 
@@ -527,7 +540,8 @@ void Trace::CalculateHalpha(double *halpha) {
 			Halpha3D_[i][j] = new double[MaxLen_];
 		}
 	}
-	
+	allocHalpha3D_ = true;
+
 	_CalculateHalpha();
 }
 
@@ -540,6 +554,8 @@ void Trace::CalculateHalpha(double ***halpha3d) {
 	/* allocate 1D and use pointer for 3D array */
 	Halpha_ = new double[n_*nalpha_*MaxLen_];
 	Halpha3D_ = halpha3d;
+
+	allocHalpha_ = true;
 	
 	_CalculateHalpha();
 }
@@ -694,9 +710,11 @@ void Trace::_TraceGSM() {
 	xfs_ = new double[n_];
 	yfs_ = new double[n_];
 	zfs_ = new double[n_];
+	allocEndpoints_ = true;
 	
 	/* check if all of the starting points are within the MP */
 	inMP_ = new bool[n_];
+	allocMP_ = true;
 	int i;
 	for (i=0;i<n_;i++) {
 		inMP_[i] = WithinMP(x0_[i],y0_[i],z0_[i],parmod_[i][3],parmod_[i][0]);

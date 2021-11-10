@@ -172,6 +172,7 @@ class Trace {
 		bool allocNstep_;
 		bool allocAlpha_;
 		bool allocEqFP_;
+		bool allocMP_;
 
 		
 

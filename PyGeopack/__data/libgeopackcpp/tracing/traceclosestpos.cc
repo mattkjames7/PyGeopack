@@ -110,11 +110,13 @@ void _RotateTrace(	int n, double *x, double *y, double *z,
 void _Closest4Pos(	double Prx, double Pry, double Prz,
 					double *rx, double *ry, double *rz, int n,
 					int *nc, double *cx, double *cy, double *cz) {
-	int i;
+	int i, k=0;
+	printf("k: %d\n",k++);
 	if (n == 0) {
 		nc[0] = 0;
 		return;
 	}
+	printf("k: %d\n",k++);
 	if (n <= 4) {
 		nc[0] = n;
 		for (i=0;i<nc[0];i++) {
@@ -124,20 +126,26 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 		}
 		return;
 	}
-	
+	printf("k: %d\n",k++);
 	double dx, dy, dz;
 	double d;
 	double dmin = INFINITY;
 	int Imind = -1;
-	
+	printf("k: %d\n",k++);
 	/* checkf or z crossing first */
 	for (i=0;i<n-1;i++) {
 		if ((rz[i] >= 0) & (rz[i+1] < 0)) {
+			printf("i: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
 			Imind = i;
 			break;
 		}
+		if (i==(n-2)) {
+			printf("i==n-2: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
+		} else if (i == (n-1)) {
+			printf("i==n-1: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
+		} 
 	}
-	
+	printf("k: %d\n",k++);
 	if (Imind < 0) {
 		/*failing that, try the closest point */
 		for (i=0;i<n;i++) {
@@ -151,9 +159,9 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 			}
 		}
 	}
-	
+	printf("k: %d\n",k++);
 	int I4[4], imn;
-	
+	printf("k: %d\n",k++);
 	if (rz[Imind] < rz[Imind+1]) {
 		I4[0] = Imind - 1;
 		I4[1] = Imind;
@@ -167,25 +175,27 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 		I4[0] = Imind + 2;
 		imn = 3;
 	}		
-	
+	printf("k: %d\n",k++);
 	while (I4[imn] < 0) {
 		for (i=0;i<4;i++) {
 			I4[i]++;
 		}
 	}
-	
+	printf("k: %d\n",k++);
 	while (I4[imn] >= n) {
 		for (i=0;i<4;i++) {
 			I4[i]--;
 		}
 	}
-	
+	printf("k: %d\n",k++);
 	nc[0] = 4;
+	printf("k: %d\n",k++);
 	for (i=0;i<4;i++) {
 		cx[i] = rx[I4[i]];
 		cy[i] = ry[I4[i]];
 		cz[i] = rz[I4[i]];
 	}
+	printf("k: %d\n",k++);
 }
 
 void _ClosestPosSpline(int nc, double *cx, double *cy, double *cz,

@@ -2351,8 +2351,8 @@ void XXXtoYYYUT(	double *Xin, double *Yin, double *Zin, int n,
 	int Year, DyNo, Hr, Mn, Sc;
 	int pDate = -1; /* previous date */
 	float put = -1.0; /* previous time */
-	int i, recalc;
-	double vx, vy, vz, vxp, vyp, vzp, Ms, utd; /* current and previous velocity*/
+	int i, recalc = 0;
+	double vx = 0.0, vy = 0.0, vz = 0.0, vxp = -1.0, vyp = -1.0, vzp = -1.0, Ms, utd; /* current and previous velocity*/
 	
 	
 	/* loop through each date/time/position */
