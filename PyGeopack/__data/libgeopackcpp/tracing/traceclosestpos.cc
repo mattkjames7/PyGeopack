@@ -9,7 +9,7 @@ void TraceClosestPos(	MatrixArray &R,
 						double *xc0, double *yc0, double *zc0,
 						double *xc1, double *yc1, double *zc1) {
 
-				
+	printf("%d %d %d \n",n,n0,n1);		
 	/* calculate the closest position for each step */
 	int i;
 	for (i=0;i<n;i++) {
@@ -55,7 +55,7 @@ void _ClosestPos(	int i, Matrix &R,
 	double Prx = rx[i];
 	double Pry = ry[i];
 	double Prz = rz[i];
-	
+		
 	/* find the four(hopefully) closest values */
 	int nc0, nc1;
 	double cx0[4], cy0[4], cz0[4];
@@ -63,10 +63,16 @@ void _ClosestPos(	int i, Matrix &R,
 
 	_Closest4Pos(Prx,Pry,Prz,rx0,ry0,rz0,n0,&nc0,cx0,cy0,cz0);
 	_Closest4Pos(Prx,Pry,Prz,rx1,ry1,rz1,n1,&nc1,cx1,cy1,cz1);
-
+	
 	/* get the closest point where z' = 0 */
-	_ClosestPosSpline(nc0,cx0,cy0,cz0,xc0,yc0,zc0);
-	_ClosestPosSpline(nc1,cx1,cy1,cz1,xc1,yc1,zc1);
+	double xt0,yt0,zt0;
+	double xt1,yt1,zt1;
+	_ClosestPosSpline(nc0,cx0,cy0,cz0,&xt0,&yt0,&zt0);
+	_ClosestPosSpline(nc1,cx1,cy1,cz1,&xt1,&yt1,&zt1);
+	
+	/* rotate back!! I can't believe I forgot this bit! */
+	_RotateBack(xt0,yt0,zt0,Px,Py,Pz,R,xc0,yc0,zc0);
+	_RotateBack(xt1,yt1,zt1,Px,Py,Pz,R,xc1,yc1,zc1);
 
 	/* clean up */
 	delete[] rx;
@@ -81,6 +87,30 @@ void _ClosestPos(	int i, Matrix &R,
 }
 
 
+void _RotateBack(	double xi, double yi, double zi,
+					double Px, double Py, double Pz,
+					Matrix &R,
+					double *xo, double *yo, double *zo) {
+	
+	int i;
+	Matrix v(3,1);
+	Matrix r(3,1);
+	
+	/* set vector to be rotated */
+	v.data[0][0] = xi;
+	v.data[1][0] = yi;
+	v.data[2][0] = zi;
+		
+	/* rotate */
+	MatrixDot(R,v,false,false,r);
+	
+	/* fill output arrays */
+	xo[0] = r.data[0][0] + Px;
+	yo[0] = r.data[1][0] + Py;
+	zo[0] = r.data[2][0] + Pz;
+	
+	
+}
 void _RotateTrace(	int n, double *x, double *y, double *z, 
 					double Px, double Py, double Pz,
 					Matrix &R,
@@ -102,7 +132,6 @@ void _RotateTrace(	int n, double *x, double *y, double *z,
 		rx[i] = r.data[0][0];
 		ry[i] = r.data[0][1];
 		rz[i] = r.data[0][2];
-	
 	}
 	
 }
@@ -111,12 +140,11 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 					double *rx, double *ry, double *rz, int n,
 					int *nc, double *cx, double *cy, double *cz) {
 	int i, k=0;
-	printf("k: %d\n",k++);
 	if (n == 0) {
 		nc[0] = 0;
 		return;
 	}
-	printf("k: %d\n",k++);
+
 	if (n <= 4) {
 		nc[0] = n;
 		for (i=0;i<nc[0];i++) {
@@ -126,26 +154,21 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 		}
 		return;
 	}
-	printf("k: %d\n",k++);
+
 	double dx, dy, dz;
 	double d;
 	double dmin = INFINITY;
 	int Imind = -1;
-	printf("k: %d\n",k++);
+
 	/* checkf or z crossing first */
 	for (i=0;i<n-1;i++) {
 		if ((rz[i] >= 0) & (rz[i+1] < 0)) {
-			printf("i: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
+			//printf("i: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
 			Imind = i;
 			break;
 		}
-		if (i==(n-2)) {
-			printf("i==n-2: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
-		} else if (i == (n-1)) {
-			printf("i==n-1: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
-		} 
 	}
-	printf("k: %d\n",k++);
+
 	if (Imind < 0) {
 		/*failing that, try the closest point */
 		for (i=0;i<n;i++) {
@@ -159,43 +182,49 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 			}
 		}
 	}
-	printf("k: %d\n",k++);
-	int I4[4], imn;
-	printf("k: %d\n",k++);
+
+	int I4[4], imn, imx;
+
+	if (Imind == (n-1)) {
+		Imind--;
+	}
+
 	if (rz[Imind] < rz[Imind+1]) {
 		I4[0] = Imind - 1;
 		I4[1] = Imind;
 		I4[2] = Imind + 1;
 		I4[3] = Imind + 2;
 		imn = 0;
+		imx = 3;
 	} else {
 		I4[3] = Imind - 1;
 		I4[2] = Imind;
 		I4[1] = Imind + 1;
 		I4[0] = Imind + 2;
 		imn = 3;
+		imx = 0;
 	}		
-	printf("k: %d\n",k++);
+
 	while (I4[imn] < 0) {
 		for (i=0;i<4;i++) {
 			I4[i]++;
 		}
 	}
-	printf("k: %d\n",k++);
-	while (I4[imn] >= n) {
+
+	while (I4[imx] >= n) {
 		for (i=0;i<4;i++) {
 			I4[i]--;
 		}
 	}
-	printf("k: %d\n",k++);
+
 	nc[0] = 4;
-	printf("k: %d\n",k++);
-	for (i=0;i<4;i++) {
+
+	for (i=0;i<nc[0];i++) {
 		cx[i] = rx[I4[i]];
 		cy[i] = ry[I4[i]];
 		cz[i] = rz[I4[i]];
 	}
-	printf("k: %d\n",k++);
+
 }
 
 void _ClosestPosSpline(int nc, double *cx, double *cy, double *cz,

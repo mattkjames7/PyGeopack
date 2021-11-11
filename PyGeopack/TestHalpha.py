@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .TraceField import TraceField
+from .TraceField import TraceField,FullTrace
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.optimize import minimize
 import time
@@ -173,10 +173,15 @@ def _ClosestPos(Ir,R,T,T0,T1):
 	rx0,ry0,rz0 = _RotateTrace(T0,R[Ir],P)
 	rx1,ry1,rz1 = _RotateTrace(T1,R[Ir],P)
 	Pr = np.array([rx[Ir],ry[Ir],rz[Ir]])
+	
+	
 
 	#find 4 values closest
 	Ic0,xc0,yc0,zc0 = _Closest4Pos(Pr,rx0,ry0,rz0,T0.nstep)
 	Ic1,xc1,yc1,zc1 = _Closest4Pos(Pr,rx1,ry1,rz1,T1.nstep)
+	
+
+		
 	
 	#get the closest point, where z' = 0
 	x0,y0,z0 = _ClosestPosSpline(xc0,yc0,zc0)
@@ -212,7 +217,7 @@ def AllClosestPos(T):
 	#get the new trace position
 	alpha0 = 90.0*np.pi/180.0
 	alpha1 = 90.0*np.pi/180.0 + np.pi
-	Delta = 0.1
+	Delta = 0.05
 	
 	dt = Delta*np.cos(alpha0)
 	dp = Delta*np.sin(alpha0)
@@ -230,8 +235,8 @@ def AllClosestPos(T):
 	zt1 = zfe
 	
 	# get two traces at a slightly different positions
-	T0 = TraceField(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
-	T1 = TraceField(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
+	T0 = FullTrace(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
+	T1 = FullTrace(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
 	
 	#get each closest position
 	for i in range(0,T.nstep):
@@ -272,7 +277,7 @@ def GetHalpha(T,ReturnAll=False):
 	#get the new trace position
 	alpha0 = 90.0*np.pi/180.0
 	alpha1 = 90.0*np.pi/180.0 + np.pi
-	Delta = 0.1
+	Delta = 0.05
 	
 	dt = Delta*np.cos(alpha0)
 	dp = Delta*np.sin(alpha0)
@@ -290,9 +295,9 @@ def GetHalpha(T,ReturnAll=False):
 	zt1 = zfe
 	
 	# get two traces at a slightly different positions
-	T0 = TraceField(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
-	T1 = TraceField(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
-	
+	T0 = FullTrace(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
+	T1 = FullTrace(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
+	print(T.nstep,T0.nstep,T1.nstep,xt0,yt0,zt0,xt1,yt1,zt1)
 	#get each closest position
 	for i in range(0,T.nstep):
 		x0[i],y0[i],z0[i],x1[i],y1[i],z1[i] = _ClosestPos(i,R,T,T0,T1)
@@ -324,7 +329,7 @@ def GetHalphaOld(T,ReturnAll=False):
 	#get the new trace position
 	alpha0 = 90.0*np.pi/180.0
 	alpha1 = 90.0*np.pi/180.0 + np.pi
-	Delta = 0.1
+	Delta = 0.05
 	
 	dt = Delta*np.cos(alpha0)
 	dp = Delta*np.sin(alpha0)
@@ -342,8 +347,8 @@ def GetHalphaOld(T,ReturnAll=False):
 	zt1 = zfe
 	
 	# get two traces at a slightly different positions
-	T0 = TraceField(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
-	T1 = TraceField(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
+	T0 = FullTrace(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
+	T1 = FullTrace(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')	
 
 	s0 = T0.s[:T0.nstep]
 	s1 = T1.s[:T1.nstep]
@@ -392,13 +397,13 @@ def TestHalpha(Ir,fig=None,maps=[1,1,0,0]):
 	
 	
 	#firstly - get a trace
-	T = TraceField(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')
+	T = FullTrace(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')
 	ife,xfe,yfe,zfe = _MidPoint(T)
 	
 	#get the new trace position
 	alpha0 = 90.0*np.pi/180.0
 	alpha1 = 90.0*np.pi/180.0 + np.pi
-	Delta = 0.1
+	Delta = 0.05
 	
 	dt = Delta*np.cos(alpha0)
 	dp = Delta*np.sin(alpha0)
@@ -416,8 +421,8 @@ def TestHalpha(Ir,fig=None,maps=[1,1,0,0]):
 	zt1 = zfe
 	
 	# get two traces at a slightly different positions
-	T0 = TraceField(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
-	T1 = TraceField(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')
+	T0 = FullTrace(xt0,yt0,zt0,20120101,12.0,CoordIn='SM')
+	T1 = FullTrace(xt1,yt1,zt1,20120101,12.0,CoordIn='SM')
 	
 	#list the rotation matrices for each vector in the original trace
 	R = _RotMatrices(T)
@@ -478,7 +483,7 @@ def TestHalpha(Ir,fig=None,maps=[1,1,0,0]):
 
 def TestHalpha2(I,fig=None,maps=[1,1,0,0]):
 	#firstly - get a trace
-	T = TraceField(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
+	T = FullTrace(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
 	
 	_t0,_t1,R = AllClosestPos(T)
 	
@@ -511,7 +516,7 @@ def TestHalpha2(I,fig=None,maps=[1,1,0,0]):
 
 def TestHalpha3(fig=None,maps=[1,1,0,0]):
 	#firstly - get a trace
-	T = TraceField(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
+	T = FullTrace(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
 	
 	_t0,_t1,R = AllClosestPos(T)
 	
@@ -544,7 +549,7 @@ def TestHalpha3(fig=None,maps=[1,1,0,0]):
 
 def PlotHalpha(fig=None,maps=[1,1,0,0]):
 	#firstly - get a trace
-	T = TraceField(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
+	T = FullTrace(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
 	
 	t0 = time.time()
 	h = GetHalpha(T)
@@ -568,7 +573,7 @@ def PlotHalpha(fig=None,maps=[1,1,0,0]):
 
 def PlotHalpha2():
 	#firstly - get a trace
-	T = TraceField(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
+	T = FullTrace(5.0,0.0,0.0,20120101,12.0,CoordIn='SM')	
 	
 	t0 = time.time()
 	new = GetHalpha(T,True)
@@ -593,12 +598,16 @@ def PlotHalpha2():
 	ax0.plot(T.s[:T.nstep],ho,color='green',label='old')
 	ax0.plot(T.s[:T.nstep],h0o,color='lime',linestyle='--',label='old')
 	ax0.plot(T.s[:T.nstep],h1o,color='lime',linestyle=':',label='old')
+	ax0.plot(T.s[:T.nstep],T.halpha[0][:T.nstep],color='blue',linestyle='--',label='C++')
+	ax0.plot(T.s[:T.nstep],T.halpha[1][:T.nstep],color='blue',linestyle='--',label='C++')
+	
 	ax1.plot(T.s[:T.nstep],dn,color='red',label='new')
 	ax1.plot(T.s[:T.nstep],d0n,color='orange',linestyle='--',label='new')
 	ax1.plot(T.s[:T.nstep],d1n,color='orange',linestyle=':',label='new')
 	ax1.plot(T.s[:T.nstep],do,color='green',label='old')
 	ax1.plot(T.s[:T.nstep],d0o,color='lime',linestyle='--',label='old')
 	ax1.plot(T.s[:T.nstep],d1o,color='lime',linestyle=':',label='old')
-
 	ax0.legend()
 	ax1.legend()
+
+	return new,old

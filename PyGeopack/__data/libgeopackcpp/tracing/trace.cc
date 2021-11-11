@@ -425,6 +425,7 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 
 	/* calculate rotation matrices */
 	MatrixArray R = TraceRotationMatrices(nstep_[i],bxsm_[i],bysm_[i],bzsm_[i]);
+	
 
 	/* do two traces */
 	Trace T0 = TracePosition(i,xe0,ye0,ze0);
@@ -461,6 +462,7 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 		h1 = d/Delta_;
 		
 		halpha[k] = 0.5*(h0 + h1);
+		//printf("%d %5.3f %5.3f %5.3f\n",k,h0,h1,halpha[k]);
 	}
 	/* free up memory */
 	delete[] xc0;

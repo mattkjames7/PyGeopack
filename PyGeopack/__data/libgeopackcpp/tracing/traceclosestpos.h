@@ -24,6 +24,11 @@ void _ClosestPos(	int i, Matrix &R,
 					int n1, double *x1, double *y1, double *z1,
 					double *xc0, double *yc0, double *zc0,
 					double *xc1, double *yc1, double *zc1);
+
+void _RotateBack(	double xi, double yi, double zi,
+					double Px, double Py, double Pz,
+					Matrix &R,
+					double *xo, double *yo, double *zo);
 				
 void _RotateTrace(	int n, double *x, double *y, double *z, 
 					double Px, double Py, double Pz,
