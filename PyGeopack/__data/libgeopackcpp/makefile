@@ -1,5 +1,5 @@
 # CFLAGS for CC
-CFLAGS=-lm -fopenmp
+CFLAGS=-lm -fopenmp -g
 
 # Compiler
 CCo=g++ -fPIC -c $(CFLAGS)

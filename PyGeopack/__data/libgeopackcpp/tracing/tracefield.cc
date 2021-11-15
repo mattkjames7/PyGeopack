@@ -228,6 +228,7 @@ void FullTrace(	int n, double *xin, double *yin, double *zin,
 
 	/* model parameters (automatically get from TData) */
 	T.SetModelParams();
+	T.Verbose_ = true;
 
 	/*trace then convert to GSE and SM */
 	T.TraceGSM(nstep,xgsm,ygsm,zgsm,bxgsm,bygsm,bzgsm);

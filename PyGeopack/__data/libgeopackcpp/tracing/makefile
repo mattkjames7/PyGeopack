@@ -1,5 +1,5 @@
 # CFLAGS for CC
-CFLAGS=-lm -Wall
+CFLAGS=-lm -Wall -g
 
 # Compiler
 CCo=g++ -fPIC -c $(CFLAGS)

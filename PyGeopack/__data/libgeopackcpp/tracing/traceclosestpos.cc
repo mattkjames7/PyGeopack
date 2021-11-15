@@ -9,7 +9,6 @@ void TraceClosestPos(	MatrixArray &R,
 						double *xc0, double *yc0, double *zc0,
 						double *xc1, double *yc1, double *zc1) {
 
-	printf("%d %d %d \n",n,n0,n1);		
 	/* calculate the closest position for each step */
 	int i;
 	for (i=0;i<n;i++) {
@@ -39,17 +38,17 @@ void _ClosestPos(	int i, Matrix &R,
 	double *rx = new double[n];
 	double *ry = new double[n];
 	double *rz = new double[n];
-	double *rx0 = new double[n];
-	double *ry0 = new double[n];
-	double *rz0 = new double[n];
-	double *rx1 = new double[n];
-	double *ry1 = new double[n];
-	double *rz1 = new double[n];
+	double *rx0 = new double[n0];
+	double *ry0 = new double[n0];
+	double *rz0 = new double[n0];
+	double *rx1 = new double[n1];
+	double *ry1 = new double[n1];
+	double *rz1 = new double[n1];
 
 	/* rotate the traces replace these */
 	_RotateTrace(n,x,y,z,Px,Py,Pz,R,rx,ry,rz);
-	_RotateTrace(n,x0,y0,z0,Px,Py,Pz,R,rx0,ry0,rz0);
-	_RotateTrace(n,x1,y1,z1,Px,Py,Pz,R,rx1,ry1,rz1);
+	_RotateTrace(n0,x0,y0,z0,Px,Py,Pz,R,rx0,ry0,rz0);
+	_RotateTrace(n1,x1,y1,z1,Px,Py,Pz,R,rx1,ry1,rz1);
 
 
 	double Prx = rx[i];
@@ -144,7 +143,7 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 		nc[0] = 0;
 		return;
 	}
-
+	
 	if (n <= 4) {
 		nc[0] = n;
 		for (i=0;i<nc[0];i++) {
@@ -161,13 +160,13 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 	int Imind = -1;
 
 	/* checkf or z crossing first */
-	for (i=0;i<n-1;i++) {
-		if ((rz[i] >= 0) & (rz[i+1] < 0)) {
-			//printf("i: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
-			Imind = i;
-			break;
-		}
-	}
+	//for (i=0;i<n-1;i++) {
+		//if ((rz[i] >= 0) & (rz[i+1] < 0)) {
+			////printf("i: %d; n: %d - %f %f\n",i,n,rz[i],rz[i+1]);
+			//Imind = i;
+			//break;
+		//}
+	//}
 
 	if (Imind < 0) {
 		/*failing that, try the closest point */
@@ -216,7 +215,6 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 			I4[i]--;
 		}
 	}
-
 	nc[0] = 4;
 
 	for (i=0;i<nc[0];i++) {
@@ -224,7 +222,6 @@ void _Closest4Pos(	double Prx, double Pry, double Prz,
 		cy[i] = ry[I4[i]];
 		cz[i] = rz[I4[i]];
 	}
-
 }
 
 void _ClosestPosSpline(int nc, double *cx, double *cy, double *cz,
@@ -239,4 +236,9 @@ void _ClosestPosSpline(int nc, double *cx, double *cy, double *cz,
 	Sx.Interpolate(1,&z0,xc);
 	Sy.Interpolate(1,&z0,yc);
 	zc[0] = 0.0;
+}
+
+
+void dbg() {
+	printf("Debug?\n");
 }

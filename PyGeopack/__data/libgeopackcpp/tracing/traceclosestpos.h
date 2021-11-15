@@ -11,6 +11,8 @@
 #endif
 class Trace;
 
+void dbg();
+
 void TraceClosestPos(	MatrixArray &R,
 						int n, double *x, double *y, double *z,
 						int n0, double *x0, double *y0, double *z0,
