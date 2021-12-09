@@ -399,7 +399,7 @@ Trace Trace::TracePosition(int i, double x, double y, double z) {
 	/* set the model up */
 	T.SetModel(Model_);
 	T.SetModelParams(&iopt_[i],&parmod_[i]);
-	T.SetTraceCFG(alt_,MaxLen_,DSMax_,false,0);
+	T.SetTraceCFG(alt_-1000.0,MaxLen_,DSMax_,false,0);
 	
 	/* run the GSM trace */
 	T.TraceGSM();
@@ -424,7 +424,7 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 	_CalculateHalphaStartPoints(i,j,&xe0,&ye0,&ze0,&xe1,&ye1,&ze1);
 
 	/* calculate rotation matrices */
-	MatrixArray R = TraceRotationMatrices(nstep_[i],bxsm_[i],bysm_[i],bzsm_[i]);
+	//MatrixArray R = TraceRotationMatrices(nstep_[i],bxsm_[i],bysm_[i],bzsm_[i]);
 	
 
 	/* do two traces */
@@ -439,11 +439,11 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 	double *yc1 = new double[nstep_[i]];
 	double *zc1 = new double[nstep_[i]];
 
-	TraceClosestPos(	R,
-						nstep_[i],xsm_[i],ysm_[i],zsm_[i],
-						T0.nstep_[0],T0.xsm_[0],T0.ysm_[0],T0.zsm_[0],
-						T1.nstep_[0],T1.xsm_[0],T1.ysm_[0],T1.zsm_[0],
-						xc0,yc0,zc0,xc1,yc1,zc1);
+	interptraceClosestPos(	nstep_[i],xsm_[i],ysm_[i],zsm_[i],
+							bxsm_[i],bysm_[i],bzsm_[i],
+							T0.nstep_[0],T0.xsm_[0],T0.ysm_[0],T0.zsm_[0],T0.S_[0],
+							T1.nstep_[0],T1.xsm_[0],T1.ysm_[0],T1.zsm_[0],T1.S_[0],
+							xc0,yc0,zc0,xc1,yc1,zc1);
 
 	/* calculate distances and then halpha */
 	double d, dx, dy, dz, h0, h1;
@@ -754,7 +754,9 @@ void Trace::_TraceGSM() {
 		}
 							
 	}	
-	
+	if (Verbose_) { 
+		printf("\n");
+	}
 }
 
 

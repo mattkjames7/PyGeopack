@@ -15,7 +15,7 @@
 #include "converttracecoords.h"
 #include "../withinmp.h"
 #include "../matrix/matrixarray.h"
-#include "traceclosestpos.h"
+#include "interptraceclosestpos.h"
 #include "tracerotationmatrices.h"
 
 

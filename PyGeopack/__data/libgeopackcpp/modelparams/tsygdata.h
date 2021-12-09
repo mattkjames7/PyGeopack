@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libdatetime/ContUT.h"
+#include "../tools/BubbleArgSort.h"
 #endif
 
 
@@ -38,6 +39,7 @@ class TsygData {
 		void GetVx(int n, int *Date, float *ut, double *Vx);
 		void GetVy(int n, int *Date, float *ut, double *Vy);
 		void GetVz(int n, int *Date, float *ut, double *Vz);
+		void InterpParam(int n, double *utc, double fillval, bool fill, double *xi, double *xo);
 	
 	private:
 		/* these indices should be used to speed up interpolation,but
@@ -54,6 +56,11 @@ class TsygData {
 		/* for interpolation of parameters */
 		void PopulateMonthInds();
 		int _MonthStartInd(int Date);
+		int _GetIndex(double utc, int prevI);
+		double _Interp(	double t,
+						double t0, double x0,
+						double t1, double x1,
+						double fillval);
 };
 
 

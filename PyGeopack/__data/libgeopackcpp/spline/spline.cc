@@ -89,17 +89,33 @@ Spline::Spline(int n, double *x, double *y) {
 	delete[] mu;
 	delete[] alpha;
 	
+	del_ = true;
+
+}
+
+Spline::Spline(const Spline &obj) {
+	/* set n_ equal to n-1 */
+	n_ = obj.n_;
+	
+	del_ = false;
+	x_ = obj.x_;
+	y_ = obj.y_;
+	a_ = obj.a_;
+	b_ = obj.b_;
+	c_ = obj.c_;
+	d_ = obj.d_;
+
 }
 
 Spline::~Spline() {
-	
-	delete[] a_;
-	delete[] b_;
-	delete[] c_;
-	delete[] d_;
-	delete[] x_;
-	delete[] y_;
-
+	if (del_) {
+		delete[] a_;
+		delete[] b_;
+		delete[] c_;
+		delete[] d_;
+		delete[] x_;
+		delete[] y_;
+	}
 }
 
 void Spline::Interpolate(int n, double *x, double *y) {

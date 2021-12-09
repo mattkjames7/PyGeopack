@@ -746,10 +746,10 @@ _CFullTrace.argtypes = [	c_int,			#number of traces
 							
 #Trace field lines
 _CTraceField = libgeopack.TraceField
-_CTraceField.argtypes = [	c_double_ptr,		#x coord
+_CTraceField.argtypes = [	c_int, 				#number of positions (n)
+							c_double_ptr,		#x coord
 							c_double_ptr, 		#y coord
 							c_double_ptr, 		#z coord
-							c_int, 				#number of positions (n)
 							c_int_ptr, 			#Date 
 							c_float_ptr, 		#UT
 							c_char_p,			#Model
@@ -758,27 +758,41 @@ _CTraceField.argtypes = [	c_double_ptr,		#x coord
 							c_double_ptr,		#Vx
 							c_double_ptr,		#Vy
 							c_double_ptr,		#Vz
-							c_char_p,			#input coord system
-							c_char_p,			#output coord system
 							c_double, 			#termination altitude (km)
 							c_int,				#Maximum number of trace steps
 							c_double,			#Max step size
 							c_bool,				#Verbose 
 							c_int,				#TraceDir
-							c_double_ptr_ptr, 	#output x positions
+							c_char_p,			#input coord system
+							c_int_ptr, 			#output number of steps
+							c_double_ptr_ptr, 	#output x positions (GSM)
 							c_double_ptr_ptr, 	#output y positions
 							c_double_ptr_ptr, 	#output z positions
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz							
+							c_double_ptr_ptr, 	#output x positions (GSE)
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz							
+							c_double_ptr_ptr, 	#output x positions (SM)
+							c_double_ptr_ptr, 	#output y positions
+							c_double_ptr_ptr, 	#output z positions
+							c_double_ptr_ptr, 	#output Bx
+							c_double_ptr_ptr, 	#output By
+							c_double_ptr_ptr, 	#output Bz							
 							c_double_ptr_ptr, 	#output distance along field line
 							c_double_ptr_ptr, 	#output R
 							c_double_ptr_ptr, 	#output Rnorm
+							c_double_ptr_ptr, 	#output footprint info
 							c_int,				#the number of alphas
 							c_double_ptr,		#alpha (n_alpha,)
-							c_double_ptr_ptr,	#output h_alpha (n,MaxLen*n_alpha)
-							c_double_ptr_ptr, 	#output Bx
-							c_double_ptr_ptr, 	#output By
-							c_double_ptr_ptr, 	#output Bz
-							c_int_ptr, 			#output number of steps
-							c_double_ptr_ptr] 	#output footprint info
+							c_double_ptr]	#output h_alpha (n,MaxLen,n_alpha)
+
+							
+							
 
 _CTraceField.restype = None
 
@@ -850,3 +864,70 @@ _CCalculateG.argtypes = [	ct.c_int,		#number of elements
 							c_double_ptr,	#G1
 							c_double_ptr] 	#G2
 _CCalculateG.restype = None
+
+#get the solar wind velocity
+_CFillSWVelocity = libgeopack.FillSWVelocity
+_CFillSWVelocity.argtypes = [	c_int,			#number of elements
+								c_int_ptr,		#Date array
+								c_float_ptr,	#UT array
+								c_double_ptr,	#Vx
+								c_double_ptr,	#Vy
+								c_double_ptr]	#Vz
+_CFillSWVelocity.restype = None
+
+#get T89 parameters
+_CFillT89Params = libgeopack.FillT89Params
+_CFillT89Params.argtypes = [	c_int,				#number of elements
+								c_int_ptr,			#Date array
+								c_float_ptr,		#UT array
+								c_double_ptr,		#Kp
+								c_int_ptr,			#iopt
+								c_double_ptr_ptr]	#parmod
+_CFillT89Params.restype = None
+
+#get T96 parameters
+_CFillT96Params = libgeopack.FillT96Params
+_CFillT96Params.argtypes = [	c_int,				#number of elements
+								c_int_ptr,			#Date array
+								c_float_ptr,		#UT array
+								c_double_ptr,		#Pdyn
+								c_double_ptr,		#SymH
+								c_double_ptr,		#By
+								c_double_ptr,		#Bz
+								c_int_ptr,			#iopt
+								c_double_ptr_ptr]	#parmod
+_CFillT96Params.restype = None
+
+#get T01 parameters
+_CFillT01Params = libgeopack.FillT01Params
+_CFillT01Params.argtypes = [	c_int,				#number of elements
+								c_int_ptr,			#Date array
+								c_float_ptr,		#UT array
+								c_double_ptr,		#Pdyn
+								c_double_ptr,		#SymH
+								c_double_ptr,		#By
+								c_double_ptr,		#Bz
+								c_double_ptr,		#G1
+								c_double_ptr,		#G2
+								c_int_ptr,			#iopt
+								c_double_ptr_ptr]	#parmod
+_CFillT01Params.restype = None
+
+#get TS05 parameters
+_CFillTS05Params = libgeopack.FillTS05Params
+_CFillTS05Params.argtypes = [	c_int,				#number of elements
+								c_int_ptr,			#Date array
+								c_float_ptr,		#UT array
+								c_double_ptr,		#Pdyn
+								c_double_ptr,		#SymH
+								c_double_ptr,		#By
+								c_double_ptr,		#Bz
+								c_double_ptr,		#W1
+								c_double_ptr,		#W2
+								c_double_ptr,		#W3
+								c_double_ptr,		#W4
+								c_double_ptr,		#W5
+								c_double_ptr,		#W6
+								c_int_ptr,			#iopt
+								c_double_ptr_ptr]	#parmod
+_CFillTS05Params.restype = None

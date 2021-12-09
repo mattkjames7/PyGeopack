@@ -13,6 +13,157 @@ void FreeParams() {
 	delete TData;
 }
 
+void FillSWVelocity(int n, int *Date, float *ut,
+					double *Vx, double *Vy, double *Vz) {
+	/* fill the missing values using interpolation */					
+	
+	/* convert time first */
+	double *utc = new double[n];
+	ContUT(n,Date,ut,utc);					
+	
+	/* interpolate/fill gaps in the velocity arrays*/
+	TData->InterpParam(n,utc,-428.0,true,TData->Vx_,Vx);
+	TData->InterpParam(n,utc,1.5,true,TData->Vy_,Vy);
+	TData->InterpParam(n,utc,0.0,true,TData->Vz_,Vz);
+	
+}
+
+void FillT89Params(	int n, int *Date, float *ut,
+					double *Kp, int *iopt, double **parmod) {
+	
+	/* convert time first */
+	double *utc = new double[n];
+	ContUT(n,Date,ut,utc);		
+	
+	/* get the Kp index */
+	TData->InterpParam(n,utc,1.0,true,TData->Kp_,Kp);
+	
+	/* fill the iopt and parmod arrays */
+	int i, j;
+	for (i=0;i<n;i++) {
+		iopt[i] = ((int) Kp[i]) + 1;
+		if (iopt[i] < 1) {
+			iopt[i] = 1;
+		}
+		if (iopt[i] > 7) {
+			iopt[i] = 7;
+		}
+		for (j=0;j<10;j++) {
+			parmod[i][j] = 0.0;
+		}
+	}	
+						
+}
+
+void FillT96Params(	int n, int *Date, float *ut,
+					double *Pdyn, double *SymH,
+					double *By, double *Bz, 
+					int *iopt, double **parmod) {
+	
+	/* convert time first */
+	double *utc = new double[n];
+	ContUT(n,Date,ut,utc);		
+	
+	/* get the parameters */
+	TData->InterpParam(n,utc,2.0,true,TData->Pdyn_,Pdyn);
+	TData->InterpParam(n,utc,0.0,true,TData->SymH_,SymH);
+	TData->InterpParam(n,utc,0.0,true,TData->By_,By);
+	TData->InterpParam(n,utc,0.0,true,TData->Bz_,Bz);
+
+	
+	/* fill the iopt and parmod arrays */
+	int i, j;
+	for (i=0;i<n;i++) {
+		iopt[i] = 0;
+		parmod[i][0] = Pdyn[i];
+		parmod[i][1] = SymH[i];
+		parmod[i][2] = By[i];
+		parmod[i][3] = Bz[i];
+		for (j=4;j<10;j++) {
+			parmod[i][j] = 0.0;
+		}
+	}	
+						
+}
+
+void FillT01Params(	int n, int *Date, float *ut,
+					double *Pdyn, double *SymH,
+					double *By, double *Bz, 
+					double *G1, double *G2,
+					int *iopt, double **parmod) {
+	
+	/* convert time first */
+	double *utc = new double[n];
+	ContUT(n,Date,ut,utc);		
+	
+	/* get the parameters */
+	TData->InterpParam(n,utc,2.0,true,TData->Pdyn_,Pdyn);
+	TData->InterpParam(n,utc,0.0,true,TData->SymH_,SymH);
+	TData->InterpParam(n,utc,0.0,true,TData->By_,By);
+	TData->InterpParam(n,utc,0.0,true,TData->Bz_,Bz);
+	TData->InterpParam(n,utc,0.0,true,TData->G1_,G1);
+	TData->InterpParam(n,utc,0.0,true,TData->G2_,G2);
+	
+	/* fill the iopt and parmod arrays */
+	int i, j;
+	for (i=0;i<n;i++) {
+		iopt[i] = 0;
+		parmod[i][0] = Pdyn[i];
+		parmod[i][1] = SymH[i];
+		parmod[i][2] = By[i];
+		parmod[i][3] = Bz[i];
+		parmod[i][4] = G1[i];
+		parmod[i][5] = G2[i];
+		for (j=6;j<10;j++) {
+			parmod[i][j] = 0.0;
+		}
+	}	
+						
+}
+
+void FillTS05Params(int n, int *Date, float *ut,
+					double *Pdyn, double *SymH,
+					double *By, double *Bz, 
+					double *W1, double *W2,
+					double *W3, double *W4,
+					double *W5, double *W6,
+					int *iopt, double **parmod) {
+	
+	/* convert time first */
+	double *utc = new double[n];
+	ContUT(n,Date,ut,utc);		
+	
+	/* get the parameters */
+	TData->InterpParam(n,utc,2.0,true,TData->Pdyn_,Pdyn);
+	TData->InterpParam(n,utc,0.0,true,TData->SymH_,SymH);
+	TData->InterpParam(n,utc,0.0,true,TData->By_,By);
+	TData->InterpParam(n,utc,0.0,true,TData->Bz_,Bz);
+	TData->InterpParam(n,utc,0.0,true,TData->W1_,W1);
+	TData->InterpParam(n,utc,0.0,true,TData->W2_,W2);
+	TData->InterpParam(n,utc,0.0,true,TData->W3_,W3);
+	TData->InterpParam(n,utc,0.0,true,TData->W4_,W4);
+	TData->InterpParam(n,utc,0.0,true,TData->W5_,W5);
+	TData->InterpParam(n,utc,0.0,true,TData->W6_,W6);
+	
+	/* fill the iopt and parmod arrays */
+	int i, j;
+	for (i=0;i<n;i++) {
+		iopt[i] = 0;
+		parmod[i][0] = Pdyn[i];
+		parmod[i][1] = SymH[i];
+		parmod[i][2] = By[i];
+		parmod[i][3] = Bz[i];
+		parmod[i][4] = W1[i];
+		parmod[i][5] = W2[i];
+		parmod[i][6] = W3[i];
+		parmod[i][7] = W4[i];
+		parmod[i][8] = W5[i];
+		parmod[i][9] = W6[i];
+
+	}	
+						
+}
+
 void GetModelParams(int n, int *Date, float *ut, const char *Model,
 							double *Vxin, double *Vyin, double *Vzin,
 							double *Kpin, double *Pdynin, double *SymHin,

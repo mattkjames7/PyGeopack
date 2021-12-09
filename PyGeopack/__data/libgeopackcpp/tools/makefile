@@ -12,6 +12,7 @@ obj:
 	$(CCo) carttospherical.cc -o carttospherical.o
 	$(CCo) linterp.cc -o linterp.o
 	$(CCo) reverseelements.cc -o reverseelements.o
+	$(CCo) BubbleArgSort.cc -o BubbleArgSort.o
 		
 clean:
 	rm -v *.o

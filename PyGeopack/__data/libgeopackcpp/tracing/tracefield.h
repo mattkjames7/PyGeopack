@@ -49,7 +49,23 @@ typedef struct TraceCFG {
 
 extern "C" {
 
-	void TraceField (	double *Xin, double *Yin, double *Zin, int n, 
+	void TraceField(int n, double *xin, double *yin, double *zin,
+					int *Date, float *ut, const char *Model,
+					int *iopt, double **parmod, 
+					double *Vx, double *Vy, double *Vz,
+					double alt, int MaxLen, double DSMax, 
+					bool Verbose, int TraceDir,
+					const char *CoordIn, int *nstep,
+					double **xgsm, double **ygsm, double **zgsm, 
+					double **bxgsm, double **bygsm, double **bzgsm,
+					double **xgse, double **ygse, double **zgse, 
+					double **bxgse, double **bygse, double **bzgse,
+					double **xsm, double **ysm, double **zsm, 
+					double **bxsm, double **bysm, double **bzsm,
+					double **s, double **r, double **rnorm, double **FP,
+					int nalpha, double *alpha, double *halpha);
+
+	void TraceFieldOld (	double *Xin, double *Yin, double *Zin, int n, 
 						int *Date, float *ut, const char *Model, 
 						int *iopt, double **parmod, 
 						double *Vx, double *Vy, double *Vz,

@@ -322,58 +322,99 @@ class TraceField(object):
 		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
 		self.CoordIn = CoordIn
 		self.CoordInCode =_CTConv(CoordIn,'c_char_p')
-		self.CoordOutCode =_CTConv("GSM",'c_char_p')
 		self.alt = np.float64(alt)
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
-		self.xgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.ygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.zgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Rnorm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bxgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bzgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.nstep = np.zeros(self.n,dtype="int32")
-		self.FP = np.zeros((self.n,15),dtype="float64")
+
 		self.Verb = np.bool(Verbose)
 		if TraceDir == 'both':
 			TraceDir = 0
 		self.TraceDir = np.int32(TraceDir)
+
+
+
+		self.xgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.xgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.xsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.ysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.zsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bxsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Bzsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+
+		self.nstep = np.zeros(self.n,dtype="int32")
+
+		self.s = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.R = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+		self.Rnorm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
+
 		self.nalpha = np.int32(np.size(alpha))
 		self.alpha = np.array(alpha).astype('float64')
-		self.halpha = np.zeros((self.n,self.MaxLen*self.nalpha),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
+		self.halpha = np.zeros((self.n*self.MaxLen*self.nalpha,),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
+		self.FP = np.zeros((self.n,15),dtype="float64")
+
+		_xgsm = _CTConv(self.xgsm,'c_double_ptr',nd=2)
+		_ygsm = _CTConv(self.ygsm,'c_double_ptr',nd=2)
+		_zgsm = _CTConv(self.zgsm,'c_double_ptr',nd=2)
+
+		_Bxgsm = _CTConv(self.Bxgsm,'c_double_ptr',nd=2)
+		_Bygsm = _CTConv(self.Bygsm,'c_double_ptr',nd=2)
+		_Bzgsm = _CTConv(self.Bzgsm,'c_double_ptr',nd=2)
 		
-		_x = _CTConv(self.xgsm,'c_double_ptr',nd=2)
-		_y = _CTConv(self.ygsm,'c_double_ptr',nd=2)
-		_z = _CTConv(self.zgsm,'c_double_ptr',nd=2)
+		_xgse = _CTConv(self.xgse,'c_double_ptr',nd=2)
+		_ygse = _CTConv(self.ygse,'c_double_ptr',nd=2)
+		_zgse = _CTConv(self.zgse,'c_double_ptr',nd=2)
+
+		_Bxgse = _CTConv(self.Bxgse,'c_double_ptr',nd=2)
+		_Bygse = _CTConv(self.Bygse,'c_double_ptr',nd=2)
+		_Bzgse = _CTConv(self.Bzgse,'c_double_ptr',nd=2)
+		
+		_xsm = _CTConv(self.xsm,'c_double_ptr',nd=2)
+		_ysm = _CTConv(self.ysm,'c_double_ptr',nd=2)
+		_zsm = _CTConv(self.zsm,'c_double_ptr',nd=2)
+
+		_Bxsm = _CTConv(self.Bxsm,'c_double_ptr',nd=2)
+		_Bysm = _CTConv(self.Bysm,'c_double_ptr',nd=2)
+		_Bzsm = _CTConv(self.Bzsm,'c_double_ptr',nd=2)
+		
+		
 		_s = _CTConv(self.s,'c_double_ptr',nd=2)
 		_R = _CTConv(self.R,'c_double_ptr',nd=2)
-		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)
-		_Bx = _CTConv(self.Bxgsm,'c_double_ptr',nd=2)
-		_By = _CTConv(self.Bygsm,'c_double_ptr',nd=2)
-		_Bz = _CTConv(self.Bzgsm,'c_double_ptr',nd=2)
+		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)		
 		_FP = _CTConv(self.FP,'c_double_ptr',nd=2)
-		_halpha = _CTConv(self.halpha,'c_double_ptr',nd=2)
+
+
 		
 		#get model parameters
 		self.params = GetModelParams(self.Date,self.ut,Model,**kwargs)
 		_Parmod = _CTConv(self.params['parmod'],'c_double_ptr',nd=2)
 		
 		#call the C code
-		_CTraceField(self.Xin,self.Yin,self.Zin,self.n,
-					self.Date,self.ut,self.ModelCode,
-					self.params['iopt'],_Parmod,
-					self.params['Vx'],self.params['Vy'],self.params['Vz'],
-					self.CoordInCode,self.CoordOutCode,
-					self.alt,self.MaxLen,self.DSMax,
-					self.Verb,self.TraceDir,
-					_x,_y,_z,
-					_s,_R,_Rnorm,
-					self.nalpha,self.alpha,_halpha,
-					_Bx,_By,_Bz,
-					self.nstep,_FP)
+		_CTraceField(	self.n,self.Xin,self.Yin,self.Zin,
+						self.Date,self.ut,self.ModelCode,
+						self.params['iopt'],_Parmod,
+						self.params['Vx'],self.params['Vy'],self.params['Vz'],
+						self.alt,self.MaxLen,self.DSMax,
+						self.Verb,self.TraceDir,
+						self.CoordInCode,self.nstep,
+						_xgsm,_ygsm,_zgsm,
+						_Bxgsm,_Bygsm,_Bzgsm,
+						_xgse,_ygse,_zgse,
+						_Bxgse,_Bygse,_Bzgse,
+						_xsm,_ysm,_zsm,
+						_Bxsm,_Bysm,_Bzsm,
+						_s,_R,_Rnorm,_FP,
+						self.nalpha,self.alpha,self.halpha)
 
 		#reshape the footprints
 		fpnames = ['GlatN','GlatS','MlatN','MlatS',
@@ -382,9 +423,6 @@ class TraceField(object):
 					'Lshell','MltE','FlLen']
 
 
-		#calculate vectors in GSE and SM
-		self._CoordConvTrace()
-		
 		
 		#flatten things and unpack footprints
 		if self.n == 1 and FlattenSingleTraces:
@@ -404,70 +442,6 @@ class TraceField(object):
 		
 	
 	
-	def _CoordConvTrace(self):
-		
-		#GSE
-		self.xgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.ygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.zgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bxgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bygse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bzgse = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan	
-		
-		#SM	
-		self.xsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.ysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.zsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bxsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bysm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan
-		self.Bzsm = np.zeros((self.n,self.MaxLen),dtype="float64") + np.nan		
-		
-		
-		
-		for i in range(0,self.n):
-			ns = self.nstep[i]
-			V = [self.params['Vx'][i],self.params['Vy'][i],self.params['Vz'][i]]
-			x = self.xgsm[i][:ns]
-			y = self.ygsm[i][:ns]
-			z = self.zgsm[i][:ns]
-			Bx = self.Bxgsm[i][:ns]
-			By = self.Bygsm[i][:ns]
-			Bz = self.Bzgsm[i][:ns]
-
-			self.xgse[i][:ns],self.ygse[i][:ns],self.zgse[i][:ns] = \
-				GSMtoGSE(x,y,z,self.Date[i],self.ut[i],V=V)
-			self.xsm[i][:ns],self.ysm[i][:ns],self.zsm[i][:ns] = \
-				GSMtoSM(x,y,z,self.Date[i],self.ut[i],V=V)
-			self.Bxgse[i][:ns],self.Bygse[i][:ns],self.Bzgse[i][:ns] = \
-				GSMtoGSE(Bx,By,Bz,self.Date[i],self.ut[i],V=V)
-			self.Bxsm[i][:ns],self.Bysm[i][:ns],self.Bzsm[i][:ns] = \
-				GSMtoSM(Bx,By,Bz,self.Date[i],self.ut[i],V=V)
-
-	def CalculateHalpha(self,I,Polarization='toroidal'):
-		'''
-		Calculate h_alpha (see Singer et al 1982)
-		
-		'''
-		
-		#get field line in SM coords
-		
-		#get starting positions near the equator
-		
-		#get two traces in opposite polarization directions
-		
-		#rescale s (distance along the field line) to match this field line
-		
-		#create splines
-		
-		#interpolate field lines to match original
-		
-		#calculate nearest points
-		
-		#get halphas
-		
-		#take mean of two halphas
-		
-		pass
 		
 	def GetTrace(self,I,Coord='SM'):
 		'''

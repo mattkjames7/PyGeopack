@@ -2,7 +2,58 @@
 
 /* this could be come a wrapper function where I/O is converted to
  * a few typedefs */
-void TraceField(double *Xin, double *Yin, double *Zin, int n, 
+void TraceField(int n, double *xin, double *yin, double *zin,
+				int *Date, float *ut, const char *Model,
+				int *iopt, double **parmod, 
+				double *Vx, double *Vy, double *Vz,
+				double alt, int MaxLen, double DSMax, 
+				bool Verbose, int TraceDir,
+				const char *CoordIn, int *nstep,
+				double **xgsm, double **ygsm, double **zgsm, 
+				double **bxgsm, double **bygsm, double **bzgsm,
+				double **xgse, double **ygse, double **zgse, 
+				double **bxgse, double **bygse, double **bzgse,
+				double **xsm, double **ysm, double **zsm, 
+				double **bxsm, double **bysm, double **bzsm,
+				double **s, double **r, double **rnorm, double **FP,
+				int nalpha, double *alpha, double *halpha) {
+	
+
+	/* create the trace object */
+	Trace T;
+
+	/* input the position */
+	T.InputPos(n,xin,yin,zin,Date,ut,CoordIn,Vx,Vy,Vz);
+
+	/* set which model we are using */
+	T.SetModel(Model);
+
+	/* model parameters and trace config */
+	T.SetModelParams(iopt,parmod);
+	T.SetTraceCFG(alt,MaxLen,DSMax,Verbose,TraceDir);
+
+	/*trace then convert to GSE and SM */
+	T.TraceGSM(nstep,xgsm,ygsm,zgsm,bxgsm,bygsm,bzgsm);
+	T.TraceGSE(xgse,ygse,zgse,bxgse,bygse,bzgse);
+	T.TraceSM(xsm,ysm,zsm,bxsm,bysm,bzsm);
+
+	/* some other bits and bobs - the order is quite important here*/
+	T.CalculateTraceDist(s);
+	T.CalculateTraceR(r);
+	T.CalculateTraceFP(FP);
+	T.CalculateTraceRnorm(rnorm);
+	
+	/* the probably dodgy bit...halpha*/
+	if (nalpha > 0) {
+		T.SetAlpha(nalpha,alpha,0.05);
+		T.CalculateHalpha(halpha);
+	}
+
+
+}
+/* this could be come a wrapper function where I/O is converted to
+ * a few typedefs */
+void TraceFieldOld(double *Xin, double *Yin, double *Zin, int n, 
 				int *Date, float *ut, const char *Model, 
 				int *iopt, double **parmod, 
 				double *Vx, double *Vy, double *Vz,

@@ -174,6 +174,125 @@ int TsygData::_MonthStartInd(int Date) {
 	return MonthInds_[ind];
 }
 
+int TsygData::_GetIndex(double utc, int prevI) {
+	
+	/* output the index of the utc just before the provided time */
+	int ind = -1;
+
+	/* check that the data are loaded */
+	if (!loaded_) {
+		return -1;
+	}
+	
+	/* check that utc is within the limits of the parameters stored in the object */
+	if ((utc < utc_[0]) || (utc > utc_[n_-1])) {
+		return -1;
+	}
+	
+	/* start index */
+	int start;
+	if ((prevI >= 0) && (prevI < n_-1)) {
+		start = prevI;
+	} else {
+		start = 0;
+	}
+
+	/* check if the current index is still good */
+	if ((utc >= utc_[start]) && (utc < utc_[start+1])) {
+		return start;
+	}
+	
+	/* check which direction we need to go in */
+	int dir, end;
+	if (utc >= utc_[start]) {
+		dir = 1;
+	} else {
+		dir = -1;
+	}
+
+	/* loop */
+	int i;
+	if (dir == 1) {
+		ind = n_ - 2;
+		for (i=start;i<n_-1;i++) {
+			if ((utc >= utc_[i]) && (utc < utc_[i+1])) {
+				ind = i;
+				break;
+			} 
+		}
+	} else { 
+		ind = 0;
+		for (i=start;i>0;i--) {
+			if ((utc >= utc_[i-1]) && (utc < utc_[i])) {
+				ind = i - 1;
+				break;
+			} 
+		}
+	}
+	return ind;
+}
+
+
+double TsygData::_Interp(	double t,
+							double t0, double x0,
+							double t1, double x1,
+							double fillval) {
+	
+	/* check that inputs are finite */
+	if ((!isfinite(x0)) || (!isfinite(x1))) {
+		printf("bad x0/x1\n");
+		printf("%f %f\n",x0,x1);
+		return fillval;
+	}
+	
+	
+	/* interpolate between t0 and t1 */
+	
+	/* get the gradient */
+	double m = (x1-x0)/(t1-t0);
+	
+	/* and dt */
+	double dt = t - t0;
+	//printf("m: %f; dt: %f\n",m,dt);
+	/* interpolate */
+	return x0 + dt*m;
+}
+
+	
+
+void TsygData::InterpParam(int n, double *utc, double fillval, bool fill, double *xi, double *xo) {
+	
+
+	/* create an index array */
+	int *ind = new int[n];
+	
+	/* sort the indices (or just fill them in) */
+	BubbleArgSort(n,utc,ind);
+	
+	/* loop through each value, storing previous index */
+	int prevI = 0, currI;
+	int i;
+	int Date;
+	float ut;
+	for (i=0;i<n;i++) {
+		if ((!fill) || (!isfinite(xo[i]))) {
+			currI = _GetIndex(utc[ind[i]],prevI);
+			ContUTtoDate(1,&utc[ind[i]],&Date,&ut);
+			if (currI == -1) {
+				xo[ind[i]] = fillval;
+			} else {
+				xo[ind[i]] = _Interp(utc[ind[i]],utc_[currI],xi[currI],utc_[currI+1],xi[currI+1],fillval);
+			}
+			prevI = currI;
+		}
+	}	
+	
+	/* delete indices */
+	delete[] ind;
+}
+
+
+
 double TsygData::InterpParam(double *x, int Date, float ut) {
 
 	/*First get the start ind for searching for this date*/
