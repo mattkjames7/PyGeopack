@@ -1,13 +1,8 @@
 import numpy as np
 from ._CFunctions import _CTraceField
 import ctypes
-from ._CoordCode import _CoordCode
-from .GetModelParams import GetModelParams
-from .GSMtoGSE import GSMtoGSE
-from .GSMtoSM import GSMtoSM
-from ._CTConv import _CTConv
-		
-
+from .Params.GetModelParams import GetModelParams
+from .ct import ctString,ctBool,ctInt,ctIntPtr,ctFloatPtr,ctDoublePtr,ctDoublePtrPtr
 		
 class TraceField(object):
 	'''
@@ -156,9 +151,9 @@ class TraceField(object):
 		else:
 			self.ut = np.array(ut).astype('float32')
 		self.Model = Model
-		self.ModelCode = ctypes.c_char_p(Model.encode('utf-8'))
+		self.ModelCode = ctString(Model)
 		self.CoordIn = CoordIn
-		self.CoordInCode =_CTConv(CoordIn,'c_char_p')
+		self.CoordInCode = ctString(CoordIn)
 		self.alt = np.float64(alt)
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
@@ -200,41 +195,41 @@ class TraceField(object):
 		self.halpha = np.zeros((self.n*self.MaxLen*self.nalpha,),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
 		self.FP = np.zeros((self.n,15),dtype="float64")
 
-		_xgsm = _CTConv(self.xgsm,'c_double_ptr',nd=2)
-		_ygsm = _CTConv(self.ygsm,'c_double_ptr',nd=2)
-		_zgsm = _CTConv(self.zgsm,'c_double_ptr',nd=2)
+		_xgsm = ctDoublePtrPtr(self.xgsm)
+		_ygsm = ctDoublePtrPtr(self.ygsm)
+		_zgsm = ctDoublePtrPtr(self.zgsm)
 
-		_Bxgsm = _CTConv(self.Bxgsm,'c_double_ptr',nd=2)
-		_Bygsm = _CTConv(self.Bygsm,'c_double_ptr',nd=2)
-		_Bzgsm = _CTConv(self.Bzgsm,'c_double_ptr',nd=2)
+		_Bxgsm = ctDoublePtrPtr(self.Bxgsm)
+		_Bygsm = ctDoublePtrPtr(self.Bygsm)
+		_Bzgsm = ctDoublePtrPtr(self.Bzgsm)
 		
-		_xgse = _CTConv(self.xgse,'c_double_ptr',nd=2)
-		_ygse = _CTConv(self.ygse,'c_double_ptr',nd=2)
-		_zgse = _CTConv(self.zgse,'c_double_ptr',nd=2)
+		_xgse = ctDoublePtrPtr(self.xgse)
+		_ygse = ctDoublePtrPtr(self.ygse)
+		_zgse = ctDoublePtrPtr(self.zgse)
 
-		_Bxgse = _CTConv(self.Bxgse,'c_double_ptr',nd=2)
-		_Bygse = _CTConv(self.Bygse,'c_double_ptr',nd=2)
-		_Bzgse = _CTConv(self.Bzgse,'c_double_ptr',nd=2)
+		_Bxgse = ctDoublePtrPtr(self.Bxgse)
+		_Bygse = ctDoublePtrPtr(self.Bygse)
+		_Bzgse = ctDoublePtrPtr(self.Bzgse)
 		
-		_xsm = _CTConv(self.xsm,'c_double_ptr',nd=2)
-		_ysm = _CTConv(self.ysm,'c_double_ptr',nd=2)
-		_zsm = _CTConv(self.zsm,'c_double_ptr',nd=2)
+		_xsm = ctDoublePtrPtr(self.xsm)
+		_ysm = ctDoublePtrPtr(self.ysm)
+		_zsm = ctDoublePtrPtr(self.zsm)
 
-		_Bxsm = _CTConv(self.Bxsm,'c_double_ptr',nd=2)
-		_Bysm = _CTConv(self.Bysm,'c_double_ptr',nd=2)
-		_Bzsm = _CTConv(self.Bzsm,'c_double_ptr',nd=2)
+		_Bxsm = ctDoublePtrPtr(self.Bxsm)
+		_Bysm = ctDoublePtrPtr(self.Bysm)
+		_Bzsm = ctDoublePtrPtr(self.Bzsm)
 		
 		
-		_s = _CTConv(self.s,'c_double_ptr',nd=2)
-		_R = _CTConv(self.R,'c_double_ptr',nd=2)
-		_Rnorm = _CTConv(self.Rnorm,'c_double_ptr',nd=2)		
-		_FP = _CTConv(self.FP,'c_double_ptr',nd=2)
+		_s = ctDoublePtrPtr(self.s)
+		_R = ctDoublePtrPtr(self.R)
+		_Rnorm = ctDoublePtrPtr(self.Rnorm)		
+		_FP = ctDoublePtrPtr(self.FP)
 
 
 		
 		#get model parameters
 		self.params = GetModelParams(self.Date,self.ut,Model,**kwargs)
-		_Parmod = _CTConv(self.params['parmod'],'c_double_ptr',nd=2)
+		_Parmod = ctDoublePtrPtr(self.params['parmod'])
 		
 		#call the C code
 		_CTraceField(	self.n,self.Xin,self.Yin,self.Zin,

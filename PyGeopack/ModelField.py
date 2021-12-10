@@ -1,8 +1,8 @@
 import numpy as np
 from ._CFunctions import _CModelField
 import ctypes
-from ._CTConv import _CTConv
-from .GetModelParams import GetModelParams
+from .Params.GetModelParams import GetModelParams
+from .ct import ctString,ctBool,ctInt,ctIntPtr,ctFloatPtr,ctDoublePtr,ctDoublePtrPtr
 
 def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', 
 			CoordIn='GSM', CoordOut='GSM', ReturnParams=False ,**kwargs):
@@ -77,23 +77,23 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96',
 
 
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = _CTConv(Xin,'c_double_ptr')
-	_Yin = _CTConv(Yin,'c_double_ptr')
-	_Zin = _CTConv(Zin,'c_double_ptr')
-	_n = _CTConv(_Xin.size,'c_int')
-	_Date = _CTConv(np.zeros(_n,dtype='int32') + Date,'c_int_ptr')
-	_ut = _CTConv(np.zeros(_n,dtype='float32') + ut,'c_float_ptr')
-	_SameTime = _CTConv(False,'c_bool')
-	_Model = _CTConv(Model,'c_char_p')
-	_CoordIn = _CTConv(CoordIn,'c_char_p')
-	_CoordOut =_CTConv(CoordOut,'c_char_p')
+	_Xin = ctDoublePtr(Xin)
+	_Yin = ctDoublePtr(Yin)
+	_Zin = ctDoublePtr(Zin)
+	_n = ctInt(_Xin.size)
+	_Date = ctIntPtr(np.zeros(_n,dtype='int32') + Date)
+	_ut = ctFloatPtr(np.zeros(_n,dtype='float32') + ut)
+	_SameTime = ctBool(False)
+	_Model = ctString(Model)
+	_CoordIn = ctString(CoordIn)
+	_CoordOut = ctString(CoordOut)
 	_Bx = np.zeros(_n,dtype="float64")
 	_By = np.zeros(_n,dtype="float64")
 	_Bz = np.zeros(_n,dtype="float64")
 
 	#get the model parameters
 	params = GetModelParams(_Date,_ut,Model,**kwargs)
-	_Parmod = _CTConv(params['parmod'],'c_double_ptr',nd=2)
+	_Parmod = ctDoublePtrPtr(params['parmod'])
 	
 	_CModelField(_n, _Xin, _Yin, _Zin, _Date, _ut, _SameTime, 
 			_Model, params['iopt'], _Parmod, params['Vx'], params['Vy'],
