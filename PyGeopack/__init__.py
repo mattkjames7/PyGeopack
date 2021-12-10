@@ -51,7 +51,3 @@ from .SMtoMAG import SMtoMAG
 from .MAGtoSM import MAGtoSM
 
 from .ConvCoords import ConvCoords
-
-
-#temporary test function
-from .TestHalpha import TestHalpha,TestHalpha2,TestHalpha3,PlotHalpha,PlotHalpha2
