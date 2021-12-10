@@ -78,25 +78,6 @@ extern "C" {
 						double **Bx, double **By, double **Bz, 
 						int *nstep, double **FP);
 						
-
-	void MinimalTrace(int n, double *xin, double *yin, double *zin,
-						int *Date, float *ut, const char *Model,
-						const char *CoordIn, const char *CoordOut,
-						int *nstep,
-						double **x, double **y, double **z, 
-						double **bx, double **by, double **bz);		
-						
-	void FullTrace(	int n, double *xin, double *yin, double *zin,
-				int *Date, float *ut, const char *Model,
-				const char *CoordIn, int *nstep,
-				double **xgsm, double **ygsm, double **zgsm, 
-				double **bxgsm, double **bygsm, double **bzgsm,
-				double **xgse, double **ygse, double **zgse, 
-				double **bxgse, double **bygse, double **bzgse,
-				double **xsm, double **ysm, double **zsm, 
-				double **bxsm, double **bysm, double **bzsm,
-				double **s, double **r, double **rnorm, double **FP,
-				int nalpha, double *alpha, double *halpha);
 }
 
 

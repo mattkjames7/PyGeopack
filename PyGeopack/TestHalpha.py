@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .TraceField import TraceField,FullTrace
+from .TraceField import TraceField
 from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.optimize import minimize
 import time
