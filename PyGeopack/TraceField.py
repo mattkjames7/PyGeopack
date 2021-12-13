@@ -308,7 +308,7 @@ class TraceField(object):
 		
 		'''
 		if Coord.upper() in ['GSM','GSE','SM']:
-			if np.size(np.shape(self.xgsm) == 1):
+			if np.size(np.shape(self.xgsm)) == 1:
 				x = getattr(self,'x'+Coord.lower())[:self.nstep]
 				y = getattr(self,'y'+Coord.lower())[:self.nstep]
 				z = getattr(self,'z'+Coord.lower())[:self.nstep]
@@ -323,7 +323,7 @@ class TraceField(object):
 				by = getattr(self,'by'+Coord.lower())[i,:self.nstep[i]]
 				bz = getattr(self,'bz'+Coord.lower())[i,:self.nstep[i]]
 		else:
-			if np.size(np.shape(self.xgsm) == 1):
+			if np.size(np.shape(self.xgsm)) == 1:
 				x = self.xgsm[:self.nstep]
 				y = self.ygsm[:self.nstep]
 				z = self.zgsm[:self.nstep]
@@ -333,12 +333,12 @@ class TraceField(object):
 				Date = self.Date
 				ut = self.ut
 			else:
-				x = self.xgsm[i,:self.nstep][i]
-				y = self.ygsm[i,:self.nstep][i]
-				z = self.zgsm[i,:self.nstep][i]
-				bx = self.Bxgsm[i,:self.nstep][i]
-				by = self.Bygsm[i,:self.nstep][i]
-				bz = self.Bzgsm[i,:self.nstep][i]
+				x = self.xgsm[i,:self.nstep[i]]
+				y = self.ygsm[i,:self.nstep[i]]
+				z = self.zgsm[i,:self.nstep[i]]
+				bx = self.Bxgsm[i,:self.nstep[i]]
+				by = self.Bygsm[i,:self.nstep[i]]
+				bz = self.Bzgsm[i,:self.nstep[i]]
 				Date = self.Date[i]
 				ut = self.ut[i]
 			if  Coord.upper() in ['GEO','MAG','GEI']:
@@ -346,7 +346,7 @@ class TraceField(object):
 				bx,by,bz = ConvCoords(bx,by,bz,Date,ut,'GSM',Coord)
 			else:
 				print('Coordinate system {:s} not recognised,returning GSM'.format(Coord.upper()))
-		if np.size(np.shape(self.xgsm) == 1):
+		if np.size(np.shape(self.xgsm)) == 1:
 			r = self.R[:self.nstep]
 			s = self.s[:self.nstep]
 			h = self.halpha[:,:self.nstep]
