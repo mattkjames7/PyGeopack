@@ -479,11 +479,13 @@ void Trace::_CalculateHalpha() {
 	int i, j, k, I, J;
 	for (i=0;i<n_;i++) {
 		I = i*(nalpha_*MaxLen_);
-		for (j=0;j<nalpha_;j++) {
-			J = j*MaxLen_;
-			_CalculateTraceHalpha(i,j,Halpha3D_[i][j]);
-			for (k=0;k<MaxLen_;k++) {
-				Halpha_[I + J + k] = Halpha3D_[i][j][k];
+		if (isfinite(FP_[i][12])) {
+			for (j=0;j<nalpha_;j++) {
+				J = j*MaxLen_;
+				_CalculateTraceHalpha(i,j,Halpha3D_[i][j]);
+				for (k=0;k<MaxLen_;k++) {
+					Halpha_[I + J + k] = Halpha3D_[i][j][k];
+				}
 			}
 		}
 	}

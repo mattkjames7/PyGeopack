@@ -3,6 +3,8 @@ from ._CFunctions import _CTraceField
 import ctypes
 from .Params.GetModelParams import GetModelParams
 from .ct import ctString,ctBool,ctInt,ctIntPtr,ctFloatPtr,ctDoublePtr,ctDoublePtrPtr
+import PyFileIO as pf
+from .Coords.ConvCoords import ConvCoords
 		
 class TraceField(object):
 	'''
@@ -35,8 +37,32 @@ class TraceField(object):
 		R = sqrt(x**2 + y**2 + z**2)		
 	
 	'''
+	def __init__(self,*args,**kwargs):
+		
+		#check if we are loading from file, or creating new traces
+		if len(args) == 1:
+			#read from file
+			print(args)
+			self._Load(*args)
+		elif len(args) == 5:
+			#new traces
+			self._Trace(*args,**kwargs)
+		else:
+			#something's wrong
+			print('TraceField was supplied with {:d} arguments...'.format(len(args)))
+			print('Either use 1 string (file name), or')
+			print('use 5 inputs (x,y,z,Date,ut)')
+			return None
+		
 	
-	def __init__(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM', 
+	
+	
+	def _Load(self,fname):
+		self.__dict__ = pf.LoadObject(fname)
+	
+	
+	
+	def _Trace(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM', 
 				alt=100.0,MaxLen=1000,DSMax=1.0,FlattenSingleTraces=True,
 				Verbose=False,TraceDir='both',alpha=[0.0,90.0],**kwargs):
 		'''
@@ -151,9 +177,9 @@ class TraceField(object):
 		else:
 			self.ut = np.array(ut).astype('float32')
 		self.Model = Model
-		self.ModelCode = ctString(Model)
+		ModelCode = ctString(Model)
 		self.CoordIn = CoordIn
-		self.CoordInCode = ctString(CoordIn)
+		CoordInCode = ctString(CoordIn)
 		self.alt = np.float64(alt)
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
@@ -195,6 +221,7 @@ class TraceField(object):
 		self.halpha = np.zeros((self.n*self.MaxLen*self.nalpha,),dtype="float64") + np.nan #hopefully this will be reshaped to (n,nalpha,MaxLen)
 		self.FP = np.zeros((self.n,15),dtype="float64")
 
+		#these are 2D pointers
 		_xgsm = ctDoublePtrPtr(self.xgsm)
 		_ygsm = ctDoublePtrPtr(self.ygsm)
 		_zgsm = ctDoublePtrPtr(self.zgsm)
@@ -233,12 +260,12 @@ class TraceField(object):
 		
 		#call the C code
 		_CTraceField(	self.n,self.Xin,self.Yin,self.Zin,
-						self.Date,self.ut,self.ModelCode,
+						self.Date,self.ut,ModelCode,
 						self.params['iopt'],_Parmod,
 						self.params['Vx'],self.params['Vy'],self.params['Vz'],
 						self.alt,self.MaxLen,self.DSMax,
 						self.Verb,self.TraceDir,
-						self.CoordInCode,self.nstep,
+						CoordInCode,self.nstep,
 						_xgsm,_ygsm,_zgsm,
 						_Bxgsm,_Bygsm,_Bzgsm,
 						_xgse,_ygse,_zgse,
@@ -275,20 +302,107 @@ class TraceField(object):
 	
 	
 		
-	def GetTrace(self,I,Coord='SM'):
+	def GetTrace(self,i,Coord='SM'):
 		'''
 		Return traces in a given coordinate system
 		
 		'''
-		pass
-		
-	def Save(self,fname):
+		if Coord.upper() in ['GSM','GSE','SM']:
+			if np.size(np.shape(self.xgsm) == 1):
+				x = getattr(self,'x'+Coord.lower())[:self.nstep]
+				y = getattr(self,'y'+Coord.lower())[:self.nstep]
+				z = getattr(self,'z'+Coord.lower())[:self.nstep]
+				bx = getattr(self,'bx'+Coord.lower())[:self.nstep]
+				by = getattr(self,'by'+Coord.lower())[:self.nstep]
+				bz = getattr(self,'bz'+Coord.lower())[:self.nstep]
+			else:
+				x = getattr(self,'x'+Coord.lower())[i,:self.nstep[i]]
+				y = getattr(self,'y'+Coord.lower())[i,:self.nstep[i]]
+				z = getattr(self,'z'+Coord.lower())[i,:self.nstep[i]]
+				bx = getattr(self,'bx'+Coord.lower())[i,:self.nstep[i]]
+				by = getattr(self,'by'+Coord.lower())[i,:self.nstep[i]]
+				bz = getattr(self,'bz'+Coord.lower())[i,:self.nstep[i]]
+		else:
+			if np.size(np.shape(self.xgsm) == 1):
+				x = self.xgsm[:self.nstep]
+				y = self.ygsm[:self.nstep]
+				z = self.zgsm[:self.nstep]
+				bx = self.Bxgsm[:self.nstep]
+				by = self.Bygsm[:self.nstep]
+				bz = self.Bzgsm[:self.nstep]
+				Date = self.Date
+				ut = self.ut
+			else:
+				x = self.xgsm[i,:self.nstep][i]
+				y = self.ygsm[i,:self.nstep][i]
+				z = self.zgsm[i,:self.nstep][i]
+				bx = self.Bxgsm[i,:self.nstep][i]
+				by = self.Bygsm[i,:self.nstep][i]
+				bz = self.Bzgsm[i,:self.nstep][i]
+				Date = self.Date[i]
+				ut = self.ut[i]
+			if  Coord.upper() in ['GEO','MAG','GEI']:
+				x,y,z = ConvCoords(x,y,z,Date,ut,'GSM',Coord)
+				bx,by,bz = ConvCoords(bx,by,bz,Date,ut,'GSM',Coord)
+			else:
+				print('Coordinate system {:s} not recognised,returning GSM'.format(Coord.upper()))
+		if np.size(np.shape(self.xgsm) == 1):
+			r = self.R[:self.nstep]
+			s = self.s[:self.nstep]
+			h = self.halpha[:,:self.nstep]
+		else:
+			r = self.R[i,:self.nstep[i]]
+			s = self.s[i,:self.nstep[i]]
+			h = self.halpha[i,:,:self.nstep[i]]
+			
+		return (x,y,z,bx,by,bz,r,s,h)
+			
+	def Save(self,fname,RemoveNAN=True):
 		'''
 		Save the data in this object to file.
 		'''
-		pass
+		#we could save a fair bit of space by removing NANs - this will
+		#mean that simple 2D arrays will become arrays of objects
+		if RemoveNAN:
+			ptrs = ['xgsm','ygsm','zgsm','xgse','ygse','zgse',
+					'xsm','ysm','zsm','Bxgsm','Bygsm','Bzgsm','Bxgse',
+					'Bygse','Bzgse','Bxsm','Bysm','Bzsm','s','R','Rnorm']
+			out = {}
+			keys = list(self.__dict__.keys())
+			for k in keys:
+				if k in ptrs:
+					#fix these
+					if np.size(self.__dict__[k].shape) == 1:
+						#flattened
+						tmp = self.__dict__[k][:self.nstep]
+					else: 
+						#2D
+						tmp = np.zeros(self.n,dtype='object')
+						for i in range(0,self.n):
+							tmp[i] = self.__dict__[k][i,:self.nstep[i]]
+					out[k] = tmp
+				elif k == 'halpha':
+					if np.size(self.halpha.shape) == 2:
+						#flattened
+						tmp = np.zeros(self.halpha.shape[0],dtype='object')
+						for i in range(0,self.nalpha):
+							tmp[i] = self.halpha[i,:self.nstep]
+					else:
+						#3D
+						tmp = np.zeros(self.halpha.shape[:2],dtype='object')
+						for i in range(0,self.n):
+							for j in range(0,self.nalpha):
+								tmp[i,j] = self.halpha[i,j,:self.nstep[i]]
+					out[k] = tmp
+				else:
+					out[k] = self.__dict__[k]
+		else:
+			out = self.__dict__
 		
+		print('Saving file: {:s}'.format(fname))
 		
+		pf.SaveObject(out,fname)
+
 		
 	
 		

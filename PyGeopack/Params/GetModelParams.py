@@ -66,7 +66,7 @@ def GetModelParams(Date, ut, Model,**kwargs):
 	#Convert input variables to appropriate numpy dtype:
 	out['Date'] = np.zeros(n_,dtype='int32') + np.array(Date).astype('int32')
 	out['ut'] = np.zeros(n_,dtype='float32') + np.array(ut).astype('float32')
-	out['Model'] = ct.ctString(Model)
+	out['Model'] = Model
 	out['iopt'] = np.zeros(n_,dtype="int32")
 	out['parmod'] = np.zeros((n_,10),dtype='float64')
 	_parmod = ct.ctDoublePtrPtr(out['parmod'])
