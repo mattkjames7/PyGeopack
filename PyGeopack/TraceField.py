@@ -41,9 +41,13 @@ class TraceField(object):
 		
 		#check if we are loading from file, or creating new traces
 		if len(args) == 1:
-			#read from file
-			print(args)
-			self._Load(*args)
+			#read from file or dict
+			if isinstance(args[0],dict):
+				#assume that the dictionary provided is a TraceField dict
+				self.__dict__ = args[0]
+			else:
+				#load from file
+				self._Load(*args)
 		elif len(args) == 5:
 			#new traces
 			self._Trace(*args,**kwargs)
@@ -361,6 +365,14 @@ class TraceField(object):
 		'''
 		Save the data in this object to file.
 		'''
+		out = TraceDict(RemoveNAN)
+		
+		print('Saving file: {:s}'.format(fname))
+		
+		pf.SaveObject(out,fname)
+
+	def TraceDict(self,RemoveNAN=True)
+	
 		#we could save a fair bit of space by removing NANs - this will
 		#mean that simple 2D arrays will become arrays of objects
 		if RemoveNAN:
@@ -398,12 +410,8 @@ class TraceField(object):
 					out[k] = self.__dict__[k]
 		else:
 			out = self.__dict__
-		
-		print('Saving file: {:s}'.format(fname))
-		
-		pf.SaveObject(out,fname)
-
-		
+				
+		return out
 	
 		
 	
