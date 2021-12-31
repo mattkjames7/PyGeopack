@@ -591,8 +591,8 @@ void Trace::_CalculateHalphaStartPoints(int i, int j,
 	
 	/* rotate based on the local time */
 	beta = atan2(-xfe_[i],-yfe_[i]);
-	dx = dp*cos(beta) - dt*sin(beta);
-	dy = dp*sin(beta) + dt*cos(beta);
+	dy = dp*cos(beta) - dt*sin(beta);
+	dx = dp*sin(beta) + dt*cos(beta);
 	
 	/* set the start points of the new field lines */
 	xe0[0] = xfe_[i] + dx;

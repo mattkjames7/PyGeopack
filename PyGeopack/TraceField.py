@@ -5,7 +5,9 @@ from .Params.GetModelParams import GetModelParams
 from .ct import ctString,ctBool,ctInt,ctIntPtr,ctFloatPtr,ctDoublePtr,ctDoublePtrPtr
 import PyFileIO as pf
 from .Coords.ConvCoords import ConvCoords
-		
+import matplotlib.pyplot as plt
+from scipy.interpolate import InterpolatedUnivariateSpline,interp1d
+
 class TraceField(object):
 	'''
 	Object which stores the result of a magnetic field trace or a series 
@@ -297,10 +299,12 @@ class TraceField(object):
 			self.halpha = (self.halpha.reshape((self.n,self.nalpha,self.MaxLen)))[0]
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[0,i])
+			self.flat = True
 		else:
 			self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
 			for i in range(0,15):
 				setattr(self,fpnames[i],self.FP[:,i])
+			self.flat = False
 
 		
 	
@@ -312,22 +316,22 @@ class TraceField(object):
 		
 		'''
 		if Coord.upper() in ['GSM','GSE','SM']:
-			if np.size(np.shape(self.xgsm)) == 1:
+			if self.flat:
 				x = getattr(self,'x'+Coord.lower())[:self.nstep]
 				y = getattr(self,'y'+Coord.lower())[:self.nstep]
 				z = getattr(self,'z'+Coord.lower())[:self.nstep]
-				bx = getattr(self,'bx'+Coord.lower())[:self.nstep]
-				by = getattr(self,'by'+Coord.lower())[:self.nstep]
-				bz = getattr(self,'bz'+Coord.lower())[:self.nstep]
+				bx = getattr(self,'Bx'+Coord.lower())[:self.nstep]
+				by = getattr(self,'By'+Coord.lower())[:self.nstep]
+				bz = getattr(self,'Bz'+Coord.lower())[:self.nstep]
 			else:
-				x = getattr(self,'x'+Coord.lower())[i,:self.nstep[i]]
-				y = getattr(self,'y'+Coord.lower())[i,:self.nstep[i]]
-				z = getattr(self,'z'+Coord.lower())[i,:self.nstep[i]]
-				bx = getattr(self,'bx'+Coord.lower())[i,:self.nstep[i]]
-				by = getattr(self,'by'+Coord.lower())[i,:self.nstep[i]]
-				bz = getattr(self,'bz'+Coord.lower())[i,:self.nstep[i]]
+				x = getattr(self,'x'+Coord.lower())[i][:self.nstep[i]]
+				y = getattr(self,'y'+Coord.lower())[i][:self.nstep[i]]
+				z = getattr(self,'z'+Coord.lower())[i][:self.nstep[i]]
+				bx = getattr(self,'Bx'+Coord.lower())[i][:self.nstep[i]]
+				by = getattr(self,'By'+Coord.lower())[i][:self.nstep[i]]
+				bz = getattr(self,'Bz'+Coord.lower())[i][:self.nstep[i]]
 		else:
-			if np.size(np.shape(self.xgsm)) == 1:
+			if self.flat:
 				x = self.xgsm[:self.nstep]
 				y = self.ygsm[:self.nstep]
 				z = self.zgsm[:self.nstep]
@@ -337,12 +341,12 @@ class TraceField(object):
 				Date = self.Date
 				ut = self.ut
 			else:
-				x = self.xgsm[i,:self.nstep[i]]
-				y = self.ygsm[i,:self.nstep[i]]
-				z = self.zgsm[i,:self.nstep[i]]
-				bx = self.Bxgsm[i,:self.nstep[i]]
-				by = self.Bygsm[i,:self.nstep[i]]
-				bz = self.Bzgsm[i,:self.nstep[i]]
+				x = self.xgsm[i][:self.nstep[i]]
+				y = self.ygsm[i][:self.nstep[i]]
+				z = self.zgsm[i][:self.nstep[i]]
+				bx = self.Bxgsm[i][:self.nstep[i]]
+				by = self.Bygsm[i][:self.nstep[i]]
+				bz = self.Bzgsm[i][:self.nstep[i]]
 				Date = self.Date[i]
 				ut = self.ut[i]
 			if  Coord.upper() in ['GEO','MAG','GEI']:
@@ -350,16 +354,18 @@ class TraceField(object):
 				bx,by,bz = ConvCoords(bx,by,bz,Date,ut,'GSM',Coord)
 			else:
 				print('Coordinate system {:s} not recognised,returning GSM'.format(Coord.upper()))
-		if np.size(np.shape(self.xgsm)) == 1:
+		if self.flat:
 			r = self.R[:self.nstep]
+			rnorm = self.Rnorm[:self.nstep]
 			s = self.s[:self.nstep]
 			h = self.halpha[:,:self.nstep]
 		else:
-			r = self.R[i,:self.nstep[i]]
-			s = self.s[i,:self.nstep[i]]
-			h = self.halpha[i,:,:self.nstep[i]]
+			r = self.R[i][:self.nstep[i]]
+			rnorm = self.Rnorm[i][:self.nstep[i]]
+			s = self.s[i][:self.nstep[i]]
+			h = self.halpha[i,:][:self.nstep[i]]
 			
-		return (x,y,z,bx,by,bz,r,s,h)
+		return (x,y,z,bx,by,bz,r,rnorm,s,h)
 			
 	def Save(self,fname,RemoveNAN=True):
 		'''
@@ -371,7 +377,7 @@ class TraceField(object):
 		
 		pf.SaveObject(out,fname)
 
-	def TraceDict(self,RemoveNAN=True)
+	def TraceDict(self,RemoveNAN=True):
 	
 		#we could save a fair bit of space by removing NANs - this will
 		#mean that simple 2D arrays will become arrays of objects
@@ -384,7 +390,7 @@ class TraceField(object):
 			for k in keys:
 				if k in ptrs:
 					#fix these
-					if np.size(self.__dict__[k].shape) == 1:
+					if self.flat:
 						#flattened
 						tmp = self.__dict__[k][:self.nstep]
 					else: 
@@ -394,7 +400,7 @@ class TraceField(object):
 							tmp[i] = self.__dict__[k][i,:self.nstep[i]]
 					out[k] = tmp
 				elif k == 'halpha':
-					if np.size(self.halpha.shape) == 2:
+					if self.flat:
 						#flattened
 						tmp = np.zeros(self.halpha.shape[0],dtype='object')
 						for i in range(0,self.nalpha):
@@ -410,8 +416,98 @@ class TraceField(object):
 					out[k] = self.__dict__[k]
 		else:
 			out = self.__dict__
-				
+		print(out['Rnorm'])
 		return out
 	
 		
+	def PlotHarmonics(self,I,A,fig=None,maps=[1,1,0,0],Harmonics=[1,2,3],
+						x0=None,df=0.1,Method='Simple',**kwargs):
 	
+		#see if we can import the harmonic package
+		try:
+			import MHDWaveHarmonics as wh
+		except:
+			print('Install MHDWaveHarmonics package to use this..')
+			return
+		
+		
+		
+		#get the s,B and halpha
+		x,y,z,Bx,By,Bz,R,Rnorm,s,h = self.GetTrace(I)
+		B = np.sqrt(Bx**2 + By**2 + Bz**2)
+		s = s*6380.0
+		h = h[A]
+		if np.size(self.s.shape) == 2:
+			L = self.Lshell[I]
+			M = self.MltE[I]
+		else:
+			L = self.Lshell
+			M = self.MltE
+			
+		
+		#get PMD
+		
+		pmd = kwargs.get('pmd',None)
+		if pmd is None:
+			print('provide plasma mass densities or power law')
+			return
+		elif np.size(pmd) == Rnorm.size:
+			PMD = pmd
+		else:
+			pmd0 = pmd[0]
+			pwr = pmd[1]
+			PMD = pmd0*Rnorm**-pwr
+
+		#alfven speed
+		Va = wh.CalcFieldLineVaPMD(B,PMD)
+		VaMid = wh.CalcFieldLineVaMidPMD(B,PMD,s)
+
+		#calculate harmonic frequencies
+		freq,success,_ = wh.FindHarmonicsPMD(B,PMD,s,halpha=h,RhoBG=None,
+						Harmonics=Harmonics,x0=x0,df=df,Method=Method)
+		
+		#check for fails
+		if (success == False).any():
+			print("WARNING: potentially bad fits")
+			
+		#find crossing over z = 0
+		North = np.where(z >= 0.0)[0]
+		South = np.where(z < 0.0)[0]
+		use = np.append(South[:-2],North[:2])
+		if use.size == 4:
+			f = InterpolatedUnivariateSpline(z[use],s[use])
+		else:
+			f = interp1d(z[use],s[use])
+		Smid = f(0.0)		
+			
+		#create figure/axes
+		if fig is None:
+			fig = plt
+			fig.figure()
+		if hasattr(fig,'Axes'):	
+			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
+		else:
+			ax = fig
+			
+		#solve the wave for each harmonic
+		ywave = []
+		
+		for f in freq:
+			ywave = wh.SolveWave(f,s,B,Va=Va,halpha=h)/h
+
+			#then plot
+			ax.plot(s,ywave,label='f={:5.2f} mHz'.format(f))
+
+		#add some stuff
+		ax.set_xlim(0.0,s.max())
+		ylim = ax.get_ylim()
+		ax.set_ylim(ylim)
+		ax.vlines(Smid,ylim[0],ylim[1],color=[0.0,0.0,0.0],linestyle=':')
+		ax.text(0.2,0.75,'South',ha='center',va='center',color=[0.7,0.7,0.7],zorder=-2.0,fontsize='x-large',transform=ax.transAxes)
+		ax.text(0.8,0.75,'North',ha='center',va='center',color=[0.7,0.7,0.7],zorder=-2.0,fontsize='x-large',transform=ax.transAxes)
+		ax.text(Smid,0.5*(ylim[1]-ylim[0])+ylim[0],'Magnetic Equator',va='center',color=[0.0,0.0,0.0],zorder=2.0,fontsize='medium',rotation=-90.0)
+		ax.plot([0.0,np.max(s)],[0.0,0.0],color=[0.0,0.0,0.0],linestyle='--')
+		
+		ax.legend()
+
+		return ax

@@ -19,3 +19,4 @@ from .__del__ import __del__
 
 
 
+from . import Test
