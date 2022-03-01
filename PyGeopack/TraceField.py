@@ -416,7 +416,6 @@ class TraceField(object):
 					out[k] = self.__dict__[k]
 		else:
 			out = self.__dict__
-		print(out['Rnorm'])
 		return out
 	
 		

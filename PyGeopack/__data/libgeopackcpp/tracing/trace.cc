@@ -419,7 +419,8 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 
 	/* some variables needed */
 	double xe0,ye0,ze0,xe1,ye1,ze1;
-
+	int k;
+	
 	/* get the trace starting points first */
 	_CalculateHalphaStartPoints(i,j,&xe0,&ye0,&ze0,&xe1,&ye1,&ze1);
 
@@ -430,6 +431,15 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 	/* do two traces */
 	Trace T0 = TracePosition(i,xe0,ye0,ze0);
 	Trace T1 = TracePosition(i,xe1,ye1,ze1);
+	
+	/* the traces above may only have 0 steps - in which case we can 
+	 * just fill halpha with nans and leave the function */
+	if ((T0.nstep_[0] == 0) | (T1.nstep_[0] == 0)) {
+		for (k=0;k<nstep_[i];k++) {
+			halpha[k] = NAN;
+		}
+		return;
+	}
 	
 	/* get the closest points to each step of the original trace*/
 	double *xc0 = new double[nstep_[i]];
@@ -447,7 +457,7 @@ void Trace::_CalculateTraceHalpha(	int i, int j, double *halpha) {
 
 	/* calculate distances and then halpha */
 	double d, dx, dy, dz, h0, h1;
-	int k;
+	
 	for (k=0;k<nstep_[i];k++) {
 		dx = xsm_[i][k] - xc0[k];
 		dy = ysm_[i][k] - yc0[k];
@@ -546,7 +556,6 @@ void Trace::CalculateHalpha(double *halpha) {
 		}
 	}
 	allocHalpha3D_ = true;
-
 	_CalculateHalpha();
 }
 
@@ -586,7 +595,7 @@ void Trace::_CalculateHalphaStartPoints(int i, int j,
 	double dt, dp, beta, dx, dy;
 	
 	/* dt and dp are the toroidal and poloidal components of Delta */
-	dt = Delta_*cos(alpha0_[j]);
+	dt = Delta_*cos(alpha0_[j]); // alpha = 0.0 is toroidal
 	dp = Delta_*sin(alpha0_[j]);
 	
 	/* rotate based on the local time */

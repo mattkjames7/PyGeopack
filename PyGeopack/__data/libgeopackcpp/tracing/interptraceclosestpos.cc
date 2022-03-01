@@ -17,7 +17,6 @@ void interptraceClosestPos(	int n, double *x, double *y, double *z,
 	Spline Sx1(n1,s1,x1);
 	Spline Sy1(n1,s1,y1);
 	Spline Sz1(n1,s1,z1);
-	
 	bool success;
 
 	/* find the closest position along the splines for each position */
@@ -108,7 +107,6 @@ void interpOptimum(	double x, double y, double z,
 int ClosestS(double x, double y, double z,
 				int nt, double *xt, double *yt, double *zt,
 				double *st) {
-
 	int i, imin;
 	double dx, dy, dz, d, dmin = INFINITY;
 	for (i=0;i<nt;i++) {
@@ -122,14 +120,14 @@ int ClosestS(double x, double y, double z,
 		}
 	}
 	return imin;
-					
+				
 }
 
 double AngleDiff( 	double s,								/* current position along the field line */
 					Spline Sx, Spline Sy, Spline Sz,	/* Splines converting s to a  vector */
 					double x, double y, double z,		/* this is the position along the original field line */
 					double bx, double by, double bz) {	/* B field unit vector */
-	
+
 	/* get the current position vector */
 	double xc, yc, zc;
 	Sx.Interpolate(1,&s,&xc);					
@@ -149,7 +147,6 @@ double AngleDiff( 	double s,								/* current position along the field line */
 	/* get the angle */
 	double dot, angle;
 	dot = dx*bx + dy*by + dz*bz;
-	
 	return fabs(M_PI/2 - acos(dot))*180.0/M_PI;
 	
 					
@@ -161,7 +158,7 @@ bool OptimizePos(	double x, double y, double z,
 					double s0, 
 					Spline Sx, Spline Sy, Spline Sz,
 					double *xc, double *yc, double *zc) {
-	
+
 	/* Nelder-Mead settings */
 	int MaxIter = 1000;
 	double tola = 0.01;
