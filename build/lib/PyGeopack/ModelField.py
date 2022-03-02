@@ -1,11 +1,11 @@
 import numpy as np
 from ._CFunctions import _CModelField
-from .SetCustParam import SetCustParam
 import ctypes
-from ._CoordCode import _CoordCode
-from ._CTConv import _CTConv
+from .Params.GetModelParams import GetModelParams
+from .ct import ctString,ctBool,ctInt,ctIntPtr,ctFloatPtr,ctDoublePtr,ctDoublePtrPtr
 
-def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GSM',OutDtype='float64',**kwargs):
+def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', 
+			CoordIn='GSM', CoordOut='GSM', ReturnParams=False ,**kwargs):
 	'''
 	Calculates the model magnetic field at a given position or array of
 	positions in space.
@@ -74,55 +74,32 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96', CoordIn='GSM', CoordOut='GS
 	'''
 
 
-	#look for custom parameters
-	keys = list(kwargs.keys())
-	CustP = False
-	CustFields = ['Kp','Pdyn','SymH','By','Bz','iopt','parmod','tilt','Vx','Vy','Vz']
-	for f in CustFields:
-		if f in keys:
-			CustP = True
 
-	#now we know if any exist, so let's add them
-	if (CustP):
-		Model = Model+'c' #this will let the C code know that we aren't just interpolating real values
-		iopt = kwargs.get('iopt',-1)
-		iopt = kwargs.get('Kp',-2)+1
-		
-		parmod = kwargs.get('parmod',np.zeros(10,dtype='float32')+np.nan)
-		Pdyn = kwargs.get('Pdyn',parmod[0])
-		SymH = kwargs.get('SymH',parmod[1])
-		By = kwargs.get('By',parmod[2])
-		Bz = kwargs.get('Bz',parmod[3])
-		parmod[0] = Pdyn
-		parmod[1] = SymH
-		parmod[2] = By
-		parmod[3] = Bz
-		
-		tilt = kwargs.get('tilt',np.nan)
-		
-		Vx = kwargs.get('Vx',np.nan)
-		Vy = kwargs.get('Vy',np.nan)
-		Vz = kwargs.get('Vz',np.nan)
-		
-		SetCustParam(iopt,parmod,tilt,Vx,Vy,Vz)
-
-		
-		
 
 	#Convert input variables to appropriate numpy dtype:
-	_Xin = _CTConv(Xin,'c_double_ptr')
-	_Yin = _CTConv(Yin,'c_double_ptr')
-	_Zin = _CTConv(Zin,'c_double_ptr')
-	_n = _CTConv(_Xin.size,'c_int')
-	_Date = _CTConv(np.zeros(_n) + Date,'c_int_ptr')
-	_ut = _CTConv(np.zeros(_n) + ut,'c_float_ptr')
-	_SameTime = _CTConv(0,'c_int')
-	_Model = _CTConv(Model,'c_char_p')
-	_CoordIn = _CTConv(_CoordCode(CoordIn),'c_int')
-	_CoordOut = _CTConv(_CoordCode(CoordOut),'c_int')
+	_Xin = ctDoublePtr(Xin)
+	_Yin = ctDoublePtr(Yin)
+	_Zin = ctDoublePtr(Zin)
+	_n = ctInt(_Xin.size)
+	_Date = ctIntPtr(np.zeros(_n,dtype='int32') + Date)
+	_ut = ctFloatPtr(np.zeros(_n,dtype='float32') + ut)
+	_SameTime = ctBool(False)
+	_Model = ctString(Model)
+	_CoordIn = ctString(CoordIn)
+	_CoordOut = ctString(CoordOut)
 	_Bx = np.zeros(_n,dtype="float64")
 	_By = np.zeros(_n,dtype="float64")
 	_Bz = np.zeros(_n,dtype="float64")
-	_CModelField(_Xin, _Yin, _Zin, _n, _Date, _ut, _SameTime, _Model, _CoordIn, _CoordOut, _Bx, _By, _Bz)
 
-	return _Bx.astype(OutDtype),_By.astype(OutDtype),_Bz.astype(OutDtype)
+	#get the model parameters
+	params = GetModelParams(_Date,_ut,Model,**kwargs)
+	_Parmod = ctDoublePtrPtr(params['parmod'])
+	
+	_CModelField(_n, _Xin, _Yin, _Zin, _Date, _ut, _SameTime, 
+			_Model, params['iopt'], _Parmod, params['Vx'], params['Vy'],
+			params['Vz'], _CoordIn, _CoordOut, _Bx, _By, _Bz)
+
+	if ReturnParams:
+		return _Bx, _By, _Bz, params
+	else:
+		return _Bx,_By,_Bz

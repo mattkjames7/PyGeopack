@@ -1,4 +1,5 @@
-from .FreeTSData import FreeTSData
-def __del__():
+from .Params.FreeParams import FreeParams
+
+def __del__():#fix me
 	print('Goodbye!')
-	FreeTSData()
+	FreeParams()

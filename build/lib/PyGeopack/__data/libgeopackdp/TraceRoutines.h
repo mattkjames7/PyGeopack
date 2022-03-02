@@ -2,6 +2,7 @@
 #define __TraceRoutines_h__
 #include <stdio.h>
 #include <stdlib.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include "ModelField.h"
 #include "libgeopack.h"
@@ -24,14 +25,14 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				double *Xout, double *Yout, double *Zout, 
 				double *s, double *R, double *Rnorm,
 				double *Bx, double *By, double *Bz, 
-				int *nstep, double *FP, bool Verbose);
+				int *nstep, double *FP, bool Verbose, int TraceDir);
 void ConvertTraceCoords(int nstep, int CoordOut, double *x, double *y, double *z, double *Bx, double *By, double *Bz);
 void MagLatLonLT(double x, double y, double z, double *lat, double *lon, double *lt);	
 void GeoLatLonLT(float ut, double x, double y, double z, double *lat, double *lon, double *lt);
 void TraceFootprints(float ut, double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
-					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen);
+					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen, int TraceDir);
 void ReverseElements(double *x, int n);
 void TraceFieldLine(double x0, double y0, double z0, int iopt, double *parmod, ModelFuncPtr ModelFunc,double alt, int MaxLen, double DSMax, 
-				double *xfn, double *yfn, double *zfn, double *xfs, double *yfs, double *zfs, double *x, double *y, double *z, int *nstep);				
+				double *xfn, double *yfn, double *zfn, double *xfs, double *yfs, double *zfs, double *x, double *y, double *z, int *nstep, int TraceDir);				
 
 

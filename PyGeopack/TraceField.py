@@ -654,8 +654,8 @@ class TraceField(object):
 			ls.append(label)
 			ax.legend(hs,ls)
 		
-		ax.set_ylabel('$z_{:s}$ (R$_E$)'.format(Coord))
-		ax.set_xlabel('$x_{:s}$ (R$_E$)'.format(Coord))
+		ax.set_ylabel('$z_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
+		ax.set_xlabel('$x_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
 
 		mxx = np.nanmax(x)
 		mxz = np.nanmax(z)

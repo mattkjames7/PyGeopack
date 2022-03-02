@@ -114,8 +114,6 @@ The `ModelField` function accepts the following arguments and keywords:
 | `ReturnParams` | keyword          | If `True` then a dictionary containing the model parameters will be returned as a fourth output parameter.            |
 | `**kwargs`     | keywords         | Keyword arguments can be used to define some or all of the model parameters used. See model parameters section.       |
 
-
-
 ### 4.2 Tracing the magnetic field
 
 The `TraceField` object will accept either one argument or 5 arguements, alongside a range of keyword arguments:
@@ -198,8 +196,6 @@ x1,y1,z1 = gp.Coords.ConvCoords(x0,y0,z0,Date,ut,CoordIn,CoordOut,V=V)
 
 where `x0`, `y0` and `z0` are either scalars or arrays of positions to be transformed. `Date`is an integer in the format yyyymmdd, `ut` is the time in hours (i.e. `ut = hours + minutes/60.0`) and `V` can be used to set a custom solar wind velocity. `CoordIn` and `CoordOut` are strings defining the input and output systems, which can be any of the following: `'GEI'|'GEO'|'GSE'|'GSM'|'MAG'|'SM'`.  `x1`, `y1` and `z1` are the transformed coordinates.
 
-
-
 There are other Cartesian coordinate conversion routines:
 
 ```python
@@ -239,8 +235,6 @@ x1,y1,z1 = gp.Coords.SMtoGSE(x0,y0,z0,Date,ut)
 x1,y1,z1 = gp.Coords.SMtoGSM(x0,y0,z0,Date,ut)
 x1,y1,z1 = gp.Coords.SMtoMAG(x0,y0,z0,Date,ut)
 ```
-
-
 
 Also included are the following routines:
 

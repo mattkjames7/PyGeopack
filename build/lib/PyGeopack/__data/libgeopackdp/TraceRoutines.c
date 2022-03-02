@@ -37,7 +37,7 @@ void FieldLineMidPoint(double *x, double *y, double *z, double *s, int n,
 	 * 
 	 * ****************************************************************/
 	int i, i0, i1;
-	double sm, ds, m;
+	double sm; // , ds, m;
 	sm = s[n-1]/2.0;
 	/* find the midpoint indices*/
 	for (i=0;i<n-1;i++) {
@@ -90,7 +90,7 @@ void GetMagEquatorFP(double *x, double *y, double *z, double *s, double *R, int 
 	 * significant distance away from the SM x-y plane in the dayside.
 	 * 
 	 * ****************************************************************/
-	int i, Imx, dirn=-1;
+	int Imx, dirn=-1; // i, 
 	double Rmx, rho, xt, yt, zt, a;
 	
 
@@ -135,10 +135,10 @@ void NorthSouthFLs(double flx[],double fly[],double flz[], double *R, int N, dou
 
 	(*nn)=cn;
 	if (cn > 0) {
-		*Nflx = malloc(cn*sizeof(double));
-		*Nfly = malloc(cn*sizeof(double));
-		*Nflz = malloc(cn*sizeof(double));
-		*NR = malloc(cn*sizeof(double));
+		*Nflx = (double*) malloc(cn*sizeof(double));
+		*Nfly = (double*) malloc(cn*sizeof(double));
+		*Nflz = (double*) malloc(cn*sizeof(double));
+		*NR = (double*) malloc(cn*sizeof(double));
 		for (i=0;i<cn;i++) {
 			(*Nflx)[i]=flx[i];
 			(*Nfly)[i]=fly[i];
@@ -158,10 +158,10 @@ void NorthSouthFLs(double flx[],double fly[],double flz[], double *R, int N, dou
 	}
 	(*ns)=cs;
 	if (cs > 0) {
-		*Sflx = malloc(cs*sizeof(double));
-		*Sfly = malloc(cs*sizeof(double));
-		*Sflz = malloc(cs*sizeof(double));
-		*SR = malloc(cs*sizeof(double));
+		*Sflx = (double*) malloc(cs*sizeof(double));
+		*Sfly = (double*) malloc(cs*sizeof(double));
+		*Sflz = (double*) malloc(cs*sizeof(double));
+		*SR = (double*) malloc(cs*sizeof(double));
 
 		for (i=0;i<cs;i++) {
 			(*Sflx)[i]=flx[(cn+cs-1)-i];
@@ -201,12 +201,12 @@ void EqFootprint(double *Nflx, double *Nfly, double *Nflz, int nN, double *Sflx,
 /*convert cartesian to spherical polar coordinates*/	
 void CartToSpherical(double x, double y, double z, double *r, double *theta, double *phi) {
 	
-	double sq = powf(x,2) + powf(y,2);
-	*r = sqrtf(sq + powf(z,2));
+	double sq = pow(x,2) + pow(y,2);
+	*r = sqrt(sq + pow(z,2));
 	if (sq > 0.0) {
 		sq = sqrt(sq);
-		*phi = atan2f(y,x);
-		*theta = atan2f(sq,z);
+		*phi = atan2(y,x);
+		*theta = atan2(sq,z);
 	} else {
 		*phi = 0.0;
 		if (z < 0.0) {
@@ -222,7 +222,7 @@ double CalculateFieldLineLength(double *x, double *y, double *z, int n) {
 	int i;
 	double len=0.0;
 	for (i=0;i<n-1;i++) {
-		len += sqrtf(powf((x[i]-x[i+1]),2.0) + powf((y[i]-y[i+1]),2.0) + powf((z[i]-z[i+1]),2.0));
+		len += sqrt(pow((x[i]-x[i+1]),2.0) + pow((y[i]-y[i+1]),2.0) + pow((z[i]-z[i+1]),2.0));
 	}
 	return len;
 }
@@ -234,7 +234,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				double *Xout, double *Yout, double *Zout, 
 				double *s, double *R, double *Rnorm,
 				double *Bx, double *By, double *Bz, 
-				int *nstep, double *FP, bool Verbose) {
+				int *nstep, double *FP, bool Verbose, int TraceDir) {
 /*				double *GlatN, double *GlatS, double *MlatN, double *MlatS,
 				double *GlonN, double *GlonS, double *MlonN, double *MlonS,double *GltN, double *GltS, double *MltN,
 				double *MltS, double *Lshell, double *MltE, double *FlLen, bool Verbose) {
@@ -260,7 +260,9 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	double xfn,yfn,zfn,xfs,yfs,zfs;
 	int iopt;
 	double parmod[10], tilt, Vx, Vy, Vz;
-	double X[n], Y[n], Z[n];
+	double* X = (double*)malloc(n * sizeof(double));
+	double* Y = (double*)malloc(n * sizeof(double));
+	double* Z = (double*)malloc(n * sizeof(double));
 	bool update, inMP;
 
 	/*get model function and parmod*/
@@ -274,7 +276,10 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		ModelFunc = &t04_s_;
 	} else if (strcmp(Model,"IGRF") == 0) {
 		ModelFunc = &DummyFunc;
-	} else { 
+	} else {
+		free(X);
+		free(Y);
+		free(Z);
 		printf("Model %s not found\n",Model);
 		return;
 	}
@@ -322,6 +327,9 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				smgsw_08_(&Xin[i],&Yin[i],&Zin[i],&X[i],&Y[i],&Z[i],&dirp);
 				break;
 			default:
+				free(X);
+				free(Y);
+				free(Z);
 				printf("Input coordinate type not recognised\n");
 				return;	
 				break;	
@@ -333,7 +341,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		if (inMP) {
 
 			/* perform trace */
-			TraceFieldLine(X[i],Y[i],Z[i],iopt,parmod,ModelFunc,alt,MaxLen,DSMax,&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&nstep[i]);
+			TraceFieldLine(X[i],Y[i],Z[i],iopt,parmod,ModelFunc,alt,MaxLen,DSMax,&xfn,&yfn,&zfn,&xfs,&yfs,&zfs,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&nstep[i],TraceDir);
 
 			/*get B vectors along trace*/
 			ModelField(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&Date[i],&ut[i],1,Model,2,2,&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
@@ -345,7 +353,7 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 			FieldLineR(&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],nstep[i],&R[i*MaxLen]);
 
 			/* find trace footprints */
-			TraceFootprints(ut[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],&R[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&FP[i*15],MaxLen);
+			TraceFootprints(ut[i],&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&s[i*MaxLen],&R[i*MaxLen],nstep[i],xfn,yfn,zfn,xfs,yfs,zfs,alt,&FP[i*15],MaxLen,TraceDir);
 
 			/* Get the Rnorm of each point */
 			FieldLineRnorm(&R[i*MaxLen],nstep[i],FP[i*15+12],&Rnorm[i*MaxLen]);
@@ -368,9 +376,12 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	for (i=0;i<n;i++) {
 		ConvertTraceCoords(nstep[i],CoordOut,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
 	}
-	
 
-	
+	free(X);
+	free(Y);
+	free(Z);	
+
+	return;
 
 }
 
@@ -469,13 +480,13 @@ void GeoLatLonLT(float ut, double x, double y, double z, double *lat, double *lo
 
 
 void TraceFootprints(float ut, double *x, double *y, double *z, double *s, double *R, int nstep, double xfn, double yfn, double zfn, 
-					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen) {
+					double xfs, double yfs, double zfs, double alt, double *FP, int MaxLen, int TraceDir) {
 
 
 	double MaxR = (Re + alt)/Re + 0.01;
 	double RFN, RFS;
-	RFN = sqrt(powf(xfn,2.0) + powf(yfn,2.0) + powf(zfn,2.0));
-	RFS = sqrt(powf(xfs,2.0) + powf(yfs,2.0) + powf(zfs,2.0));
+	RFN = sqrt(pow(xfn,2.0) + pow(yfn,2.0) + pow(zfn,2.0));
+	RFS = sqrt(pow(xfs,2.0) + pow(yfs,2.0) + pow(zfs,2.0));
 	
 	double MlatN,MlatS,GlatN,GlatS;
 	double MlonN,MlonS,GlonN,GlonS;
@@ -483,7 +494,7 @@ void TraceFootprints(float ut, double *x, double *y, double *z, double *s, doubl
 	double FlLen,Lshell;
 
 	/* Calculate the lat, long and lt of the northern footprint*/
-	if (RFN <= MaxR) {
+	if ((RFN <= MaxR) && (TraceDir >= 0)) {
 		GeoLatLonLT(ut,xfn,yfn,zfn,&GlatN,&GlonN,&GltN);
 		MagLatLonLT(xfn,yfn,zfn,&MlatN,&MlonN,&MltN);
 	} else {
@@ -496,7 +507,7 @@ void TraceFootprints(float ut, double *x, double *y, double *z, double *s, doubl
 	}
 
 	/* Calculate the lat, long and lt of the southern footprint*/ 
-	if (RFS <= MaxR) {
+	if ((RFS <= MaxR) && (TraceDir <= 0)) {
 		GeoLatLonLT(ut,xfs,yfs,zfs,&GlatS,&GlonS,&GltS);
 		MagLatLonLT(xfs,yfs,zfs,&MlatS,&MlonS,&MltS);
 	} else {
@@ -539,7 +550,7 @@ void TraceFootprints(float ut, double *x, double *y, double *z, double *s, doubl
 }
 
 void ReverseElements(double *x, int n) {
-	double tmp[n];
+	double* tmp = (double*)malloc(n * sizeof(double));
 	int i;
 	for (i=0;i<n;i++) {
 		tmp[i] = x[i];
@@ -547,31 +558,71 @@ void ReverseElements(double *x, int n) {
 	for (i=0;i<n;i++) {
 		x[i] = tmp[n-i-1];
 	}
+	free(tmp);
 	return;
 }
 
-void TraceFieldLine(double x0, double y0, double z0, int iopt, double *parmod, ModelFuncPtr ModelFunc,double alt, int MaxLen, double DSMax, double *xfn, double *yfn, double *zfn, double *xfs, double *yfs, double *zfs, double *x, double *y, double *z, int *nstep) {
+void TraceFieldLine(double x0, double y0, double z0, int iopt, double *parmod, 
+					ModelFuncPtr ModelFunc,double alt, int MaxLen, 
+					double DSMax, double *xfn, double *yfn, double *zfn, 
+					double *xfs, double *yfs, double *zfs, 
+					double *x, double *y, double *z, 
+					int *nstep, int TraceDir) {
 	
 	/*calculate the radial distance of the stopping altitude*/
     double R = (alt + Re)/Re;
     
-	/*next we need to trace backwards along the field line towards the north pole*/
+	
 	int N = 0, M = 0;
-	double dir = -1.0;
+	double dir;
 	double Err = 0.0001;
 	double Rlim = 1000.0;
-	int Nmax = MaxLen/2 - 2;
-	trace_08_(&x0,&y0,&z0,&dir,&DSMax,&Err,&Rlim,&R,&iopt,parmod,ModelFunc,&igrf_gsw_08_,xfn,yfn,zfn,x,y,z,&N,&Nmax);
-
+	int Nmax;
+	
+	/*next we need to trace backwards along the field line towards the north pole*/
+	if (TraceDir == 0) {
+		Nmax = MaxLen/2 - 2;
+		dir = -1.0;
+	} else if (TraceDir == 1) {
+		Nmax = MaxLen - 1;
+		dir = -1.0;
+	} else {
+		Nmax = 0;
+	}
+	if (Nmax > 0) {
+		trace_08_(&x0,&y0,&z0,&dir,&DSMax,&Err,&Rlim,&R,&iopt,parmod,ModelFunc,&igrf_gsw_08_,xfn,yfn,zfn,x,y,z,&N,&Nmax);
+	} else {
+		xfn[0] = 0.0;
+		yfn[0] = 0.0;
+		zfn[0] = 0.0;
+	}
+	
+	
 	/*reverse array elements*/
-	ReverseElements(x,N);
-	ReverseElements(y,N);
-	ReverseElements(z,N);
-	
+	if (N > 1) {
+		ReverseElements(x,N);
+		ReverseElements(y,N);
+		ReverseElements(z,N);
+	}
+
 	/*now for the southern part of the field line*/
-	Nmax = MaxLen - N;
-	dir = 1.0;
-	trace_08_(&x0,&y0,&z0,&dir,&DSMax,&Err,&Rlim,&R,&iopt,parmod,ModelFunc,&igrf_gsw_08_,xfs,yfs,zfs,&x[N-1],&y[N-1],&z[N-1],&M,&Nmax);
+	if (TraceDir == 0) {
+		Nmax = MaxLen - N;
+		dir = 1.0;
+		N -= 1;
+	} else if (TraceDir == -1) {
+		Nmax = MaxLen - 1;
+		dir = 1.0;
+	} else {
+		Nmax = 0;
+	}
+	if (Nmax > 1) {
+		trace_08_(&x0,&y0,&z0,&dir,&DSMax,&Err,&Rlim,&R,&iopt,parmod,ModelFunc,&igrf_gsw_08_,xfs,yfs,zfs,&x[N],&y[N],&z[N],&M,&Nmax);
+	} else {
+		xfs[0] = 0.0;
+		yfs[0] = 0.0;
+		zfs[0] = 0.0;
+	}
 	
-	nstep[0] = N + M - 1;
+	nstep[0] = N + M;
 }
