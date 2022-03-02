@@ -7,6 +7,8 @@ import PyFileIO as pf
 from .Coords.ConvCoords import ConvCoords
 import matplotlib.pyplot as plt
 from scipy.interpolate import InterpolatedUnivariateSpline,interp1d
+from .Tools.PlotPlanet import PlotPlanetXY,PlotPlanetXZ,PlotPlanetYZ
+from .Tools.GetLegendHandLab import GetLegendHandLab
 
 class TraceField(object):
 	'''
@@ -312,7 +314,38 @@ class TraceField(object):
 		
 	def GetTrace(self,i,Coord='SM'):
 		'''
-		Return traces in a given coordinate system
+		Return traces in a given coordinate system.
+		
+		Inputs
+		======
+		i : int
+			Index of the trace to be returned.
+		Coord : str
+			Coordinate system of the returned arrays: 
+			'GSE'|'GSM'|'SM'|'MAG'|'GEI'|'GEO'
+		
+		Returns
+		=======
+		x : float
+			x-coordinate (R_E)
+		y : float
+			y-coordinate (R_E)
+		z : float
+			z-coordinate (R_E)
+		bx : float
+			x-component of the magnetic field (nT)
+		by : float
+			y-component of the magnetic field (nT)
+		bz : float
+			z-component of the magnetic field (nT)
+		r : float
+			radial distance (R_E)
+		rnorm : float
+			Normalised radial distance (Rnorm = 1.0 at Rmax)
+		s : float
+			Distance along the field line trace (R_E)
+		h : float
+			H_alpha array.
 		
 		'''
 		if Coord.upper() in ['GSM','GSE','SM']:
@@ -370,6 +403,14 @@ class TraceField(object):
 	def Save(self,fname,RemoveNAN=True):
 		'''
 		Save the data in this object to file.
+		
+		Inputs
+		======
+		fname : str
+			Path to the file where this trace will be save on disk.
+		RemoveNAN : bool
+			If True then arrays will be shortened by removing nans.
+			
 		'''
 		out = TraceDict(RemoveNAN)
 		
@@ -378,7 +419,20 @@ class TraceField(object):
 		pf.SaveObject(out,fname)
 
 	def TraceDict(self,RemoveNAN=True):
-	
+		'''
+		Return a dictionary with all of the outputs of the field trace.
+		
+		Inputs
+		======
+		RemoveNAN : bool
+			If True then arrays will be shortened by removing nans.
+			
+		Returns
+		=======
+		out : dict
+			Contains the field traces coordinates, field components etc.
+		
+		'''
 		#we could save a fair bit of space by removing NANs - this will
 		#mean that simple 2D arrays will become arrays of objects
 		if RemoveNAN:
@@ -421,7 +475,39 @@ class TraceField(object):
 		
 	def PlotHarmonics(self,I,A,fig=None,maps=[1,1,0,0],Harmonics=[1,2,3],
 						x0=None,df=0.1,Method='Simple',**kwargs):
-	
+		'''
+		Plot the field displacement as in Singer et al 1981.
+		
+		This module requires the MHDWaveHarmonics module to be present.
+		
+		Inputs
+		======
+		I : int
+			Index of the trace to plot.
+		A : int
+			Index for the alpha value to plot.
+		fig : None|matplotlib.pyplot 
+			If None, then a new figure will be created, if an instance 
+			of matplotlib.pyplot is provided, an existin figure will be 
+			used with a new axes, if an existing axes instance is 
+			provided then the plotting will occur ont hat existing
+			subplot.
+		maps : list
+			4-element list: [xmaps,ymaps,xmap,ymap] denoting the number
+			of vertical (ymaps) and horizontal (xmaps) subplots on the 
+			current figure and the position horizontally (xmap) and 
+			vertically (ymap) of the subplot.
+		Harmonics : list
+			Harmonic numbers to calculate.
+		x0 : float|None
+			starting frequency in mHz
+		df : float
+			Size of frequency step in mHz
+		Method : str
+			'Simple'|'Complex'
+		
+		
+		'''
 		#see if we can import the harmonic package
 		try:
 			import MHDWaveHarmonics as wh
@@ -510,3 +596,272 @@ class TraceField(object):
 		ax.legend()
 
 		return ax
+
+
+
+	def PlotXZ(self,ind='all',Coord='GSM',fig=None,maps=[1,1,0,0],
+				label=None,color='black'):
+		'''
+		Plot field lines in the X-Z plane
+		
+		Inputs
+		======
+		ind : int|str
+			Index of trace to plot. Can be scalar or an array. If set 
+			ind='all' then all traces will be plotted.
+		Coord : str
+			Coordinate system of the trace to be plotted.
+		fig : None|pyplot|pyplot.Axes instance
+			None - new figure will be created
+			pyplot - new subplot will be created on existing figure
+			pyplot.Axes - existing subplot will be used
+		maps : list
+			4-element array-like to determine the subplot position,
+			ignored when fig=pyplot.Axes.
+			maps = [xmaps,ymaps,xmap,ymap]
+			xmaps - number of subplots in x-direction
+			ymaps - number of subplots in y-direction
+			xmap - x position of this subplot
+			ymap - y position of this subplot
+		label : None|str
+			Add label to traces.
+		color : str|array-like
+			Colour to plot the field lines
+		'''
+		
+		if ind == 'all':
+			ind = np.arange(self.n)
+		elif np.size(ind) == 1:
+			ind = np.array([ind]).flatten()
+		else:
+			ind = np.array(ind)
+			
+		
+		if fig is None:
+			fig = plt
+			fig.figure()
+		if hasattr(fig,'Axes'):	
+			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
+		else:
+			ax = fig
+		
+		x,_,z,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
+
+		ln = ax.plot(x,z,color=color)
+		if not label is None:
+			hs,ls = GetLegendHandLab(ax)
+			hs.append(ln[0])
+			ls.append(label)
+			ax.legend(hs,ls)
+		
+		ax.set_ylabel('$z_{:s}$ (R$_E$)'.format(Coord))
+		ax.set_xlabel('$x_{:s}$ (R$_E$)'.format(Coord))
+
+		mxx = np.nanmax(x)
+		mxz = np.nanmax(z)
+		mx = 1.1*np.nanmax([mxx,mxz])		
+		ax.set_xlim(-mx,mx)
+		ax.set_ylim(-mx,mx)
+		
+		PlotPlanetXZ(ax,NoonTop=False)
+		ax.set_aspect(1.0)
+
+		return ax
+	
+	def PlotXY(self,ind='all',Coord='GSM',fig=None,maps=[1,1,0,0],
+				label=None,color='black'):
+		'''
+		Plot field lines in the X-Y plane
+		
+		Inputs
+		======
+		ind : int|str
+			Index of trace to plot. Can be scalar or an array. If set 
+			ind='all' then all traces will be plotted.
+		fig : None|pyplot|pyplot.Axes instance
+			None - new figure will be created
+			pyplot - new subplot will be created on existing figure
+			pyplot.Axes - existing subplot will be used
+		maps : list
+			4-element array-like to determine the subplot position,
+			ignored when fig=pyplot.Axes.
+			maps = [xmaps,ymaps,xmap,ymap]
+			xmaps - number of subplots in x-direction
+			ymaps - number of subplots in y-direction
+			xmap - x position of this subplot
+			ymap - y position of this subplot
+		label : None|str
+			Add label to traces.
+		color : str|array-like
+			Colour to plot the field lines		
+		'''
+		
+		if ind == 'all':
+			ind = np.arange(self.n)
+		elif np.size(ind) == 1:
+			ind = np.array([ind]).flatten()
+		else:
+			ind = np.array(ind)
+			
+		
+		if fig is None:
+			fig = plt
+			fig.figure()
+		if hasattr(fig,'Axes'):	
+			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
+		else:
+			ax = fig
+		
+		x,y,_,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
+			
+		ln = ax.plot(y,x,color=color)
+		if not label is None:
+			hs,ls = GetLegendHandLab(ax)
+			hs.append(ln[0])
+			ls.append(label)
+			ax.legend(hs,ls)
+		yl = ax.get_xlim()
+		ax.set_xlim(yl[::-1])
+		
+		ax.set_xlabel('$y_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
+		ax.set_ylabel('$x_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
+
+		mxx = np.nanmax(x)
+		mxy = np.nanmax(y)
+		mx = 1.1*np.nanmax([mxx,mxy])		
+		ax.set_xlim(mx,-mx)
+		ax.set_ylim(-mx,mx)
+		
+		PlotPlanetXY(ax)
+		ax.set_aspect(1.0)
+		return ax
+	
+	def PlotRhoZ(self,ind='all',Coord='GSM',fig=None,maps=[1,1,0,0],
+					label=None,color='black'):
+		'''
+		Plot field lines in the rho-Z plane
+
+		
+		Inputs
+		======
+		ind : int|str
+			Index of trace to plot. Can be scalar or an array. If set 
+			ind='all' then all traces will be plotted.
+		fig : None|pyplot|pyplot.Axes instance
+			None - new figure will be created
+			pyplot - new subplot will be created on existing figure
+			pyplot.Axes - existing subplot will be used
+		maps : list
+			4-element array-like to determine the subplot position,
+			ignored when fig=pyplot.Axes.
+			maps = [xmaps,ymaps,xmap,ymap]
+			xmaps - number of subplots in x-direction
+			ymaps - number of subplots in y-direction
+			xmap - x position of this subplot
+			ymap - y position of this subplot
+		label : None|str
+			Add label to traces.
+		color : str|array-like
+			Colour to plot the field lines		
+		'''
+		
+		if ind == 'all':
+			ind = np.arange(self.n)
+		elif np.size(ind) == 1:
+			ind = np.array([ind]).flatten()
+		else:
+			ind = np.array(ind)
+			
+		
+		if fig is None:
+			fig = plt
+			fig.figure()
+		if hasattr(fig,'Axes'):	
+			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
+		else:
+			ax = fig
+		
+		x,y,z,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
+		
+		r = np.sqrt(x**2 + y**2)
+		ln = ax.plot(r,z,color=color)
+		if not label is None:
+			hs,ls = GetLegendHandLab(ax)
+			hs.append(ln[0])
+			ls.append(label)
+			ax.legend(hs,ls)
+		
+		ax.set_ylabel('$z_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
+		ax.set_xlabel(r'$\rho_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
+
+		mxr = np.nanmax(r)
+		mxz = np.nanmax(z)
+		mx = 1.1*np.nanmax([mxr,mxz])		
+		ax.set_xlim(-mx,mx)
+		ax.set_ylim(-mx,mx)
+		
+		PlotPlanetXZ(ax,NoonTop=False,NoShadow=True)
+		ax.set_aspect(1.0)
+		return ax
+	
+	
+	def PlotHalpha(self,TI='all',AI='all',fig=None,maps=[1,1,0,0]):
+		'''
+		Plot h_alpha (see Singer et al 1982) for a field line.
+		
+		Inputs
+		======
+		TI : int|str
+			Index of trace to plot. TI='all' will plot for all traces.
+		AI : int|str
+			Index of alpha angle to plot for. AI will plot all alphas.
+		fig : None|matplotlib.pyplot|matplotlib.pyplot.Axes
+			None - a new figure will be created with new axes
+			matplotlib.pyplot - existing figure, new axes
+			matplotlib.pyplot.Axes - existing axes instance to be used
+				(maps ignored in the case).
+		maps : list|tuple|numpy.ndarray
+			Four element array-like, denoting subplot position,
+			e.g. [xmaps,ymaps,xmap,ymap]
+				xmaps : number of subplots in x-direction
+				ymaps : number of subplots in y-direction
+				xmap : position index (0 is left)
+				ymap : position index (0 is top)
+		
+		
+		'''
+		if AI == 'all':
+			AI = np.arange(self.nalpha)
+		
+		if np.size(AI) == 1:
+			AI = np.array([AI]).flatten()
+			
+		if TI == 'all':
+			TI = np.arange(self.n)
+		
+		if np.size(TI) == 1:
+			TI = np.array([TI]).flatten()
+			
+		if fig is None:
+			fig = plt
+			fig.figure()
+		if hasattr(fig,'Axes'):	
+			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
+		else:
+			ax = fig		
+			
+		for t in TI:
+			if np.size(np.shape(self.s)) == 1:
+				#trace arrays have been flattened 
+				for a in AI:
+					ax.plot(self.s,self.halpha[a],label=r'$\alpha=${:5.1f}'.format(self.alpha[a]))
+			else:
+				for a in AI:
+					ax.plot(self.s[t],self.halpha[t,a],label=r'Trace {:d} $\alpha=${:5.1f}'.format(t,self.alpha[a]))
+
+		ax.legend()
+		ax.set_xlabel(r'$s$ (R$_E$)')
+		ax.set_ylabel(r'$h_{\alpha}$')
+
+		return ax
+		

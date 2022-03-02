@@ -327,3 +327,4 @@ This model uses all of the `parmod` array, where the first four are as in the T9
 4. N.A. Tsyganenko, A model of the near magnetosphere with a dawn-dusk asymmetry - 1. Mathematical Structure, J. Geophys.Res., 107, A8, 10.1029/2001JA000219, 2002.
 5. N.A. Tsyganenko, A model of the near magnetosphere with a dawn-dusk asymmetry - 2. Parameterization and fitting to observations, J. Geophys.Res., 107, A7, 10.1029/2001JA000220, 2002.
 6. N.A. Tsyganenko and M. I. Sitnov, Modeling the dynamics of the inner magnetosphere during strong geomagnetic storms, J. Geophys.Res., 110, A3, 10.1029/2004JA010798, 2005. 
+7. Singer, H. & Southwood, D. & Walker, Raymond & Kivelson, M.. (1981). Alfven wave resonances in a realistic magnetospheric magnetic field geometry. Journal of Geophysical Research. 86. 4589-4596. 10.1029/JA086iA06p04589. 
