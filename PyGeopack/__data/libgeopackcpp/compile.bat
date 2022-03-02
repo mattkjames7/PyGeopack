@@ -63,13 +63,13 @@ if %ERRORLEVEL% neq 0 (goto CompileError)
 echo Done
 
 del *.o
-del fortran/*.o
-del libdatetime/*.o
-del matrix/*.o
-del modelparams/*.o
-del spline/*.o
-del tools/*.o
-del tracing/*.o
+del fortran\*.o
+del libdatetime\*.o
+del matrix\*.o
+del modelparams\*.o
+del spline\*.o
+del tools\*.o
+del tracing\*.o
 exit /b 0
 
 :CompileError

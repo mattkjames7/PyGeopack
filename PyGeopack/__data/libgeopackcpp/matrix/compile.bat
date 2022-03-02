@@ -9,6 +9,7 @@ g++ -fPIC -c -lm -fopenmp identity.cc -o identity.o
 g++ -fPIC -c -lm -fopenmp rotmatrix.cc -o rotmatrix.o
 g++ -fPIC -c -lm -fopenmp libmatrix.cc -o libmatrix.o
 
+exit /b 0
 
 :CompileError
 echo Compilation error

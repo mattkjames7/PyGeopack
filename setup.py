@@ -49,9 +49,9 @@ setuptools.setup(
 		'numpy',
 		'PyFileIO',
 		'RecarrayTools',
-		'DateTimeTools>=0.0.6',
-		'kpindex',
-		'pyomnidata',
+		'DateTimeTools>=1.1.0',
+		'kpindex>=1.0.1',
+		'pyomnidata>=1.0.1',
 	],
 	include_package_data=True,
 )

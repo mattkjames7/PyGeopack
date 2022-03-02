@@ -10,6 +10,7 @@ g++ -fPIC -c -lm modelparams.cc -o modelparams.o
 g++ -fPIC -c -lm checkv.cc -o checkv.o
 g++ -fPIC -c -lm fillinkp.cc -o fillinkp.o
 
+exit /b 0
 
 :CompileError
 echo Compilation error

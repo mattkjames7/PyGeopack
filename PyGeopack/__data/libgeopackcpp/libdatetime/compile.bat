@@ -35,6 +35,7 @@ if %ERRORLEVEL% neq 0 (goto CompileError)
 g++ -c -fPIC JulDaytoDate.cc
 if %ERRORLEVEL% neq 0 (goto CompileError)
 
+exit /b 0
 
 :CompileError
 echo Compilation error

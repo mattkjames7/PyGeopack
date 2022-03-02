@@ -18,6 +18,7 @@ g++ -fPIC -c -lm -Wall trace.cc -o trace.o
 g++ -fPIC -c -lm -Wall interptraceclosestpos.cc -o interptraceclosestpos.o
 g++ -fPIC -c -lm -Wall tracerotationmatrices.cc -o tracerotationmatrices.o
 
+exit /b 0
 
 :CompileError
 echo Compilation error
