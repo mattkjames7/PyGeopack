@@ -37,7 +37,7 @@ void FieldLineMidPoint(double *x, double *y, double *z, double *s, int n,
 	 * 
 	 * ****************************************************************/
 	int i, i0, i1;
-	double sm, ds, m;
+	double sm; // , ds, m;
 	sm = s[n-1]/2.0;
 	/* find the midpoint indices*/
 	for (i=0;i<n-1;i++) {
@@ -90,7 +90,7 @@ void GetMagEquatorFP(double *x, double *y, double *z, double *s, double *R, int 
 	 * significant distance away from the SM x-y plane in the dayside.
 	 * 
 	 * ****************************************************************/
-	int i, Imx, dirn=-1;
+	int Imx, dirn=-1; // i, 
 	double Rmx, rho, xt, yt, zt, a;
 	
 
@@ -201,12 +201,12 @@ void EqFootprint(double *Nflx, double *Nfly, double *Nflz, int nN, double *Sflx,
 /*convert cartesian to spherical polar coordinates*/	
 void CartToSpherical(double x, double y, double z, double *r, double *theta, double *phi) {
 	
-	double sq = powf(x,2) + powf(y,2);
-	*r = sqrtf(sq + powf(z,2));
+	double sq = pow(x,2) + pow(y,2);
+	*r = sqrt(sq + pow(z,2));
 	if (sq > 0.0) {
 		sq = sqrt(sq);
-		*phi = atan2f(y,x);
-		*theta = atan2f(sq,z);
+		*phi = atan2(y,x);
+		*theta = atan2(sq,z);
 	} else {
 		*phi = 0.0;
 		if (z < 0.0) {
@@ -222,7 +222,7 @@ double CalculateFieldLineLength(double *x, double *y, double *z, int n) {
 	int i;
 	double len=0.0;
 	for (i=0;i<n-1;i++) {
-		len += sqrtf(powf((x[i]-x[i+1]),2.0) + powf((y[i]-y[i+1]),2.0) + powf((z[i]-z[i+1]),2.0));
+		len += sqrt(pow((x[i]-x[i+1]),2.0) + pow((y[i]-y[i+1]),2.0) + pow((z[i]-z[i+1]),2.0));
 	}
 	return len;
 }
@@ -260,7 +260,9 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	double xfn,yfn,zfn,xfs,yfs,zfs;
 	int iopt;
 	double parmod[10], tilt, Vx, Vy, Vz;
-	double X[n], Y[n], Z[n];
+	double* X = (double*)malloc(n * sizeof(double));
+	double* Y = (double*)malloc(n * sizeof(double));
+	double* Z = (double*)malloc(n * sizeof(double));
 	bool update, inMP;
 
 	/*get model function and parmod*/
@@ -274,7 +276,10 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 		ModelFunc = &t04_s_;
 	} else if (strcmp(Model,"IGRF") == 0) {
 		ModelFunc = &DummyFunc;
-	} else { 
+	} else {
+		free(X);
+		free(Y);
+		free(Z);
 		printf("Model %s not found\n",Model);
 		return;
 	}
@@ -322,6 +327,9 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 				smgsw_08_(&Xin[i],&Yin[i],&Zin[i],&X[i],&Y[i],&Z[i],&dirp);
 				break;
 			default:
+				free(X);
+				free(Y);
+				free(Z);
 				printf("Input coordinate type not recognised\n");
 				return;	
 				break;	
@@ -368,9 +376,12 @@ void TraceField(double *Xin, double *Yin, double *Zin, int n,
 	for (i=0;i<n;i++) {
 		ConvertTraceCoords(nstep[i],CoordOut,&Xout[i*MaxLen],&Yout[i*MaxLen],&Zout[i*MaxLen],&Bx[i*MaxLen],&By[i*MaxLen],&Bz[i*MaxLen]);
 	}
-	
 
-	
+	free(X);
+	free(Y);
+	free(Z);	
+
+	return;
 
 }
 
@@ -474,8 +485,8 @@ void TraceFootprints(float ut, double *x, double *y, double *z, double *s, doubl
 
 	double MaxR = (Re + alt)/Re + 0.01;
 	double RFN, RFS;
-	RFN = sqrt(powf(xfn,2.0) + powf(yfn,2.0) + powf(zfn,2.0));
-	RFS = sqrt(powf(xfs,2.0) + powf(yfs,2.0) + powf(zfs,2.0));
+	RFN = sqrt(pow(xfn,2.0) + pow(yfn,2.0) + pow(zfn,2.0));
+	RFS = sqrt(pow(xfs,2.0) + pow(yfs,2.0) + pow(zfs,2.0));
 	
 	double MlatN,MlatS,GlatN,GlatS;
 	double MlonN,MlonS,GlonN,GlonS;
@@ -539,7 +550,7 @@ void TraceFootprints(float ut, double *x, double *y, double *z, double *s, doubl
 }
 
 void ReverseElements(double *x, int n) {
-	double tmp[n];
+	double* tmp = (double*)malloc(n * sizeof(double));
 	int i;
 	for (i=0;i<n;i++) {
 		tmp[i] = x[i];
@@ -547,6 +558,7 @@ void ReverseElements(double *x, int n) {
 	for (i=0;i<n;i++) {
 		x[i] = tmp[n-i-1];
 	}
+	free(tmp);
 	return;
 }
 

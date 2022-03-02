@@ -26,7 +26,7 @@ void DateToYearDayNo(int Date, int *Year, int *DayNo) {
 
 void DecUTToHHMMSS(float UT, int *H, int *M, int *S) {
 	*H = (int) UT;
-	float Md = (60.0*(UT - *H));
+	float Md = (60.0f*(UT - *H));
 	*M = (int) Md;
 	*S = (int) (60.0*(Md - *M));
 }
@@ -91,6 +91,6 @@ int DateDifference(int Date0, int Date1) {
 
 float TimeDifference(int Date0, float ut0, int Date1, float ut1) {
 	int dd = DateDifference(Date0,Date1);
-	return ((float) dd) + (ut1 - ut0)/24.0;
+	return ((float) dd) + (ut1 - ut0)/24.0f;
 }
 

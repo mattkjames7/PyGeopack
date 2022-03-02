@@ -18,8 +18,12 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 	int dirp = 1, dirn = -1;
 	int iopt;
 	double parmod[10], tilt, Vx, Vy, Vz;
-	double X[n],Y[n],Z[n];
-	double Bxgsm[n],Bygsm[n],Bzgsm[n];
+	double* X = (double*)malloc(n * sizeof(double));
+	double* Y = (double*)malloc(n * sizeof(double));
+	double* Z = (double*)malloc(n * sizeof(double));
+	double* Bxgsm = (double*)malloc(n * sizeof(double));
+	double* Bygsm = (double*)malloc(n * sizeof(double));
+	double* Bzgsm = (double*)malloc(n * sizeof(double));
 	double intx, inty, intz, extx, exty, extz;
 	bool inMP;
 
@@ -151,6 +155,12 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 		}	
 
 	}
+	free(X);
+	free(Y);
+	free(Z);
+	free(Bxgsm);
+	free(Bygsm);
+	free(Bzgsm);
 
 	return;
 	

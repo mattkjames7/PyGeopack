@@ -3,8 +3,12 @@
 const double Re = 6371.2;
 TSD TSData = {.n = 0};
 
+char DataFile[256];
+CustParam CustP;
+
 void LoadTSData() {
-	FILE *f = fopen(DataFile,"rb");
+	FILE* f;
+	fopen_s(&f, DataFile,"rb");
 	if (f == NULL) {
 		return;
 	}
@@ -234,7 +238,7 @@ bool WithinMP(double x, double y, double z, double Bz, double Pdyn) {
 	 * Check whether a point is inside the magnetosphere
 	 * 
 	 * ****************************************************************/
-	 int i;
+	 //int i;
 	 double r0, alpha, r, rm;
 	 
 	 r0 = (10.22 + 1.29*tanh(0.184*(Bz + 8.14)))*pow(Pdyn,-0.15151515);
@@ -371,10 +375,10 @@ void SetCustParam(int iopt, float *parmod, float tilt, float Vx, float Vy, float
 }
 
 
-void Init(const char *filename) {
-	strcpy(DataFile,filename);
+void Init(const char* filename, size_t SizeInBites) {
+	strcpy_s(DataFile, SizeInBites, filename);
 	if (TSData.n == 0) {
-		LoadTSData();	
+		LoadTSData();
 	}
 }
 
@@ -503,8 +507,8 @@ void CalculateG(int n, float *By, float *Bz, float *V, bool *good, float *G1, fl
 	for (i=0;i<n;i++) {
 		 CA[i] = atan2f(-By[i],Bz[i]);
 		 Bp = sqrtf(By[i]*By[i] + Bz[i]*Bz[i]);
-		 Bs[i] = fabsf(min(0.0,Bz[i]));
-		 h[i] = powf(Bp/40.0,2.0)/(1.0 + Bp/40.0);
+		 Bs[i] = fabsf(fminf(0.0f,Bz[i]));
+		 h[i] = powf(Bp/40.0f,2.0f)/(1.0f + Bp/40.0f);
 	}
 		 
 	/*now to get G1 and G2*/
@@ -517,7 +521,7 @@ void CalculateG(int n, float *By, float *Bz, float *V, bool *good, float *G1, fl
 		G2[i] = 0.0;
 		for (j=i0;j<i1;j++) {
 			if (good[j]) {
-				G1[i] += V[j]*h[j]*powf(sinf(CA[j]/2.0),3.0);
+				G1[i] += V[j]*h[j]*powf(sinf(CA[j]/2.0f),3.0f);
 				G2[i] += 0.005*V[j]*Bs[j];
 				u++;
 			}

@@ -42,7 +42,7 @@ def UpdateParameters(SkipWParameters=True):
 	
 	#create the output directory
 	if not os.path.isdir(Globals.DataPath):
-		os.system('mkdir -pv '+Globals.DataPath)
+		os.makedirs(Globals.DataPath)
 
 	#now combining all of the data and calculating the W and G parameters
 	data = _CalculateParameters(SkipWParameters)

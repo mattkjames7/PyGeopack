@@ -8,6 +8,8 @@ def _DownloadTS05Data(Overwrite=False):
 	
 	
 	'''
+	if(os.name=='nt'):
+		raise Exception("This function is not supported on Windows")
 	Year = 1995
 	Cont = True
 	OutPath = Globals.DataPath+'tab/'
