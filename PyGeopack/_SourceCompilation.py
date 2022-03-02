@@ -51,7 +51,7 @@ def getLibFilename(isShort=False):
     if(isShort):
         libFilename = "libgeopack."
     else:
-        libFilename = os.path.dirname(__file__) + "/__data/libgeopackdp/libgeopackcpp."
+        libFilename = os.path.dirname(__file__) + "/__data/libgeopackcpp/libgeopack."
 
     if(os.name=='posix'):
         extention = "so"

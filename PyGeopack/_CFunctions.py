@@ -8,11 +8,11 @@ from ._SourceCompilation import getLibFilename, compileSource
 
 
 try:
-	libgeopack = ct.CDLL(getLibFilename())
+	libgeopack = ctypes.CDLL(getLibFilename())
 except:
 	print('Importing '+getLibFilename(isShort=True)+' failed, attempting to recompile')
 	compileSource()
-	libgeopack = ct.CDLL(getLibFilename())
+	libgeopack = ctypes.CDLL(getLibFilename())
 
 
 #obtain the model magnetic field
