@@ -16,3 +16,4 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 					int *Date, float *ut, int SameTime, 
 					const char *Model,	int CoordIn, int CoordOut, 
 					double *Bx, double *By, double *Bz);
+
