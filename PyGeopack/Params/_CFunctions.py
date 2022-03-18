@@ -97,13 +97,13 @@ _CCalculateW.restype = None
 _CFillInKp = libgeopack.FillInKp
 _CFillInKp.argtypes = [	c_int,		#number of Kp indices
 						c_int_ptr,		#Kp dates
-						c_double_ptr,	#Kp ut0
-						c_double_ptr,	#Kp ut1
-						c_double_ptr,	#Kp value
+						c_float_ptr,	#Kp ut0
+						c_float_ptr,	#Kp ut1
+						c_float_ptr,	#Kp value
 						c_int,		#number of data elements
 						c_int_ptr,		#Date
-						c_double_ptr,	#ut
-						c_double_ptr]	#kp output
+						c_float_ptr,	#ut
+						c_float_ptr]	#kp output
 _CFillInKp.restype = None
 
 #Calculate the G1 and G2 indices

@@ -86,11 +86,11 @@ def _FillInKp(Date,ut,kp):
 def _GetGParameters(data):
 	_n = np.int32(data.size)
 	_good = np.bool8(np.isfinite(data.By) & np.isfinite(data.Bz) & (data.IMFFlag > -1) & (data.ISWFlag > -1))
-	_By = data.By.astype('float32')
-	_Bz = data.Bz.astype('float32')
-	_V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2).astype('float32')
-	_G1 = np.zeros(_n,dtype='float32')
-	_G2 = np.zeros(_n,dtype='float32')
+	_By = data.By.astype('float64')
+	_Bz = data.Bz.astype('float64')
+	_V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2).astype('float64')
+	_G1 = np.zeros(_n,dtype='float64')
+	_G2 = np.zeros(_n,dtype='float64')
 	
 	_CCalculateG(_n,_By,_Bz,_V,_good,_G1,_G2)
 	
@@ -288,19 +288,19 @@ def _GetWParameters(data):
 	
 	'''
 	n = np.int32(data.size)
-	S = np.array(data.SymH).astype('float32')
-	Bz = np.array(data.Bz).astype('float32')
+	S = np.array(data.SymH).astype('float64')
+	Bz = np.array(data.Bz).astype('float64')
 	SWF = np.array(data.ISWFlag).astype('int32')
 	IMF = np.array(data.IMFFlag).astype('int32')
-	V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2).astype('float32')
-	Den = np.array(data.Den).astype('float32')
+	V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2).astype('float64')
+	Den = np.array(data.Den).astype('float64')
 	
-	W1 = np.zeros(data.size,dtype='float32')
-	W2 = np.zeros(data.size,dtype='float32')
-	W3 = np.zeros(data.size,dtype='float32')
-	W4 = np.zeros(data.size,dtype='float32')
-	W5 = np.zeros(data.size,dtype='float32')
-	W6 = np.zeros(data.size,dtype='float32')
+	W1 = np.zeros(data.size,dtype='float64')
+	W2 = np.zeros(data.size,dtype='float64')
+	W3 = np.zeros(data.size,dtype='float64')
+	W4 = np.zeros(data.size,dtype='float64')
+	W5 = np.zeros(data.size,dtype='float64')
+	W6 = np.zeros(data.size,dtype='float64')
 	
 	_CCalculateW(n,S,Bz,SWF,IMF,V,Den,W1,W2,W3,W4,W5,W6)
 	
