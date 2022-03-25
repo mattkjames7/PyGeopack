@@ -15,7 +15,7 @@ obj:
 	cd modelparams; make all
 	cd tracing; make all
 	cd tools; make all
-	cd matrix; make all
+	#cd matrix; make all
 	
 	$(CCo) modelfield.cc -o modelfield.o
 	$(CCo) withinmp.cc -o withinmp.o
@@ -32,8 +32,9 @@ lib:
 		modelparams/*.o \
 		tools/*.o \
 		tracing/*.o \
-		matrix/*.o \
 		*.o -lstdc++ -lgomp
+		#matrix/*.o \
+		
 
 tests:
 	cd test; make all

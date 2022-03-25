@@ -21,7 +21,7 @@ obj:
 	$(CCo) calculatehalpha.cc -o calculatehalpha.o
 	$(CCo) trace.cc -o trace.o
 	$(CCo) interptraceclosestpos.cc -o interptraceclosestpos.o
-	$(CCo) tracerotationmatrices.cc -o tracerotationmatrices.o
+	#$(CCo) tracerotationmatrices.cc -o tracerotationmatrices.o
 		
 clean:
 	rm -v *.o
