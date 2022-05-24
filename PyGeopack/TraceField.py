@@ -71,7 +71,7 @@ class TraceField(object):
 	
 	
 	def _Trace(self,Xin,Yin,Zin,Date,ut,Model='T96',CoordIn='GSM', 
-				alt=100.0,MaxLen=1000,DSMax=1.0,FlattenSingleTraces=True,
+				alt=100.0,MaxLen=1000,DSMax=1.0,
 				Verbose=False,TraceDir='both',alpha=[0.0,90.0],**kwargs):
 		'''
 		Traces along the magnetic field given a starting set of 
@@ -110,9 +110,6 @@ class TraceField(object):
 			Maximum number of steps in the trace, default is 1000.
 		DSMax : float
 			Maximum step length, default is 1.0 Re.
-		FlattenSingleTraces	: bool
-			When set to True and if performing only a single trace to 
-			flatten all of the arrays (position, magnetic field, etc.)
 		Verbose	: bool
 			Boolean, if True will display an indication of the progress 
 			made during traces.
@@ -292,23 +289,10 @@ class TraceField(object):
 
 		
 		#flatten things and unpack footprints
-		if self.n == 1 and FlattenSingleTraces:
-			flat = ['nstep','xgsm','ygsm','zgsm','xgse','ygse','zgse',
-					'xsm','ysm','zsm','Bxgsm','Bygsm','Bzgsm','Bxgse',
-					'Bygse','Bzgse','Bxsm','Bysm','Bzsm','s','R','Rnorm']
-			for f in flat:
-				self.__dict__[f] = self.__dict__[f][0]
-			self.halpha = (self.halpha.reshape((self.n,self.nalpha,self.MaxLen)))[0]
-			for i in range(0,15):
-				setattr(self,fpnames[i],self.FP[0,i])
-			self.flat = True
-		else:
-			self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
-			for i in range(0,15):
-				setattr(self,fpnames[i],self.FP[:,i])
-			self.flat = False
-
-		
+		self.halpha = self.halpha.reshape((self.n,self.nalpha,self.MaxLen))
+		for i in range(0,15):
+			setattr(self,fpnames[i],self.FP[:,i])
+	
 	
 	
 		
@@ -349,54 +333,30 @@ class TraceField(object):
 		
 		'''
 		if Coord.upper() in ['GSM','GSE','SM']:
-			if self.flat:
-				x = getattr(self,'x'+Coord.lower())[:self.nstep]
-				y = getattr(self,'y'+Coord.lower())[:self.nstep]
-				z = getattr(self,'z'+Coord.lower())[:self.nstep]
-				bx = getattr(self,'Bx'+Coord.lower())[:self.nstep]
-				by = getattr(self,'By'+Coord.lower())[:self.nstep]
-				bz = getattr(self,'Bz'+Coord.lower())[:self.nstep]
-			else:
-				x = getattr(self,'x'+Coord.lower())[i][:self.nstep[i]]
-				y = getattr(self,'y'+Coord.lower())[i][:self.nstep[i]]
-				z = getattr(self,'z'+Coord.lower())[i][:self.nstep[i]]
-				bx = getattr(self,'Bx'+Coord.lower())[i][:self.nstep[i]]
-				by = getattr(self,'By'+Coord.lower())[i][:self.nstep[i]]
-				bz = getattr(self,'Bz'+Coord.lower())[i][:self.nstep[i]]
+			x = getattr(self,'x'+Coord.lower())[i][:self.nstep[i]]
+			y = getattr(self,'y'+Coord.lower())[i][:self.nstep[i]]
+			z = getattr(self,'z'+Coord.lower())[i][:self.nstep[i]]
+			bx = getattr(self,'Bx'+Coord.lower())[i][:self.nstep[i]]
+			by = getattr(self,'By'+Coord.lower())[i][:self.nstep[i]]
+			bz = getattr(self,'Bz'+Coord.lower())[i][:self.nstep[i]]
 		else:
-			if self.flat:
-				x = self.xgsm[:self.nstep]
-				y = self.ygsm[:self.nstep]
-				z = self.zgsm[:self.nstep]
-				bx = self.Bxgsm[:self.nstep]
-				by = self.Bygsm[:self.nstep]
-				bz = self.Bzgsm[:self.nstep]
-				Date = self.Date
-				ut = self.ut
-			else:
-				x = self.xgsm[i][:self.nstep[i]]
-				y = self.ygsm[i][:self.nstep[i]]
-				z = self.zgsm[i][:self.nstep[i]]
-				bx = self.Bxgsm[i][:self.nstep[i]]
-				by = self.Bygsm[i][:self.nstep[i]]
-				bz = self.Bzgsm[i][:self.nstep[i]]
-				Date = self.Date[i]
-				ut = self.ut[i]
+			x = self.xgsm[i][:self.nstep[i]]
+			y = self.ygsm[i][:self.nstep[i]]
+			z = self.zgsm[i][:self.nstep[i]]
+			bx = self.Bxgsm[i][:self.nstep[i]]
+			by = self.Bygsm[i][:self.nstep[i]]
+			bz = self.Bzgsm[i][:self.nstep[i]]
+			Date = self.Date[i]
+			ut = self.ut[i]
 			if  Coord.upper() in ['GEO','MAG','GEI']:
 				x,y,z = ConvCoords(x,y,z,Date,ut,'GSM',Coord)
 				bx,by,bz = ConvCoords(bx,by,bz,Date,ut,'GSM',Coord)
 			else:
 				print('Coordinate system {:s} not recognised,returning GSM'.format(Coord.upper()))
-		if self.flat:
-			r = self.R[:self.nstep]
-			rnorm = self.Rnorm[:self.nstep]
-			s = self.s[:self.nstep]
-			h = self.halpha[:,:self.nstep]
-		else:
-			r = self.R[i][:self.nstep[i]]
-			rnorm = self.Rnorm[i][:self.nstep[i]]
-			s = self.s[i][:self.nstep[i]]
-			h = self.halpha[i,:][:self.nstep[i]]
+		r = self.R[i][:self.nstep[i]]
+		rnorm = self.Rnorm[i][:self.nstep[i]]
+		s = self.s[i][:self.nstep[i]]
+		h = self.halpha[i,:][:self.nstep[i]]
 			
 		return (x,y,z,bx,by,bz,r,rnorm,s,h)
 			
@@ -645,9 +605,13 @@ class TraceField(object):
 		else:
 			ax = fig
 		
-		x,_,z,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
-
-		ln = ax.plot(x,z,color=color)
+		mx = 0.0
+		mz = 0.0
+		for i in ind:
+			x,_,z,_,_,_,_,_,_,_ = self.GetTrace(i,Coord=Coord)
+			mx = np.nanmax([mx,np.nanmax(np.abs(x))])
+			mz = np.nanmax([mz,np.nanmax(np.abs(z))])
+			ln = ax.plot(x,z,color=color)
 		if not label is None:
 			hs,ls = GetLegendHandLab(ax)
 			hs.append(ln[0])
@@ -657,8 +621,8 @@ class TraceField(object):
 		ax.set_ylabel('$z_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
 		ax.set_xlabel('$x_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
 
-		mxx = np.nanmax(x)
-		mxz = np.nanmax(z)
+		mxx = mx
+		mxz = mz
 		mx = 1.1*np.nanmax([mxx,mxz])		
 		ax.set_xlim(-mx,mx)
 		ax.set_ylim(-mx,mx)
@@ -712,9 +676,13 @@ class TraceField(object):
 		else:
 			ax = fig
 		
-		x,y,_,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
-			
-		ln = ax.plot(y,x,color=color)
+		mx = 0.0
+		my = 0.0
+		for i in ind:
+			x,y,_,_,_,_,_,_,_,_ = self.GetTrace(i,Coord=Coord)
+			mx = np.nanmax([mx,np.nanmax(np.abs(x))])
+			my = np.nanmax([my,np.nanmax(np.abs(y))])
+			ln = ax.plot(y,x,color=color)
 		if not label is None:
 			hs,ls = GetLegendHandLab(ax)
 			hs.append(ln[0])
@@ -726,8 +694,8 @@ class TraceField(object):
 		ax.set_xlabel('$y_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
 		ax.set_ylabel('$x_{'+'{:s}'.format(Coord)+'}$ (R$_E$)')
 
-		mxx = np.nanmax(x)
-		mxy = np.nanmax(y)
+		mxx = mx
+		mxy = my
 		mx = 1.1*np.nanmax([mxx,mxy])		
 		ax.set_xlim(mx,-mx)
 		ax.set_ylim(-mx,mx)
@@ -781,10 +749,11 @@ class TraceField(object):
 		else:
 			ax = fig
 		
-		x,y,z,_,_,_,_,_,_,_ = self.GetTrace(ind,Coord=Coord)
-		
-		r = np.sqrt(x**2 + y**2)
-		ln = ax.plot(r,z,color=color)
+		for i in ind:
+			x,y,z,_,_,_,_,_,_,_ = self.GetTrace(i,Coord=Coord)
+			
+			r = np.sqrt(x**2 + y**2)
+			ln = ax.plot(r,z,color=color)
 		if not label is None:
 			hs,ls = GetLegendHandLab(ax)
 			hs.append(ln[0])
