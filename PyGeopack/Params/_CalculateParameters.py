@@ -18,14 +18,15 @@ def _InterpField(a,flags,maxgap=36):
 	fina = np.isfinite(a)
 	g0 = np.where(fina[:-1] & (fina[1:] == False))[0]
 	g1 = np.where((fina[:-1] == False) & fina[1:])[0]+1
-	
+
 	if g0.size > 0 and g1.size > 0:
 		#if the field starts with a valid value
 		if g1[0] <= g0[0]:
 			g0 = np.append(0,g0)
 		#if the field ends with a valid value
-		if g0[-1] > g1[-1]:
+		if g0[-1] > g1[-1] - 1:
 			g1 = np.append(g1,a.size) 
+
 		
 		#loop through each gap	
 		ng = g0.size

@@ -50,4 +50,4 @@ def UpdateParameters(SkipWParameters=True):
 	#save the data
 	print('Saving')
 	fname = Globals.DataPath+'TSdata.bin'
-	RT.SaveRecarray(data,fname)
+	RT.SaveRecarray(data,fname,Progress=True)
