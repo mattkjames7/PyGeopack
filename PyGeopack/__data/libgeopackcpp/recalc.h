@@ -10,4 +10,5 @@ using namespace std;
 
 
 
+bool Recalc(int Date, float ut, double Vx, double Vy, double Vz, bool force);
 bool Recalc(int Date, float ut, double Vx, double Vy, double Vz);

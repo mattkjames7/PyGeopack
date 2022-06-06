@@ -1791,7 +1791,8 @@ C     AUTHOR:  N. A. TSYGANENKO
 C
       IMPLICIT REAL*8 (A-H,O-Z)
       DIMENSION XX(LMAX),YY(LMAX),ZZ(LMAX), PARMOD(10)
-      COMMON /GEOPACK1/ AA(12),DD,BB(21)
+c     COMMON /GEOPACK1/ AA(12),DD,BB(21)
+      COMMON /GEOPACK1/ A(12),DD,BB(2),PSI,CC(18)
       EXTERNAL EXNAME,INNAME
 C
       L=0
@@ -1804,6 +1805,8 @@ C
       X=XI
       Y=YI
       Z=ZI
+      CALL EXNAME (IOPT,PARMOD,PSI,X,Y,Z,BXGSW,BYGSW,BZGSW)
+      CALL INNAME (X,Y,Z,HXGSW,HYGSW,HZGSW)
 c
 c  here we call RHAND_08 just to find out the sign of the radial component of the field
 c   vector, and to determine the initial direction of the tracing (i.e., either away
@@ -1833,7 +1836,6 @@ c  check if the line hit the outer tracing boundary; if yes, then terminate
 c   the tracing (label 8). The outer boundary is assumed reached, when the line
 c   crosses any of the 3 surfaces: (1) a sphere R=RLIM, (2) a cylinder of radius 40Re,
 c   coaxial with the XGSW axis, (3) the plane X=20Re:
-
       IF (R.GT.RLIM.OR.RYZ.GT.1600.D0.OR.X.GT.20.D0) GOTO 8
 c
 c  check whether or not the inner tracing boundary was crossed from outside,

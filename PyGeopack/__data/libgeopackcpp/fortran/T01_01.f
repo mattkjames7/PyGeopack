@@ -81,7 +81,7 @@ c              from anonymous ftp-area www-istp.gsfc.nasa.gov,  /pub/kolya/T01)
 c
 c----------------------------------------------------------------------
 c
-      REAL PARMOD(10),PS,X,Y,Z,BX,BY,BZ
+      REAL*8 PARMOD(10),PS,X,Y,Z,BX,BY,BZ
       REAL*8 A(43),PDYN,DST_AST,BYIMF,BZIMF,G1,G2,PSS,XX,YY,ZZ,
      *  BXCF,BYCF,BZCF,BXT1,BYT1,BZT1,BXT2,BYT2,BZT2,
      *  BXSRC,BYSRC,BZSRC,BXPRC,BYPRC,BZPRC, BXR11,BYR11,BZR11,
@@ -102,6 +102,7 @@ C
 C
       ENDIF
 C
+        
       PDYN=PARMOD(1)
       DST_AST=PARMOD(2)*0.8-13.*SQRT(PDYN)
       BYIMF=PARMOD(3)
@@ -113,6 +114,7 @@ C
       XX=X
       YY=Y
       ZZ=Z
+      
 C
       CALL T01EXTALL (0,0,0,0,A,43,PDYN,DST_AST,BYIMF,BZIMF,G1,G2,
      *  PSS,XX,YY,ZZ,BXCF,BYCF,BZCF,BXT1,BYT1,BZT1,BXT2,BYT2,BZT2,

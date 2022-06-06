@@ -19,7 +19,7 @@ void TraceFieldLine(double x0, double y0, double z0,
 	double Err = 0.0001;
 	double Rlim = 1000.0;
 	int Nmax;
-	
+
 	/*next we need to trace backwards along the field line towards the north pole*/
 	if (TraceDir == 0) {
 		Nmax = MaxLen/2 - 2;

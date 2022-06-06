@@ -233,7 +233,7 @@ void Trace::InputPos(	int n, double *x, double *y, double *z,
 		allocV_ = true;
 
 	}
-	
+
 	/* allocate the memory to store the input coords */
 	n_ = n;
 	x0_ = new double[n];
@@ -241,14 +241,14 @@ void Trace::InputPos(	int n, double *x, double *y, double *z,
 	z0_ = new double[n];
 	Date_ = new int[n];
 	ut_ = new float[n];
-	
+
 	/* copy times across */
 	int i;
 	for (i=0;i<n_;i++) {
 		Date_[i] = Date[i];
 		ut_[i] = ut[i];
 	}
-	
+
 	/* convert the coordinates to GSM */
 	if (strcmp(CoordIn,"GSE") == 0) {
 		GSEtoGSMUT(x,y,z,n,Vx_,Vy_,Vz_,Date,ut,x0_,y0_,z0_);
@@ -265,7 +265,7 @@ void Trace::InputPos(	int n, double *x, double *y, double *z,
 			z0_[i] = z[i];
 		}
 	}	
-	
+
 	/* set the flag so we know to delete  again once the object is deleted */
 	inputPos_ = true;
 						
@@ -742,7 +742,6 @@ void Trace::_TraceGSM() {
 
 		/* call recalc */
 		Recalc(Date_[i],ut_[i],Vx_[i],Vy_[i],Vz_[i]);
-		
 		
 		
 		if (inMP_[i]) {

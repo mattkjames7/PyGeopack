@@ -45,8 +45,8 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 		}
 
 		/* call recalc */
-		Recalc(Date[ipar],ut[ipar],Vx[ipar],Vy[ipar],Vz[ipar]);
-		
+		Recalc(Date[ipar],ut[ipar],Vx[ipar],Vy[ipar],Vz[ipar],true);
+
 		/* get the tilt */
 		tilt = getpsi_();
 		

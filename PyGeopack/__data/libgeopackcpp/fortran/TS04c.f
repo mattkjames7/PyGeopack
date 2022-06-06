@@ -65,7 +65,7 @@ c   (3)  N. A. Tsyganenko and M. I. Sitnov, Modeling the dynamics of the inner m
 c         strong geomagnetic storms, J. Geophys. Res., v. 110 (A3), A03208, doi: 10.1029/2004JA010798, 2005.
 c----------------------------------------------------------------------
 c
-      REAL PARMOD(10),PS,X,Y,Z,BX,BY,BZ
+      REAL*8 PARMOD(10),PS,X,Y,Z,BX,BY,BZ
       REAL*8 A(69),PDYN,DST_AST,BXIMF,BYIMF,BZIMF,W1,W2,W3,W4,W5,W6,
      *  PSS,XX,YY,ZZ,BXCF,BYCF,BZCF,BXT1,BYT1,BZT1,BXT2,BYT2,BZT2,
      *  BXSRC,BYSRC,BZSRC,BXPRC,BYPRC,BZPRC, BXR11,BYR11,BZR11,
