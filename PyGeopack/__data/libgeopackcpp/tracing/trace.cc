@@ -755,7 +755,7 @@ void Trace::_TraceGSM() {
 			/*get B vectors along trace*/
 			ModelField(nstep_[i],xgsm_[i],ygsm_[i],zgsm_[i],
 						&Date_[i],&ut_[i],true,Model_,&iopt_[i],&parmod_[i],
-						&Vx_[i],&Vy_[i],&Vz_[i],"GSM","GSM",
+						&Vx_[i],&Vy_[i],&Vz_[i],"GSM","GSM", false,
 						bxgsm_[i],bygsm_[i],bzgsm_[i]);
 
 		} else {

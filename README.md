@@ -102,7 +102,7 @@ where the output field components `Bx`, `By` and `Bz` are in units of nT.
 The `ModelField` function accepts the following arguments and keywords:
 
 | Name           | Keyword/Argument | Description                                                                                                           |
-| -------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+|----------------|------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `x`            | argument         | Scalar or array of x-coordinates                                                                                      |
 | `y`            | argument         | Scalar or array of y-coordinates                                                                                      |
 | `z`            | argument         | Scalar or array of z-coordinates                                                                                      |
@@ -111,6 +111,7 @@ The `ModelField` function accepts the following arguments and keywords:
 | `Model`        | keyword          | String denoting the model to use `'T89'\|'T96'\|'T01'\|'TS05'`                                                        |
 | `CoordIn`      | keyword          | Input coordinate system string: `'GSE'\|'GSM'\|'SM'`                                                                  |
 | `CoordOut`     | keyword          | Output coordinate system string: `'GSE'\|'GSM'\|'SM'`                                                                 |
+| `WithinMPOnly  | keyword          | If `True` then return NaN's outside the magnetopause.                                                                 |
 | `ReturnParams` | keyword          | If `True` then a dictionary containing the model parameters will be returned as a fourth output parameter.            |
 | `**kwargs`     | keywords         | Keyword arguments can be used to define some or all of the model parameters used. See model parameters section.       |
 

@@ -5,7 +5,7 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 					int *Date, float *ut, bool SameTime,
 					const char *Model, int *iopt, double **parmod,
 					double *Vx, double *Vy, double *Vz,
-					const char *CoordIn, const char *CoordOut, 
+					const char *CoordIn, const char *CoordOut, bool WithinMPOnly,
 					double *Bx, double *By, double *Bz) {
 
 	/* declare a bunch of variables to use */
@@ -70,18 +70,19 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 
 		/*check if we are within the magnetopause or not */
 		inMP = WithinMP(X[i],Y[i],Z[i],parmod[ipar][3],parmod[ipar][0]);
-		if (inMP) {
+		
+		if (WithinMPOnly && ! inMP) {
+			/* fill with NAN */
+			Bxgsm[i] = NAN;
+			Bygsm[i] = NAN;
+			Bzgsm[i] = NAN;
+		} else { 
 			/*call relevant model code*/
 			igrf_gsw_08_(&X[i],&Y[i],&Z[i],&intx,&inty,&intz);
 			ModelFunc(&iopt[ipar],parmod[ipar],&tilt,&X[i],&Y[i],&Z[i],&extx,&exty,&extz);
 			Bxgsm[i] = intx + extx;
 			Bygsm[i] = inty + exty;
 			Bzgsm[i] = intz + extz;
-		} else { 
-			/* fill with NAN */
-			Bxgsm[i] = NAN;
-			Bygsm[i] = NAN;
-			Bzgsm[i] = NAN;
 		}
 
 		/*now to convert the vectors to the desired output coordinates*/
@@ -108,7 +109,7 @@ void ModelField(	int n, double *Xin, double *Yin, double *Zin,
 ModelCFG GetModelCFG(	int n, int *Date, float *ut, bool SameTime,
 						const char *Model, int *iopt, double **parmod,
 						double *Vx, double *Vy, double *Vz,
-						const char *CoordIn, const char *CoordOut) {
+						const char *CoordIn, const char *CoordOut, bool WithinMPOnly) {
 	
 	
 	/*get model function and parmod*/
@@ -130,7 +131,7 @@ ModelCFG GetModelCFG(	int n, int *Date, float *ut, bool SameTime,
 	
 	/* create a struct to store model config */
 	ModelCFG cfg = {n,Date,ut,SameTime,ModelFunc,iopt,parmod,Vx,Vy,Vz,
-			CoordIn,CoordOut};
+			CoordIn,CoordOut, WithinMPOnly};
 
 	return cfg;
 	
