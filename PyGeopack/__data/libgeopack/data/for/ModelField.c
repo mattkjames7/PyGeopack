@@ -1,7 +1,7 @@
 #include "ModelField.h"
 
 
-void ModelField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, const char *Model, int CoordIn, int CoordOut, float *Bx, float *By, float *Bz) {
+void ModelField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, const char *Model, int CoordIn, int CoordOut, int WithinMPOnly, float *Bx, float *By, float *Bz) {
 
 	/*Check that TSData has been loaded*/
 	if (TSData.n == 0) {

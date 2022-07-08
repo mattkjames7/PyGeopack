@@ -8,5 +8,5 @@
 
 //CtypeStart
 //PyFunc iiiiiiiiiooo
-void ModelField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, const char *Model, int CoordIn, int CoordOut, float *Bx, float *By, float *Bz);
+void ModelField(float *Xin, float *Yin, float *Zin, int n, int Date, float ut, const char *Model, int CoordIn, int CoordOut, int WithinMPOnly, float *Bx, float *By, float *Bz);
 //CtypeStop

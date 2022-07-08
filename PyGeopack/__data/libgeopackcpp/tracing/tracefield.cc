@@ -129,7 +129,7 @@ void TraceFieldOld(double *Xin, double *Yin, double *Zin, int n,
 			/*get B vectors along trace*/
 			ModelField(nstep[i],Xout[i],Yout[i],Zout[i],
 						&Date[i],&ut[i],true,Model,&iopt[i],&parmod[i],
-						&Vx[i],&Vy[i],&Vz[i],"GSM","GSM",
+						&Vx[i],&Vy[i],&Vz[i],"GSM","GSM", false,
 						Bx[i],By[i],Bz[i]);
 
 			/* Get the distance along the field line*/
