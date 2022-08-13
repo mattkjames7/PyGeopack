@@ -528,7 +528,7 @@ void MAGtoGSE(	double Xin, double Yin, double Zin,
 	/* do the coordinate conversion */
 	magsm_08_(&Xin,&Yin,&Zin,&Xt,&Yt,&Zt,&dirp);
 	smgsw_08_(&Xt,&Yt,&Zt,&X,&Y,&Z,&dirp);
-	gswgse_08_(&X,&Y,&Z,Xout,Yout,Zout,&dirp);	
+	gswgse_08_(&X,&Y,&Z,Xout,Yout,Zout,&dirp);
 	
 	return;
 }
