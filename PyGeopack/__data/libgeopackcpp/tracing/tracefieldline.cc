@@ -39,7 +39,6 @@ void TraceFieldLine(double x0, double y0, double z0,
 		zfn[0] = 0.0;
 	}
 	
-	
 	/*reverse array elements*/
 	if (N > 1) {
 		ReverseElements(x,N);

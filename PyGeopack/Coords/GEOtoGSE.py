@@ -34,6 +34,7 @@ def GEOtoGSE(Xin, Yin, Zin, Date, ut, V=None):
 		Vx = np.zeros(_n) + V[0]
 		Vy = np.zeros(_n) + V[1]
 		Vz = np.zeros(_n) + V[2]
+
 	_Vx = ctDoublePtr(Vx)
 	_Vy = ctDoublePtr(Vy)
 	_Vz = ctDoublePtr(Vz)

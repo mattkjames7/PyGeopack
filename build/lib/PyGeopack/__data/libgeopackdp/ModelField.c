@@ -3,8 +3,8 @@
 
 void ModelField(	double *Xin, double *Yin, double *Zin, int n, 
 					int *Date, float *ut, int SameTime, 
-					const char *Model,	int CoordIn, int CoordOut, 
-					double *Bx, double *By, double *Bz) {
+			const char *Model,	int CoordIn, int CoordOut, int WithinMPOnly,
+			double *Bx, double *By, double *Bz) {
 
 	/*Check that TSData has been loaded*/
 	if (TSData.n == 0) {
@@ -118,20 +118,21 @@ void ModelField(	double *Xin, double *Yin, double *Zin, int n,
 
 		/*check if we are within the magnetopause or not */
 		inMP = WithinMP(X[i],Y[i],Z[i],parmod[3],parmod[0]);
-		if (inMP) {
+		
+		if (WithinMPOnly && !inMP) {
+			/* fill with NAN */
+			Bxgsm[i] = NAN;
+			Bygsm[i] = NAN;
+			Bzgsm[i] = NAN;		  
+		} else {
 			/*call relevant model code*/
 			igrf_gsw_08_(&X[i],&Y[i],&Z[i],&intx,&inty,&intz);
 			ModelFunc(&iopt,parmod,&tilt,&X[i],&Y[i],&Z[i],&extx,&exty,&extz);
 			Bxgsm[i] = intx + extx;
 			Bygsm[i] = inty + exty;
 			Bzgsm[i] = intz + extz;
-		} else { 
-			/* fill with NAN */
-			Bxgsm[i] = NAN;
-			Bygsm[i] = NAN;
-			Bzgsm[i] = NAN;
 		}
-
+		
 		/*now to convert the vectors to the desired output coordinates*/
 		switch (CoordOut) {
 			case 1:

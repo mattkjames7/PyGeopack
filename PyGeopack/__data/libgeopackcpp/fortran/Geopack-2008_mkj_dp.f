@@ -1878,7 +1878,8 @@ c
 c  find the footpoint position by interpolating between the current and previous
 c   field line points:
 c
-  6   R1=(R0-R)/(RR-R)
+  6   IF (L.EQ.1) GOTO 8
+	  R1=(R0-R)/(RR-R)
       X=X-(X-XR)*R1
       Y=Y-(Y-YR)*R1
       Z=Z-(Z-ZR)*R1

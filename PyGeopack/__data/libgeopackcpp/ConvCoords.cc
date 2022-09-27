@@ -2373,7 +2373,7 @@ void XXXtoYYYUT(	double *Xin, double *Yin, double *Zin, int n,
 
 		/*Get velocity if needed*/
 		CheckV(Date[i],ut[i],Vx[i],Vy[i],Vz[i],&vx,&vy,&vz);
-		
+
 		if ((vx != vxp) || (vy != vyp) || (vz != vzp)) {
 			recalc = 1;
 		}

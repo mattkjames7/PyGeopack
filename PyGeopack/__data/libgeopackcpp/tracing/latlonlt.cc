@@ -34,7 +34,7 @@ void GeoLatLonLT(float ut, double x, double y, double z, double *lat, double *lo
 	
 	/*convert GSW to SM*/
 	geogsw_08_(&X1,&Y1,&Z1,&x,&y,&z,&dirn);
-	
+
 	/* Calculate the spherical coordinate */
 	CartToSpherical(X1,Y1,Z1,&r,&theta,&phi);	
 	

@@ -240,8 +240,6 @@ double TsygData::_Interp(	double t,
 	
 	/* check that inputs are finite */
 	if ((!isfinite(x0)) || (!isfinite(x1))) {
-		printf("bad x0/x1\n");
-		printf("%f %f\n",x0,x1);
 		return fillval;
 	}
 	
@@ -301,7 +299,6 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 	double utc;
 
 	ContUT(1,&Date,&ut,&utc);
-
 	
 
 	/* check if the time provided is within the range of the data */
@@ -311,6 +308,7 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 	} else if (utc > utc_[n_-1]) {
 		/* this would be afterwards */
 		return NAN;
+		
 	}
 	
 
@@ -334,6 +332,7 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 	c = x[i0];
 	out = m*dtp + c;
 
+
 	return out;
 }
 
@@ -341,9 +340,13 @@ double TsygData::InterpParam(double *x, int Date, float ut) {
 void TsygData::GetVx(int n, int *Date, float *ut, double *Vx) {
 
 	int i;
+	
 	if (loaded_) {
 		for (i=0;i<n;i++) {
 			Vx[i] = InterpParam(Vx_,Date[i],ut[i]);
+			if (isnan(Vx[i])) {
+				Vx[i] = -400.0;
+			}
 		}	
 	} else {
 		for (i=0;i<n;i++) {
@@ -358,6 +361,9 @@ void TsygData::GetVy(int n, int *Date, float *ut, double *Vy) {
 	if (loaded_) {
 		for (i=0;i<n;i++) {
 			Vy[i] = InterpParam(Vy_,Date[i],ut[i]);
+			if (isnan(Vy[i])) {
+				Vy[i] = 0.0;
+			}
 		}	
 	} else {
 		for (i=0;i<n;i++) {
@@ -372,6 +378,9 @@ void TsygData::GetVz(int n, int *Date, float *ut, double *Vz) {
 	if (loaded_) {
 		for (i=0;i<n;i++) {
 			Vz[i] = InterpParam(Vz_,Date[i],ut[i]);
+			if (isnan(Vz[i])) {
+				Vz[i] = 0.0;
+			}
 		}	
 	} else {
 		for (i=0;i<n;i++) {
