@@ -637,6 +637,9 @@ PyGeopack/__data/libgeopackcpp/test/test.cc
 PyGeopack/__data/libgeopackcpp/test/test.h
 PyGeopack/__data/libgeopackcpp/test/testrotate.cc
 PyGeopack/__data/libgeopackcpp/test/testrotate.h
+PyGeopack/__data/libgeopackcpp/test/testswitchmodel
+PyGeopack/__data/libgeopackcpp/test/testswitchmodel.cc
+PyGeopack/__data/libgeopackcpp/test/testswitchmodel.h
 PyGeopack/__data/libgeopackcpp/tools/BubbleArgSort.cc
 PyGeopack/__data/libgeopackcpp/tools/BubbleArgSort.h
 PyGeopack/__data/libgeopackcpp/tools/BubbleArgSort.o
