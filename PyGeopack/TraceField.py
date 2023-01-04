@@ -537,7 +537,7 @@ class TraceField(object):
 		ywave = []
 		
 		for f in freq:
-			ywave = wh.SolveWave(f,s,B,Va=Va,halpha=h)/h
+			ywave = wh.SolveWave(f,s,B,Va=Va,halpha=h)
 
 			#then plot
 			ax.plot(s,ywave,label='f={:5.2f} mHz'.format(f))
