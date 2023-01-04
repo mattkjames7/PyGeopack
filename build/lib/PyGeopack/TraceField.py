@@ -167,7 +167,6 @@ class TraceField(object):
 				
 		'''
 
-
 		#Convert input variables to appropriate numpy dtype:
 		self.Xin = np.array(Xin).astype("float64")
 		self.Yin = np.array(Yin).astype("float64")
@@ -262,7 +261,7 @@ class TraceField(object):
 		#get model parameters
 		self.params = GetModelParams(self.Date,self.ut,Model,**kwargs)
 		_Parmod = ctDoublePtrPtr(self.params['parmod'])
-		
+
 		#call the C code
 		_CTraceField(	self.n,self.Xin,self.Yin,self.Zin,
 						self.Date,self.ut,ModelCode,

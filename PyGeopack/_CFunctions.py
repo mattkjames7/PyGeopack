@@ -23,7 +23,7 @@ _CModelField.argtypes = [	c_int, 				#number of positions
 							c_double_ptr, 		#z coord
 							c_int_ptr, 			#Date array
 							c_float_ptr, 		#ut array
-							c_int,				#a flag which tells the function whether there is one or more dates
+							c_bool,				#a flag which tells the function whether there is one or more dates
 							c_char_p, 			#Model name
 							c_int_ptr,			#iopt for each position
 							c_double_ptr_ptr,	#parmod for each position
@@ -32,6 +32,7 @@ _CModelField.argtypes = [	c_int, 				#number of positions
 							c_double_ptr,		#Vz
 							c_char_p, 			#input coords
 							c_char_p, 			#output coords
+							c_bool,				#whether to only include vectors within MP
 							c_double_ptr, 		#output Bx
 							c_double_ptr, 		#output By
 							c_double_ptr]		#output Bz
