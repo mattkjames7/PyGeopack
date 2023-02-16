@@ -16,3 +16,5 @@ from .__del__ import __del__
 
 from . import Test
 from . import Tools
+
+from .ShueMP import ShueMP
