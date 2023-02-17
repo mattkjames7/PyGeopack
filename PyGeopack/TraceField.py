@@ -371,7 +371,7 @@ class TraceField(object):
 			If True then arrays will be shortened by removing nans.
 			
 		'''
-		out = TraceDict(RemoveNAN)
+		out = self.TraceDict(RemoveNAN)
 		
 		print('Saving file: {:s}'.format(fname))
 		
