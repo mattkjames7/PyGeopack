@@ -87,6 +87,7 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96',
 	_Model = ctString(Model)
 	_CoordIn = ctString(CoordIn)
 	_CoordOut = ctString(CoordOut)
+	_WithinMPOnly = ctBool(kwargs.get("WithinMPOnly",True))
 	_Bx = np.zeros(_n,dtype="float64")
 	_By = np.zeros(_n,dtype="float64")
 	_Bz = np.zeros(_n,dtype="float64")
@@ -97,7 +98,7 @@ def ModelField(Xin, Yin, Zin, Date, ut, Model='T96',
 	
 	_CModelField(_n, _Xin, _Yin, _Zin, _Date, _ut, _SameTime, 
 			_Model, params['iopt'], _Parmod, params['Vx'], params['Vy'],
-			params['Vz'], _CoordIn, _CoordOut, _Bx, _By, _Bz)
+			params['Vz'], _CoordIn, _CoordOut, _WithinMPOnly, _Bx, _By, _Bz)
 
 	if ReturnParams:
 		return _Bx, _By, _Bz, params

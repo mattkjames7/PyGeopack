@@ -1,4 +1,4 @@
-__version__ = '1.1.2'
+__version__ = '1.1.4'
 
 
 from . import Globals
@@ -16,3 +16,5 @@ from .__del__ import __del__
 
 from . import Test
 from . import Tools
+
+from .ShueMP import ShueMP
