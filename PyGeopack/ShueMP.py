@@ -31,7 +31,7 @@ def ShueMP(Theta,Pdyn=2.0,Bz=0.0):
 	return Rmp
 
 
-def PlotMPXZ(ax,Date,ut,**kwargs):
+def PlotMPXZ(ax,Date,ut,Pdyn=2.0,Bz=0.0,**kwargs):
 	'''
 	Plot the magnetopause in the X-Z GSM plane
 
@@ -51,8 +51,6 @@ def PlotMPXZ(ax,Date,ut,**kwargs):
 
 	params = GetModelParams(Date,ut,'T96')
 
-	Pdyn = params['Pdyn'][0]
-	Bz = params['Bz'][0]
 
 	theta = np.linspace(-179,179,1000)*np.pi/180.0
 	Rmp = ShueMP(theta,Pdyn,Bz)

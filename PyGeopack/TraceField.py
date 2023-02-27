@@ -594,6 +594,7 @@ class TraceField(object):
 			ind = np.array([ind]).flatten()
 		else:
 			ind = np.array(ind)
+		
 			
 		
 		if fig is None:
@@ -603,11 +604,15 @@ class TraceField(object):
 			ax = fig.subplot2grid((maps[1],maps[0]),(maps[3],maps[2]))
 		else:
 			ax = fig
+		if ind.size == 0:
+			return ax
 		
 		mx = 0.0
 		mz = 0.0
 		for i in ind:
 			x,_,z,_,_,_,_,_,_,_ = self.GetTrace(i,Coord=Coord)
+			if x.size == 0:
+				continue
 			mx = np.nanmax([mx,np.nanmax(np.abs(x))])
 			mz = np.nanmax([mz,np.nanmax(np.abs(z))])
 			ln = ax.plot(x,z,color=color)

@@ -7,7 +7,7 @@ from ..Tools.T89CurrentSheet import _T89CurrentSheet
 from ..Params.GetDipoleTilt import GetDipoleTilt
 from ..Coords.SMtoGSM import SMtoGSM
 
-def PlotTraces(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0],MaxDT=1.0):
+def PlotTraces(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0],MaxDT=1.0,Pdyn=2.0,Bz=0.0):
 	
 
 	#colatitudes to trace from
@@ -24,11 +24,11 @@ def PlotTraces(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0],MaxDT=1.0):
 	zs = -zn[::-1]
 
 	#get northern traces
-	Tn = TraceField(xn,yn,zn,Date,ut,Model='T96',CoordIn='SM')
+	Tn = TraceField(xn,yn,zn,Date,ut,Model='T96',CoordIn='SM',Pdyn=Pdyn,Bz=Bz)
 
 	#southern traces for where north has open field lines
 	sth = np.where(np.isnan(Tn.Lshell))
-	Ts = TraceField(xs[sth],ys[sth],zs[sth],Date,ut,Model='T96',CoordIn='SM')
+	Ts = TraceField(xs[sth],ys[sth],zs[sth],Date,ut,Model='T96',CoordIn='SM',Pdyn=Pdyn,Bz=Bz)
 
 	if fig is None:
 		fig = plt
@@ -54,7 +54,7 @@ def PlotTraces(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0],MaxDT=1.0):
 	return ax
 
 
-def GetDaysideTraces(Date,ut):
+def GetDaysideTraces(Date,ut,Pdyn=2.0,Bz=0.0):
 
 	#find the magnetopause first
 	psi = GetDipoleTilt(Date,ut)
@@ -74,12 +74,12 @@ def GetDaysideTraces(Date,ut):
 	zfp = _T89CurrentSheet(x,y,psi)
 
 	#trace
-	T = TraceField(xfp,yfp,zfp,Date,ut,CoordIn='SM',alpha=[],Model='T96')
+	T = TraceField(xfp,yfp,zfp,Date,ut,CoordIn='SM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
 
 
 	return T
 
-def GetNightsideTraces(Date,ut):
+def GetNightsideTraces(Date,ut,Pdyn=2.0,Bz=0.0):
 
 	psi = GetDipoleTilt(Date,ut)
 	x0 = np.linspace(-2,-30,100)
@@ -96,7 +96,7 @@ def GetNightsideTraces(Date,ut):
 
 
 	#trace
-	T = TraceField(xfp,yfp,zfp,Date,ut,CoordIn='SM',alpha=[],Model='T96')
+	T = TraceField(xfp,yfp,zfp,Date,ut,CoordIn='SM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
 
 	return T
 
@@ -110,7 +110,7 @@ def GetMPatX(x):
 
 	return zmpn
 
-def GetLobeTracesCrap(Date,ut,Tn):
+def GetLobeTracesCrap(Date,ut,Tn,Pdyn=2.0,Bz=0.0):
 
 	#start by finding the current sheet at x = -10
 	psi = GetDipoleTilt(Date,ut)
@@ -145,12 +145,12 @@ def GetLobeTracesCrap(Date,ut,Tn):
 	yfp = np.zeros(nfp,dtype='float64')
 
 	#trace
-	Tln = TraceField(xfpn,yfp,zfpn,Date,ut,CoordIn='SM',alpha=[],Model='T96')
-	Tls = TraceField(xfps,yfp,zfps,Date,ut,CoordIn='SM',alpha=[],Model='T96')
+	Tln = TraceField(xfpn,yfp,zfpn,Date,ut,CoordIn='SM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
+	Tls = TraceField(xfps,yfp,zfps,Date,ut,CoordIn='SM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
 	print(Tls.nstep)
 	return Tln,Tls
 
-def GetLobeTraces(Date,ut,Td,Tn):
+def GetLobeTraces(Date,ut,Td,Tn,Pdyn=2.0,Bz=0.0):
 
 	#find the furthest trace
 	indn = np.where(Tn.Lshell == np.nanmax(Tn.Lshell))[0][0]
@@ -211,23 +211,23 @@ def GetLobeTraces(Date,ut,Td,Tn):
 
 
 
-	Tln = TraceField(xfpn,yfp,zfpn,Date,ut,CoordIn='GSM',alpha=[],Model='T96')
-	Tls = TraceField(xfps,yfp,zfps,Date,ut,CoordIn='GSM',alpha=[],Model='T96')
+	Tln = TraceField(xfpn,yfp,zfpn,Date,ut,CoordIn='GSM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
+	Tls = TraceField(xfps,yfp,zfps,Date,ut,CoordIn='GSM',alpha=[],Model='T96',Pdyn=Pdyn,Bz=Bz)
 
 	return Tln,Tls	
 
-def PlotTracesXZ(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0]):
+def PlotTracesXZ(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0],Pdyn=2.0,Bz=0.0):
 	
 
 	#dayside traces with starting points along CS
-	Td = GetDaysideTraces(Date,ut)
+	Td = GetDaysideTraces(Date,ut,Pdyn=Pdyn,Bz=Bz)
 
 	#nightside traces
-	Tn = GetNightsideTraces(Date,ut)
+	Tn = GetNightsideTraces(Date,ut,Pdyn=Pdyn,Bz=Bz)
 	usen = np.where(np.isfinite(Tn.Lshell))[0]
 
 	#lobe traces
-	Tln,Tls = GetLobeTraces(Date,ut,Td,Tn)
+	Tln,Tls = GetLobeTraces(Date,ut,Td,Tn,Pdyn=Pdyn,Bz=Bz)
 	useln = np.where(Tln.nstep > 0)[0]
 	usels = np.where(Tls.nstep > 0)[0]
 
@@ -252,6 +252,6 @@ def PlotTracesXZ(Date=20230320,ut=22.983,fig=None,maps=[1,1,0,0]):
 	ax.set_ylim(-12,12)
 	ax.set_aspect(1.0)
 
-	PlotMPXZ(ax,Date,ut,color='blue',linewidth=3.0)
+	PlotMPXZ(ax,Date,ut,color='blue',linewidth=3.0,Pdyn=Pdyn,Bz=Bz)
 
 	return ax
