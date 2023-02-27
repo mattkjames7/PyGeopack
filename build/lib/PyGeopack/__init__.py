@@ -1,4 +1,4 @@
-__version__ = '1.1.4'
+__version__ = '1.1.5'
 
 
 from . import Globals
@@ -17,4 +17,4 @@ from .__del__ import __del__
 from . import Test
 from . import Tools
 
-from .ShueMP import ShueMP
+from .ShueMP import ShueMP,PlotMPXZ,WithinMP

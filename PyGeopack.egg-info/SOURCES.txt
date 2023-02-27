@@ -69,6 +69,7 @@ PyGeopack/Test/TestHarmonic.py
 PyGeopack/Test/__init__.py
 PyGeopack/Tools/GetLegendHandLab.py
 PyGeopack/Tools/PlotPlanet.py
+PyGeopack/Tools/T89CurrentSheet.py
 PyGeopack/Tools/__init__.py
 PyGeopack/__data/libgeopack/ConvCoords.c
 PyGeopack/__data/libgeopack/ConvCoords.h
