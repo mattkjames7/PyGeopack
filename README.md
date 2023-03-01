@@ -2,6 +2,9 @@
 
 A Python wrapper for Geopack-2008. This includes the T89, T96, T01 and TS05 (or is it TS04? I don't know...) magnetic field models for Earth's magnetosphere. See https://ccmc.gsfc.nasa.gov/modelweb/magnetos/tsygan.html and http://geo.phys.spbu.ru/~tsyganenko/modeling.html for more information.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7688061.svg)](https://zenodo.org/badge/DOI/10.5281/zenodo.7688061.svg)
+
+
 ## 1. Requirements
 
 The following Python packages will be installed automatically:

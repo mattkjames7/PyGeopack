@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: PyGeopack
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: M. K.
+    family-names: James
+    email: mkj13@leicester.ac.uk
+    affiliation: >-
+      School of Physics and Astronomy, University of
+      Leicester, Leicester, UK
+    orcid: 'https://orcid.org/0000-0002-5699-6121'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7688061
+  - type: url
+    value: 'https://github.com/mattkjames7/PyGeopack.git'

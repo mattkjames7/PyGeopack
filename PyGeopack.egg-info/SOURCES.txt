@@ -631,7 +631,6 @@ PyGeopack/__data/libgeopackcpp/spline/spline.cc
 PyGeopack/__data/libgeopackcpp/spline/spline.h
 PyGeopack/__data/libgeopackcpp/spline/spline.o
 PyGeopack/__data/libgeopackcpp/spline/testspline.py
-PyGeopack/__data/libgeopackcpp/spline/__pycache__/testspline.cpython-36.pyc
 PyGeopack/__data/libgeopackcpp/test/makefile
 PyGeopack/__data/libgeopackcpp/test/test
 PyGeopack/__data/libgeopackcpp/test/test.cc
