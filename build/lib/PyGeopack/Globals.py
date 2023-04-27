@@ -1,2 +1,0 @@
-DataPath = None
-DataFile = None
