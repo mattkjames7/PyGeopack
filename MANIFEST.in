@@ -1,1 +1,1 @@
-recursive-include PyGeopack/__data/libgeopackcpp *
+recursive-include PyGeopack/__data/geopack *

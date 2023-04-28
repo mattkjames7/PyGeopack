@@ -188,7 +188,7 @@ class TraceField(object):
 		self.MaxLen = np.int32(MaxLen)
 		self.DSMax = np.float64(DSMax)
 
-		self.Verb = np.bool(Verbose)
+		self.Verb = np.bool8(Verbose)
 		if TraceDir == 'both':
 			TraceDir = 0
 		self.TraceDir = np.int32(TraceDir)
