@@ -588,7 +588,7 @@ class TraceField(object):
 			Colour to plot the field lines
 		'''
 		
-		if ind is 'all':
+		if isinstance(ind,str) and ind == 'all':
 			ind = np.arange(self.n)
 		elif np.size(ind) == 1:
 			ind = np.array([ind]).flatten()

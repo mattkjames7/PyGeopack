@@ -12,21 +12,13 @@ def compileSource():
             sudo = ''
 
         CWD = os.getcwd()
-        os.chdir(os.path.dirname(__file__)+"/__data/libgeopackcpp/")
+        os.chdir(os.path.dirname(__file__)+"/__data/geopack/")
         os.system(sudo+'make')
         os.chdir(CWD)
     elif(os.name=='nt'):
         CWD = os.getcwd()
-        os.chdir(os.path.dirname(__file__)+"/__data/libgeopackcpp/")
+        os.chdir(os.path.dirname(__file__)+"/__data/geopack/")
         compile = subprocess.Popen("compile.bat")
-        compile.communicate()
-        comperr = compile.returncode
-        if(comperr==6):
-            raise Exception("There is no GCC compiler in PATH. Unable to compile C source files.")
-        if(comperr==7):
-            raise Exception("There is no GFORTRAN compiler in PATH. Unable to compile FORTRAN source files.")
-        if(comperr==8):
-            raise Exception("An error occurred during compilation.")
         os.chdir(CWD)
     else:
         raise Exception("The Operating System is not supported")
@@ -51,7 +43,7 @@ def getLibFilename(isShort=False):
     if(isShort):
         libFilename = "libgeopack."
     else:
-        libFilename = os.path.dirname(__file__) + "/__data/libgeopackcpp/libgeopack."
+        libFilename = os.path.dirname(__file__) + "/__data/geopack/lib/libgeopack."
 
     if(os.name=='posix'):
         extention = "so"

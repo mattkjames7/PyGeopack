@@ -6,7 +6,13 @@ from .ct import c_char_p,c_bool,c_bool_ptr,c_int,c_int_ptr
 from .ct import c_float,c_float_ptr,c_double,c_double_ptr,c_double_ptr_ptr
 from ._SourceCompilation import getLibFilename, compileSource
 
-
+#set LD_LIBRARY_PATH
+ldpth = os.getenv('LD_LIBRARY_PATH')
+if ldpth is None:
+	os.environ['LD_LIBRARY_PATH'] = Globals.ModulePath + '__data/geopack/lib/'
+else:
+	os.environ['LD_LIBRARY_PATH'] = ldpth + ':' + Globals.ModulePath + '__data/geopack/lib/'
+os.system('export LD_LIBRARY_PATH={:s}'.format(os.environ['LD_LIBRARY_PATH']))
 try:
 	libgeopack = ctypes.CDLL(getLibFilename())
 except:

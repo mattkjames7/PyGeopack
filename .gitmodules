@@ -1,0 +1,3 @@
+[submodule "PyGeopack/__data/geopack"]
+	path = PyGeopack/__data/geopack
+	url = https://github.com/mattkjames7/geopack
