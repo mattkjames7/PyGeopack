@@ -3,7 +3,7 @@ import subprocess
 
 def compileSource():
     """Runs a script to compile the source files."""
-    if(os.name=='posix'):
+    if (os.name == 'posix'):
         #check if we need root or not!
         path = os.path.dirname(__file__)
         if '/usr/local/' in path:
@@ -15,7 +15,7 @@ def compileSource():
         os.chdir(os.path.dirname(__file__)+"/__data/geopack/")
         os.system(sudo+'make')
         os.chdir(CWD)
-    elif(os.name=='nt'):
+    elif (os.name == 'nt'):
         CWD = os.getcwd()
         os.chdir(os.path.dirname(__file__)+"/__data/geopack/")
         compile = subprocess.Popen("compile.bat")
@@ -46,13 +46,13 @@ def getLibFilename(isShort=False):
         libFilename = os.path.dirname(__file__) + "/__data/geopack/lib/libgeopack."
 
     if(os.name=='posix'):
-        extention = "so"
+        extension = "so"
     elif(os.name=='nt'):
-        extention = "dll"
+        extension = "dll"
     else:
         raise Exception("The Operating System is not supported")
     
-    return libFilename + extention
+    return libFilename + extension
 
 
 def checkLibExists():

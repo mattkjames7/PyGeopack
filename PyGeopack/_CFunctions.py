@@ -12,7 +12,7 @@ if ldpth is None:
 	os.environ['LD_LIBRARY_PATH'] = Globals.ModulePath + '__data/geopack/lib/'
 else:
 	os.environ['LD_LIBRARY_PATH'] = ldpth + ':' + Globals.ModulePath + '__data/geopack/lib/'
-os.system('export LD_LIBRARY_PATH={:s}'.format(os.environ['LD_LIBRARY_PATH']))
+#os.system('export LD_LIBRARY_PATH={:s}'.format(os.environ['LD_LIBRARY_PATH']))
 try:
 	libgeopack = ctypes.CDLL(getLibFilename())
 except:
