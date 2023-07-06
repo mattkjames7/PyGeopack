@@ -31,7 +31,7 @@ def ShueMP(Theta,Pdyn=2.0,Bz=0.0):
 	return Rmp
 
 
-def PlotMPXZ(ax,Date,ut,Pdyn=2.0,Bz=0.0,**kwargs):
+def PlotMPXZ(ax,Date,ut,Pdyn=2.0,Bz=0.0,noonTop=False,**kwargs):
 	'''
 	Plot the magnetopause in the X-Z GSM plane
 
@@ -58,7 +58,10 @@ def PlotMPXZ(ax,Date,ut,Pdyn=2.0,Bz=0.0,**kwargs):
 	x = Rmp*np.cos(theta)
 	z = Rmp*np.sin(theta)
 
-	ax.plot(x,z,**kwargs)
+	if noonTop:
+		ax.plot(z,x,**kwargs)
+	else:
+		ax.plot(x,z,**kwargs)
 
 
 
