@@ -1,4 +1,4 @@
-__version__ = '1.2.0-devel'
+__version__ = '1.2.0.dev1'
 
 
 from . import Globals

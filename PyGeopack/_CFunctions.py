@@ -4,7 +4,7 @@ import os
 from . import Globals
 from .ct import c_char_p,c_bool,c_bool_ptr,c_int,c_int_ptr
 from .ct import c_float,c_float_ptr,c_double,c_double_ptr,c_double_ptr_ptr
-from ._SourceCompilation import getLibFilename, compileSource
+from ._CheckFirstImport import getLibFilename
 
 #set LD_LIBRARY_PATH
 ldpth = os.getenv('LD_LIBRARY_PATH')
@@ -16,9 +16,8 @@ else:
 try:
 	libgeopack = ctypes.CDLL(getLibFilename())
 except:
-	print('Importing '+getLibFilename(isShort=True)+' failed, attempting to recompile')
-	compileSource()
-	libgeopack = ctypes.CDLL(getLibFilename())
+	print('Importing '+getLibFilename(isShort=True)+' failed, please reinstall')
+	raise SystemError
 
 
 #obtain the model magnetic field

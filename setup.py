@@ -1,6 +1,26 @@
-import setuptools
 from setuptools.command.install import install
+from setuptools import setup, find_packages
+from setuptools.command.build_py import build_py
+import subprocess
 import os
+import platform
+
+
+class CustomBuild(build_py):
+    def run(self):
+        self.execute(self.target_build, ())
+        build_py.run(self)
+
+    def target_build(self):
+        if platform.system() == 'Windows':
+            cwd = os.getcwd()
+            os.chdir('PyGeopack/__data/geopack/')
+            subprocess.check_call(['cmd','/c','compile.bat'])
+            os.chdir(cwd)
+            #subprocess.check_call(['cmd', '/c', 'testmodule2/__data/geopack/compile.bat'])
+        else:
+            subprocess.check_call(['make', '-C', 'PyGeopack/__data/geopack'])
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -30,7 +50,7 @@ def getversion():
 	
 version = getversion()
 
-setuptools.setup(
+setup(
     name="PyGeopack",
     version=version,
     author="Matthew Knight James",
@@ -39,7 +59,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/mattkjames7/PyGeopack",
-    packages=setuptools.find_packages(),
+    packages=find_packages(),
+    package_data={'testmodule2': ['**/*']},
+    cmdclass={'build_py': CustomBuild},  
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License (GPL)",
