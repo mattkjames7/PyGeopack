@@ -3,7 +3,46 @@ import subprocess
 import numpy as np
 from . import Globals
 from . import ct
-from ._SourceCompilation import checkLibExists
+
+
+def getLibFilename(isShort=False):
+    """
+    Return library filename string
+	
+	Inputs
+	======
+	isShort : bool 
+        If False return filename with full path, if True return only filename
+        default - False
+	
+	Returns
+	=======
+	libFilename	: str
+        Filename of the source library
+
+    """
+    if(isShort):
+        libFilename = "libgeopack."
+    else:
+        libFilename = os.path.dirname(__file__) + "/__data/geopack/lib/libgeopack."
+
+    if os.name == 'posix':
+        extension = "so"
+    elif os.name == 'nt':
+        extension = "dll"
+    else:
+        raise Exception("The Operating System is not supported")
+    
+    return libFilename + extension
+
+
+def checkLibExists():
+    """Check if library file exist, and start compilation script if not."""
+    if not os.path.isfile(getLibFilename()):
+        print(getLibFilename(isShort=True)+" not found, try reinstalling")
+        raise SystemError
+
+
 
 def _CheckFirstImport():
 	#first of all - check if the shared object exists
