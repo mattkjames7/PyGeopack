@@ -19,7 +19,7 @@ The following packages will also be required for running the  ```PyGeopack.Updat
 * kpindex
 * pyomnidata
 
-This package is primarily a Python 3 wrapper for a mixure of C/C++/FORTRAN code. The wheel file contains a shared object file which works in 64-bit Linux and a dynamic link library for 64-bit Windows 10. If this package is imported on any other architecture or operating system, loading the SO/DLL file will fail and the code will attempt to recompile. For recompilation to work, the following are needed:
+This package is primarily a Python 3 wrapper for a mixture of C/C++/FORTRAN code which is compiled during installation. For building to work, the following are needed:
 
 - g++
 
@@ -52,24 +52,24 @@ pip3 install PyGeopack --user
 or by downloading the latest release on GitHub and running:
 
 ```
-pip3 install PyGeopack-1.0.0-py3-none-any.whl --user
+pip3 install PyGeopack-1.2.0.tar.gz --user
 ```
 
 NOTE: You should uninstall any previous versions before installing this. If you had a version installed before 0.0.12 - you will need to remove the old shared object files - they are likely to be contained somewhere like (depending on the Python version used):
 
 ```
-~/.local/lib/python3.6/site-packages/PyGeopack/
+~/.local/lib/python3.10/site-packages/PyGeopack/
 ```
 
-It's best just to remove everyting within that folder!
+It's best just to remove everything within that folder!
 
 ### 2.2 Windows
 
-Install TDM-GCC (make sure to select `g++` and `gfortran`), install anaconda and then install the package in an anaconda power shell session using `pip3` as in the Linux instructions. The same environment variables will need to be set as those in the Linux instructions. This package has only briefly been tested in Windows 10 x64, mileage may vary with other versions of Windows.
+Install TDM-GCC (make sure to select `g++` and `gfortran`), install anaconda and then install the package in an anaconda power shell session using `pip3` as in the Linux instructions. The same environment variables will need to be set as those in the Linux instructions. This package has only briefly been tested in Windows 10 x64, mileage may vary with other versions of Windows. It also appears that other Windows compilers may not be able to compile the code, if you do come across such a problem please feel free to raise an issue so I can have a look into it.
 
 ### 2.3 Mac
 
-I have not been able to test this on a Mac - I believe it should be able to recompile the shared object library on the first import of the module provided that all of the requirements are met. Please feel free to open an issue if you're willing to be the Mac guinea pig!
+This module should work on MacOS as it does on Linux, with the same requirements. I have tested it using MacOS Big Sur.
 
 ## 3 Post-install
 
@@ -243,8 +243,8 @@ x1,y1,z1 = gp.Coords.SMtoMAG(x0,y0,z0,Date,ut)
 Also included are the following routines:
 
 ```python
-MLon,MLat = gp.GEOtoMAG(Lat,Lon,Date,ut)
-Lon,Lat = gp.MAGtoGEO(MLat,MLon,Date,ut)
+MLon,MLat = gp.Coords.GEOtoMAG(Lat,Lon,Date,ut)
+Lon,Lat = gp.Coords.MAGtoGEO(MLat,MLon,Date,ut)
 ```
 
 which convert between geographic (`Lat` and `Lon`) and magnetic (`MLat` and `MLon`) latitude and longitudes.
@@ -252,8 +252,8 @@ which convert between geographic (`Lat` and `Lon`) and magnetic (`MLat` and `MLo
 And for converting between magnetic longitude (`MLon`) and magnetic local time (`MLT`):
 
 ```python
-MLT = gp.MLONtoMLT(MLon,Date,ut)
-MLon = gp.MLTtoMLON(MLT,Date,ut)
+MLT = gp.Coords.MLONtoMLT(MLon,Date,ut)
+MLon = gp.Coords.MLTtoMLON(MLT,Date,ut)
 ```
 
 Descriptions of the coordinate systems:
