@@ -5,16 +5,17 @@ from . import Globals
 from .ct import c_char_p,c_bool,c_bool_ptr,c_int,c_int_ptr
 from .ct import c_float,c_float_ptr,c_double,c_double_ptr,c_double_ptr_ptr
 from ._CheckFirstImport import getLibFilename
+import platform
 
-#set LD_LIBRARY_PATH
-ldpth = os.getenv('LD_LIBRARY_PATH')
-if ldpth is None:
-	os.environ['LD_LIBRARY_PATH'] = Globals.ModulePath + '__data/geopack/lib/'
-else:
-	os.environ['LD_LIBRARY_PATH'] = ldpth + ':' + Globals.ModulePath + '__data/geopack/lib/'
-#os.system('export LD_LIBRARY_PATH={:s}'.format(os.environ['LD_LIBRARY_PATH']))
+
 try:
-	libgeopack = ctypes.CDLL(getLibFilename())
+	if platform.system() == 'Darwin':
+		cwd = os.getcwd()
+		os.chdir(Globals.ModulePath + '__data/geopack/lib/')
+		libgeopack = ctypes.CDLL(getLibFilename(True))
+		os.chdir(cwd)
+	else:
+		libgeopack = ctypes.CDLL(getLibFilename())
 except:
 	print('Importing '+getLibFilename(isShort=True)+' failed, please reinstall')
 	raise SystemError
