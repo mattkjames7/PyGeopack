@@ -4,7 +4,7 @@ import os
 from . import Globals
 from .ct import c_char_p,c_bool,c_bool_ptr,c_int,c_int_ptr
 from .ct import c_float,c_float_ptr,c_double,c_double_ptr,c_double_ptr_ptr
-from ._CheckFirstImport import getLibFilename
+from ._CheckFirstImport import getLibFilename,addWindowsSearchPaths
 import platform
 
 
@@ -14,6 +14,9 @@ try:
 		os.chdir(Globals.ModulePath + '__data/geopack/lib/')
 		libgeopack = ctypes.CDLL(getLibFilename(True))
 		os.chdir(cwd)
+	elif platform.system() == 'Windows':
+		addWindowsSearchPaths()
+		libgeopack = ctypes.CDLL(getLibFilename())
 	else:
 		libgeopack = ctypes.CDLL(getLibFilename())
 except:

@@ -52,7 +52,7 @@ pip3 install PyGeopack --user
 or by downloading the latest release on GitHub and running:
 
 ```
-pip3 install PyGeopack-1.2.0.tar.gz --user
+pip3 install PyGeopack-1.2.2.tar.gz --user
 ```
 
 NOTE: You should uninstall any previous versions before installing this. If you had a version installed before 0.0.12 - you will need to remove the old shared object files - they are likely to be contained somewhere like (depending on the Python version used):
@@ -65,7 +65,9 @@ It's best just to remove everything within that folder!
 
 ### 2.2 Windows
 
-Install TDM-GCC (make sure to select `g++` and `gfortran`), install anaconda and then install the package in an anaconda power shell session using `pip3` as in the Linux instructions. The same environment variables will need to be set as those in the Linux instructions. This package has only briefly been tested in Windows 10 x64, mileage may vary with other versions of Windows. It also appears that other Windows compilers may not be able to compile the code, if you do come across such a problem please feel free to raise an issue so I can have a look into it.
+Install TDM-GCC (make sure to select `g++` and `gfortran`), install anaconda and then install the package in an anaconda power shell session using `pip3` as in the Linux instructions. The same environment variables will need to be set as those in the Linux instructions. This package has only briefly been tested in Windows 10 x64, mileage may vary with other versions of Windows. This code has also been successfully built using the Strawberry Perl compilers.
+
+It appears that `ctypes` doesn't necessarily search the directories listed within the `$PATH` environment variable for the C++ dependencies on some versions of Python. To hack myself around this, I have added a function which with scan all of the directories within `$PATH` for `libstdc++*.dll`; if found then the paths which it is found in will be added using `os.add_dll_directory()`. If the directory of your compiler's libraries is not listed within `$PATH`, this may be the cause of any failures at build time or importing the library. If you have multiple compilers installed, then I am unsure what will happen! Feel free to post an issue if you encounter any errors, or if you have any suggestions for fixes.
 
 ### 2.3 Mac
 
