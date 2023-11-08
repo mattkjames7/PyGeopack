@@ -10,7 +10,8 @@ from .. import ct
 _fields = { 'T89' : ['Vx','Vy','Vz','Kp'],
 			'T96' : ['Vx','Vy','Vz','Pdyn','SymH','By','Bz'],
 			'T01' : ['Vx','Vy','Vz','Pdyn','SymH','By','Bz','G1','G2'],
-			'TS05' : ['Vx','Vy','Vz','Pdyn','SymH','By','Bz','W1','W2','W3','W4','W5','W6']}
+			'TS05' : ['Vx','Vy','Vz','Pdyn','SymH','By','Bz','W1','W2','W3','W4','W5','W6'],
+			'IGRF' : ['Vx','Vy','Vz','Pdyn','SymH','By','Bz']}
 
 
 def GetModelParams(Date, ut, Model,**kwargs):
@@ -39,7 +40,7 @@ def GetModelParams(Date, ut, Model,**kwargs):
 	
 	'''
 
-	if not Model in ['T89','T96','T01','TS05']:
+	if not Model in ['T89','T96','T01','TS05','IGRF']:
 		print('Model {:s} not recognised'.format(Model))
 		return
 
@@ -69,7 +70,8 @@ def GetModelParams(Date, ut, Model,**kwargs):
 	out['Model'] = Model
 	out['iopt'] = np.zeros(n_,dtype="int32")
 	out['parmod'] = np.zeros((n_,10),dtype='float64')
-	_parmod = ct.ctDoublePtrPtr(out['parmod'])
+	if not Model == 'IGRF':
+		_parmod = ct.ctDoublePtrPtr(out['parmod'])
 	out['tilt'] = np.zeros(n_,dtype="float64") #fix me
 
 	#get SW velocity first
@@ -98,5 +100,8 @@ def GetModelParams(Date, ut, Model,**kwargs):
 						out['W3'],out['W4'],
 						out['W5'],out['W6'],
 						out['iopt'],_parmod)
+	elif Model == 'IGRF':
+		out['iopt'] = np.ones(n_,dtype='int32')
+		out['parmod'][0,:] = 2.0
 
 	return out
