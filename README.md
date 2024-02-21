@@ -94,6 +94,12 @@ gp.Params.UpdateParameters(SkipWParameters=True)
 
 The `SkipWParameters` keyword (set to `True` by default) can be used to skip the lengthy process of calculating the six W parameters for the TS05 magnetic field model - if `True` then these will be filled with zeros. Apparently they aren't all that important anyway. The code included in this module can calculate them and is Tsyganenko's own code, but it produces different numbers to those given in the files on Tsyganenko's website! No idea why, so use them with caution!
 
+If the above parameters are not loaded, a warning will appear when the module is imported. To suppress warnings, set:
+```bash
+export GEOPACK_NOWARN=1
+```
+
+
 ### 4.1 Calculating the model field.
 
 To calculate the model field, use the `ModelField` function:
