@@ -80,13 +80,13 @@ def _CheckFirstImport():
 
     #Check if the GEOPACK_PATH variable has been set
     Globals.DataPath = os.getenv('GEOPACK_PATH',default='')+'/'
-    if Globals.DataPath == '/':
+    if Globals.DataPath == '/' and Globals.showWarnings:
         print('The $GEOPACK_PATH variable has not been set, this module will not function correctly without it')
         
 
     #check for the data file
     Globals.DataFile = Globals.DataPath + 'TSdata.bin'
-    if not os.path.isfile(Globals.DataFile):
+    if not os.path.isfile(Globals.DataFile) and Globals.showWarnings:
         print('Data file does not exist - to create data file run "PyGeopack.Params.UpdateParameters()"')
 
     
