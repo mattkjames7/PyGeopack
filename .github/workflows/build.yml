@@ -1,0 +1,39 @@
+name: Build PyGeopack In Container
+
+on:
+  push:
+
+run-name: Build PyGeopack In Container
+
+env:
+  CONTAINER_NAME: pygeopack-build-container
+  IMAGE_NAME: pygeopack-build-image
+
+jobs:
+  build:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          recursive: true
+
+      - name: Build container image
+        run: |
+          cd tools
+          docker build -t $IMAGE_NAME .
+
+      - name: Create and start container
+        run: |
+          docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+
+      - name: Build PyGeopack in container
+        run: |
+          bash ./tools/container-build.sh $CONTAINER_NAME
+
+      - name: Stop and remove container
+        if: always()
+        run: |
+          docker stop $CONTAINER_NAME || true

@@ -86,7 +86,7 @@ def _FillInKp(Date,ut,kp):
 	
 def _GetGParameters(data):
 	_n = np.int32(data.size)
-	_good = np.bool8(np.isfinite(data.By) & np.isfinite(data.Bz) & (data.IMFFlag > -1) & (data.ISWFlag > -1))
+	_good = np.bool(np.isfinite(data.By) & np.isfinite(data.Bz) & (data.IMFFlag > -1) & (data.ISWFlag > -1))
 	_By = data.By.astype('float64')
 	_Bz = data.Bz.astype('float64')
 	_V = np.sqrt(data.Vx**2 + data.Vy**2 + data.Vz**2).astype('float64')
