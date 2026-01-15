@@ -7,6 +7,7 @@ SOURCE_DIR="$(realpath "${SCRIPT_DIR}/..")"
 CONTAINER=$1
 
 docker cp "${SOURCE_DIR}/." "${CONTAINER}:/home/ubuntu/PyGeopack"
+docker exec -u root "${CONTAINER}" chown -R ubuntu:ubuntu /home/ubuntu/PyGeopack
 
 docker cp "${SCRIPT_DIR}/create-env.sh" "${CONTAINER}:/home/ubuntu/create-env.sh"
 
