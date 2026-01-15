@@ -23,12 +23,12 @@ def _CTConv(x,ctype,nd=1):
 	scl = ['c_bool','c_int','c_float','c_double']
 	arr = ['c_bool_ptr','c_int_ptr','c_float_ptr','c_double_ptr']
 	
-	st = {	'c_bool' : 'bool8',
+	st = {	'c_bool' : 'bool',
 			'c_int' : 'int32',
 			'c_float' : 'float32',
 			'c_double' : 'float64'}
 	
-	at = {	'c_bool_ptr' : 'bool8',
+	at = {	'c_bool_ptr' : 'bool',
 			'c_int_ptr' : 'int32',
 			'c_float_ptr' : 'float32',
 			'c_double_ptr' : 'float64'}

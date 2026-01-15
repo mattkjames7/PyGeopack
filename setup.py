@@ -64,7 +64,6 @@ setup(
     cmdclass={'build_py': CustomBuild},  
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: POSIX",
     ],
     install_requires=[
