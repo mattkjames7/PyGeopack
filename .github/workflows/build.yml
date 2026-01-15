@@ -1,6 +1,8 @@
 name: Build PyGeopack In Container
 
 on:
+  schedule:
+    - cron: '0 0 1 * *'
   workflow_dispatch:
     inputs:
       python-version:
@@ -8,12 +10,12 @@ on:
         required: false
         default: '3.14'
 
-run-name: Build PyGeopack In Container
+run-name: ${{ github.event_name == 'workflow_dispatch' && 'Build PyGeopack In Container' || 'Monthly Build' }}
 
 env:
   CONTAINER_NAME: pygeopack-build-container
   IMAGE_NAME: pygeopack-build-image
-  PYTHON_VERSION: ${{ inputs.python-version }}
+  PYTHON_VERSION: ${{ inputs.python-version || '3.14' }}
 
 jobs:
   build:
