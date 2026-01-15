@@ -21,7 +21,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-venv \
-        python${PYTHON_VERSION}-dev && \
+        python${PYTHON_VERSION}-dev \
+        gcc g++ make gfortran && \
     rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
