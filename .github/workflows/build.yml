@@ -1,13 +1,19 @@
 name: Build PyGeopack In Container
 
 on:
-  push:
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: 'Python version to use in container'
+        required: false
+        default: '3.14'
 
 run-name: Build PyGeopack In Container
 
 env:
   CONTAINER_NAME: pygeopack-build-container
   IMAGE_NAME: pygeopack-build-image
+  PYTHON_VERSION: ${{ inputs.python-version }}
 
 jobs:
   build:
@@ -23,7 +29,7 @@ jobs:
       - name: Build container image
         run: |
           cd tools
-          docker build -t $IMAGE_NAME .
+          docker build -t $IMAGE_NAME --build-arg PYTHON_VERSION=$PYTHON_VERSION .
 
       - name: Create and start container
         run: |

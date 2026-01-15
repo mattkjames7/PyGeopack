@@ -1,5 +1,6 @@
 FROM ubuntu:24.04
-ENV PYTHON_VERSION=3.14
+ARG PYTHON_VERSION
+
 # Install common packages and add deadsnakes PPA for multiple Python versions
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
