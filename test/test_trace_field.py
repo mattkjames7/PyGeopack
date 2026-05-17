@@ -1,0 +1,98 @@
+from __future__ import annotations
+
+import numpy as np
+import pytest
+
+from cases import TRACE_CASES
+from golden_utils import assert_close
+
+FOOTPRINT_NAMES = [
+    "GlatN",
+    "GlatS",
+    "MlatN",
+    "MlatS",
+    "GlonN",
+    "GlonS",
+    "MlonN",
+    "MlonS",
+    "GltN",
+    "GltS",
+    "MltN",
+    "MltS",
+    "Lshell",
+    "MltE",
+    "FlLen",
+]
+
+TRACE_VALUE_NAMES = ["x", "y", "z", "Bx", "By", "Bz", "R", "Rnorm", "s", "halpha"]
+
+
+def _run_trace(gp, case):
+    args = case["args"]
+    return gp.TraceField(
+        args["Xin"],
+        args["Yin"],
+        args["Zin"],
+        args["Date"],
+        args["ut"],
+        **case["kwargs"],
+    )
+
+
+@pytest.mark.parametrize("case", TRACE_CASES, ids=[case["name"] for case in TRACE_CASES])
+def test_trace_metadata_and_footprints_match_v1_2_7(gp, golden_data, case):
+    expected = golden_data["traces"][case["name"]]
+    trace = _run_trace(gp, case)
+
+    assert int(trace.n) == expected["n"]
+    assert int(trace.nalpha) == expected["nalpha"]
+    assert_close(trace.alpha, expected["alpha"], rtol=0.0, atol=0.0)
+    assert_close(trace.nstep, expected["nstep"], rtol=0.0, atol=0.0)
+    for name in FOOTPRINT_NAMES:
+        assert_close(getattr(trace, name), expected["footprints"][name], rtol=1e-6, atol=1e-6)
+
+
+@pytest.mark.parametrize("case", TRACE_CASES, ids=[case["name"] for case in TRACE_CASES])
+def test_trace_samples_match_v1_2_7(gp, golden_data, case):
+    expected = golden_data["traces"][case["name"]]
+    trace = _run_trace(gp, case)
+
+    for coord in case["coords"]:
+        for trace_index, expected_trace in enumerate(expected["coords"][coord]):
+            indices = np.asarray(expected_trace["indices"], dtype="int64")
+            actual_values = trace.GetTrace(trace_index, Coord=coord)
+            for name, actual in zip(TRACE_VALUE_NAMES, actual_values):
+                actual_arr = np.asarray(actual)
+                if name == "halpha":
+                    actual_sample = actual_arr[:, indices] if indices.size else actual_arr[:, :0]
+                else:
+                    actual_sample = actual_arr[indices] if indices.size else actual_arr[:0]
+                assert_close(
+                    actual_sample,
+                    expected_trace["values"][name],
+                    rtol=1e-6,
+                    atol=1e-6,
+                )
+
+
+def test_get_trace_unknown_coordinate_falls_back_to_gsm(gp, capsys):
+    trace = _run_trace(gp, TRACE_CASES[0])
+
+    gsm = trace.GetTrace(0, Coord="GSM")
+    fallback = trace.GetTrace(0, Coord="NOTACOORD")
+
+    captured = capsys.readouterr()
+    assert "Coordinate system NOTACOORD not recognised,returning GSM" in captured.out
+    for actual, expected in zip(fallback, gsm):
+        assert_close(actual, expected, rtol=1e-7, atol=1e-8)
+
+
+def test_trace_dict_without_nan_removal_preserves_full_array_shapes(gp):
+    trace = _run_trace(gp, TRACE_CASES[0])
+
+    trace_dict = trace.TraceDict(RemoveNAN=False)
+
+    assert trace_dict["xgsm"].shape == (trace.n, trace.MaxLen)
+    assert trace_dict["Bxgsm"].shape == (trace.n, trace.MaxLen)
+    assert trace_dict["halpha"].shape == (trace.n, trace.nalpha, trace.MaxLen)
+    assert trace_dict["FP"].shape == (trace.n, 15)
