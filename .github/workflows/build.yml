@@ -13,13 +13,11 @@ on:
 run-name: ${{ github.event_name == 'workflow_dispatch' && 'Build PyGeopack In Container' || 'Monthly Build' }}
 
 env:
-  CONTAINER_NAME: pygeopack-build-container
-  IMAGE_NAME: pygeopack-build-image
   PYTHON_VERSION: ${{ inputs.python-version || '3.14' }}
 
 jobs:
   build:
-    timeout-minutes: 10
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,20 +26,61 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Build container image
+      - name: Select manylinux Python tag
         run: |
-          cd tools
-          docker build -t $IMAGE_NAME --build-arg PYTHON_VERSION=$PYTHON_VERSION .
+          case "$PYTHON_VERSION" in
+            "3.10") echo "MANYLINUX_PYTAG=cp310-cp310" >> "$GITHUB_ENV" ;;
+            "3.11") echo "MANYLINUX_PYTAG=cp311-cp311" >> "$GITHUB_ENV" ;;
+            "3.12") echo "MANYLINUX_PYTAG=cp312-cp312" >> "$GITHUB_ENV" ;;
+            "3.13") echo "MANYLINUX_PYTAG=cp313-cp313" >> "$GITHUB_ENV" ;;
+            "3.14") echo "MANYLINUX_PYTAG=cp314-cp314" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unsupported python-version: $PYTHON_VERSION"
+              exit 1
+              ;;
+          esac
 
-      - name: Create and start container
+      - name: Build and repair wheel in manylinux
         run: |
-          docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+          rm -rf dist wheelhouse
+          mkdir -p dist wheelhouse
 
-      - name: Build PyGeopack in container
-        run: |
-          bash ./tools/container-build.sh $CONTAINER_NAME
+          if [[ "$(uname -m)" == "aarch64" ]]; then
+            MANYLINUX_IMAGE="quay.io/pypa/manylinux_2_34_aarch64:latest"
+          else
+            MANYLINUX_IMAGE="quay.io/pypa/manylinux_2_34:latest"
+          fi
 
-      - name: Stop and remove container
-        if: always()
+          docker run --rm \
+            -e PYTAG="${MANYLINUX_PYTAG}" \
+            -v "${{ github.workspace }}:/io" \
+            -w /io \
+            "$MANYLINUX_IMAGE" \
+            /bin/bash -lc '
+              set -euo pipefail
+              if ! command -v cmake >/dev/null 2>&1; then
+                dnf install -y cmake gcc gcc-c++ gfortran make ninja-build
+              fi
+              "/opt/python/${PYTAG}/bin/python" -m pip install --upgrade pip setuptools wheel build auditwheel
+              "/opt/python/${PYTAG}/bin/python" -m build --wheel -o dist
+              auditwheel repair dist/*.whl -w wheelhouse
+            '
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install wheel
         run: |
-          docker stop $CONTAINER_NAME || true
+          python3 -m venv env
+          source env/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install wheelhouse/*.whl
+
+      - name: Run pytest on installed module
+        run: |
+          source env/bin/activate
+          python -m pip install pytest
+          cd test
+          pytest -q
