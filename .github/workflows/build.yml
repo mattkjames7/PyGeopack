@@ -85,6 +85,124 @@ jobs:
           cd test
           pytest -q
 
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-linux-py${{ env.PYTHON_VERSION }}
+          path: wheelhouse/*.whl
+
+      - name: Build sdist (Linux 3.14)
+        if: ${{ env.PYTHON_VERSION == '3.14' }}
+        run: |
+          source env/bin/activate
+          python -m pip install --upgrade build
+          python -m build --sdist -o dist
+
+      - name: Upload sdist artifact (Linux 3.14)
+        if: ${{ env.PYTHON_VERSION == '3.14' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: sdist-linux-py${{ env.PYTHON_VERSION }}
+          path: dist/*.tar.gz
+
+  build-macos:
+    timeout-minutes: 25
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set Fortran compiler
+        shell: bash
+        run: |
+          brew_prefix="$(brew --prefix)"
+          echo "$brew_prefix/bin" >> "$GITHUB_PATH"
+
+          if ! command -v gfortran-15 >/dev/null 2>&1 && \
+             ! command -v gfortran-14 >/dev/null 2>&1 && \
+             ! command -v gfortran-13 >/dev/null 2>&1 && \
+             ! command -v gfortran >/dev/null 2>&1; then
+            brew install gcc
+          fi
+
+          gfortran_path=""
+          for compiler in gfortran-15 gfortran-14 gfortran-13 gfortran; do
+            if command -v "$compiler" >/dev/null 2>&1; then
+              gfortran_path="$(command -v "$compiler")"
+              break
+            fi
+          done
+
+          if [ -z "$gfortran_path" ]; then
+            gcc_prefix="$(brew --prefix gcc)"
+            for compiler in "$gcc_prefix"/bin/gfortran-15 "$gcc_prefix"/bin/gfortran-14 "$gcc_prefix"/bin/gfortran-13 "$gcc_prefix"/bin/gfortran; do
+              if [ -x "$compiler" ]; then
+                gfortran_path="$compiler"
+                break
+              fi
+            done
+          fi
+
+          if [ -z "$gfortran_path" ]; then
+            echo "Could not find a Homebrew gfortran compiler" >&2
+            exit 1
+          fi
+
+          echo "FC=$gfortran_path" >> "$GITHUB_ENV"
+          "$gfortran_path" --version
+
+      - name: Build wheel
+        shell: bash
+        run: |
+          python3 -m venv env
+          source env/bin/activate
+          python -m pip install --upgrade pip setuptools wheel build
+
+          export CMAKE_GENERATOR="Ninja"
+          export CMAKE_OSX_ARCHITECTURES="$(uname -m)"
+          export CMAKE_OSX_DEPLOYMENT_TARGET="11.0"
+          export MACOSX_DEPLOYMENT_TARGET="11.0"
+
+          rm -rf dist
+          mkdir -p dist
+          python -m build --wheel -o dist
+          ls -1 dist
+          if ls dist/*universal2*.whl >/dev/null 2>&1; then
+            echo "Unexpected universal2 wheel produced"
+            exit 1
+          fi
+
+      - name: Install wheel
+        shell: bash
+        run: |
+          source env/bin/activate
+          python -m pip install --upgrade dist/*.whl
+
+      - name: Run pytest on installed module
+        shell: bash
+        run: |
+          source env/bin/activate
+          if [[ "$(uname -m)" == "x86_64" ]]; then
+            python -m pip install --force-reinstall --no-binary DateTimeTools DateTimeTools
+          fi
+          python -m pip install pytest
+          cd test
+          pytest -q
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-macos-py${{ env.PYTHON_VERSION }}
+          path: dist/*.whl
+
   build-windows:
     timeout-minutes: 20
     runs-on: windows-latest
@@ -162,3 +280,9 @@ jobs:
           python -m pip install pytest
           Set-Location test
           pytest -q
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-windows-py${{ env.PYTHON_VERSION }}
+          path: dist/*.whl
