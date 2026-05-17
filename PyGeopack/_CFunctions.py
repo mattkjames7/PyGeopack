@@ -15,6 +15,7 @@ try:
 		libgeopack = ctypes.CDLL(getLibFilename(True))
 		os.chdir(cwd)
 	elif platform.system() == 'Windows':
+		os.add_dll_directory(Globals.ModulePath + '__data/geopack/lib/')
 		addWindowsSearchPaths()
 		libgeopack = ctypes.CDLL(getLibFilename())
 	else:

@@ -23,7 +23,7 @@ RUN apt-get update && \
         python${PYTHON_VERSION} \
         python${PYTHON_VERSION}-venv \
         python${PYTHON_VERSION}-dev \
-        gcc g++ make gfortran && \
+        gcc g++ make gfortran cmake git && \
     rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
