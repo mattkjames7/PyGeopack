@@ -421,17 +421,6 @@ jobs:
         run: |
           python -m venv env
 
-      - name: Set up MSYS2 clangarm64 toolchain (arm64 only)
-        if: matrix.arch == 'arm64'
-        uses: msys2/setup-msys2@e9898307ac31d1a803454791be09ab9973336e1c  # v2.31.1
-        with:
-          msystem: CLANGARM64
-          install: >-
-            mingw-w64-clang-aarch64-toolchain
-            mingw-w64-clang-aarch64-flang
-          update: false
-          cache: true
-
       - name: Build wheel
         shell: pwsh
         run: |
@@ -444,20 +433,36 @@ jobs:
           Remove-Item Env:CMAKE_ARGS -ErrorAction SilentlyContinue
 
           if ("${{ matrix.arch }}" -eq "arm64") {
-            # The msys2/setup-msys2 action above installed the clangarm64 toolchain.
-            # Add its bin dir to PATH so cmake finds clang/flang/ninja.
-            $msys2Arm64Bin = "C:\msys64\clangarm64\bin"
+            # The arm64 runner ships with arm64-native LLVM (clang/flang) at
+            # C:\Program Files\LLVM. We just need VsDevCmd to put mt.exe and
+            # the Windows SDK linker libraries on PATH so flang can link.
+            $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+            if (-not (Test-Path $vswhere)) { throw "vswhere.exe not found" }
+            $vsInstallPath = & $vswhere -latest -products * `
+              -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+              -property installationPath
+            if (-not $vsInstallPath) { throw "Could not locate a Visual Studio installation" }
+            $vsDevCmd = Join-Path $vsInstallPath "Common7\Tools\VsDevCmd.bat"
+            if (-not (Test-Path $vsDevCmd)) { throw "VsDevCmd.bat not found" }
 
-            "$msys2Arm64Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            $env:Path = "$msys2Arm64Bin;$env:Path"
+            $envDump = & cmd.exe /s /c "`"$vsDevCmd`" -no_logo -host_arch=arm64 -arch=arm64 && set"
+            foreach ($line in $envDump) {
+              if ($line -match '^(.*?)=(.*)$') {
+                Set-Item -Path ("Env:" + $matches[1]) -Value $matches[2]
+              }
+            }
 
+            # Use the pre-installed arm64 LLVM toolchain (clang + flang) with Ninja.
+            # VsDevCmd may have set a VS generator; override back to Ninja.
+            $env:CMAKE_GENERATOR = "Ninja"
+            Remove-Item Env:CMAKE_GENERATOR_PLATFORM -ErrorAction SilentlyContinue
             $env:CC  = "clang"
             $env:CXX = "clang++"
             $env:FC  = "flang"
 
-            if (-not (Get-Command clang.exe   -ErrorAction SilentlyContinue)) { throw "clang not found" }
-            if (-not (Get-Command flang.exe   -ErrorAction SilentlyContinue)) { throw "flang not found" }
-            if (-not (Get-Command ninja.exe   -ErrorAction SilentlyContinue)) { throw "ninja not found" }
+            if (-not (Get-Command clang.exe -ErrorAction SilentlyContinue)) { throw "clang not found" }
+            if (-not (Get-Command flang.exe -ErrorAction SilentlyContinue)) { throw "flang not found" }
+            if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) { throw "ninja not found" }
           } else {
             # x64: prefer any pre-installed gfortran; fall back to Chocolatey MinGW.
             if (-not (Get-Command gfortran.exe -ErrorAction SilentlyContinue)) {
