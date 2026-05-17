@@ -84,3 +84,82 @@ jobs:
           python -m pip install pytest
           cd test
           pytest -q
+
+  build-windows:
+    timeout-minutes: 20
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Create venv
+        shell: pwsh
+        run: |
+          python -m venv env
+
+      - name: Build wheel
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          $pythonExe = Join-Path $env:VIRTUAL_ENV "Scripts\python.exe"
+          & $pythonExe -m pip install --upgrade pip build wheel
+
+          $targetArch = "x64"
+          $hostArch = $targetArch
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vswhere)) {
+            throw "vswhere.exe not found at $vswhere"
+          }
+
+          $vsInstallPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsInstallPath) {
+            throw "Could not locate a Visual Studio installation with C++ tools"
+          }
+
+          $vsDevCmd = Join-Path $vsInstallPath "Common7\Tools\VsDevCmd.bat"
+          if (-not (Test-Path $vsDevCmd)) {
+            throw "VsDevCmd.bat not found at $vsDevCmd"
+          }
+
+          $envDump = & cmd.exe /s /c "`"$vsDevCmd`" -no_logo -host_arch=$hostArch -arch=$targetArch && set"
+          foreach ($line in $envDump) {
+            if ($line -match '^(.*?)=(.*)$') {
+              Set-Item -Path ("Env:" + $matches[1]) -Value $matches[2]
+            }
+          }
+
+          $clCmd = Get-Command cl.exe -ErrorAction SilentlyContinue
+          $cmakeCmd = Get-Command cmake.exe -ErrorAction SilentlyContinue
+          if (-not $clCmd -or -not $cmakeCmd) {
+            throw "MSVC or CMake not available in PATH after loading VsDevCmd"
+          }
+
+          $env:CMAKE_GENERATOR = "Visual Studio 17 2022"
+          $env:CMAKE_GENERATOR_PLATFORM = $targetArch
+          Remove-Item Env:CMAKE_ARGS -ErrorAction SilentlyContinue
+
+          & $pythonExe -m build --wheel -o dist
+
+      - name: Install wheel
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          $wheel = Get-ChildItem -Path dist -Filter *.whl | Select-Object -First 1
+          if (-not $wheel) { throw "No wheel found in dist/" }
+          python -m pip install --upgrade $wheel.FullName
+
+      - name: Run pytest on installed module
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          python -m pip install pytest
+          Set-Location test
+          pytest -q
