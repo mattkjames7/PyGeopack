@@ -99,9 +99,11 @@ jobs:
               run_macos=true
               run_windows=true
               linux_targets+=("ubuntu-latest|x64")
+              linux_targets+=("ubuntu-24.04-arm|arm64")
               macos_targets+=("macos-15|arm64")
               macos_targets+=("macos-15-intel|x64")
               windows_targets+=("windows-latest|x64")
+              windows_targets+=("windows-11-arm|arm64")
               ;;
             linux-x64)
               run_linux=true
