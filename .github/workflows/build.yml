@@ -421,6 +421,16 @@ jobs:
         run: |
           python -m venv env
 
+      - name: Set up MSYS2 clangarm64 toolchain (arm64 only)
+        if: matrix.arch == 'arm64'
+        uses: msys2/setup-msys2@e9898307ac31d1a803454791be09ab9973336e1c  # v2.31.1
+        with:
+          msystem: CLANGARM64
+          install: >-
+            mingw-w64-clang-aarch64-toolchain
+            mingw-w64-clang-aarch64-flang
+          update: false
+
       - name: Build wheel
         shell: pwsh
         run: |
@@ -433,21 +443,12 @@ jobs:
           Remove-Item Env:CMAKE_ARGS -ErrorAction SilentlyContinue
 
           if ("${{ matrix.arch }}" -eq "arm64") {
-            # On arm64 Windows, the x86_64 MinGW at C:/mingw64 runs under emulation
-            # but produces x86_64 binaries, which would mismatch the arm64 wheel tag.
-            # Use the MSYS2 clangarm64 toolchain which includes native arm64 flang.
+            # The msys2/setup-msys2 action above installed the clangarm64 toolchain.
+            # Add its bin dir to PATH so cmake finds clang/flang/ninja.
             $msys2Arm64Bin = "C:\msys64\clangarm64\bin"
-            $msys2Usr = "C:\msys64\usr\bin"
-
-            if (-not (Test-Path "$msys2Arm64Bin\flang.exe")) {
-              Write-Host "Installing MSYS2 clangarm64 Fortran toolchain"
-              & "$msys2Usr\pacman.exe" -S --noconfirm --needed `
-                mingw-w64-clang-aarch64-toolchain `
-                mingw-w64-clang-aarch64-flang
-            }
 
             "$msys2Arm64Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            $env:Path = "$msys2Arm64Bin;$msys2Usr;$env:Path"
+            $env:Path = "$msys2Arm64Bin;$env:Path"
 
             $env:CC  = "clang"
             $env:CXX = "clang++"
