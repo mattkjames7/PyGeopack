@@ -1,26 +1,208 @@
-name: Build PyGeopack In Container
+name: Build PyGeopack
 
 on:
   schedule:
     - cron: '0 0 1 * *'
   workflow_dispatch:
     inputs:
-      python-version:
-        description: 'Python version to use in container'
+      target:
+        description: OS and architecture target
         required: false
-        default: '3.14'
+        type: choice
+        default: all
+        options:
+          - all
+          - linux-x64
+          - linux-arm64
+          - macos-arm64
+          - macos-x64
+          - windows-x64
+          - windows-arm64
+      python_version:
+        description: Python version
+        required: false
+        type: choice
+        default: all
+        options:
+          - all
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+          - "3.14"
+  workflow_call:
+    inputs:
+      target:
+        description: OS and architecture target (all, linux-x64, linux-arm64, macos-arm64, macos-x64, windows-x64, windows-arm64)
+        required: false
+        type: string
+        default: all
+      python_version:
+        description: Python version (all, 3.10, 3.11, 3.12, 3.13, 3.14)
+        required: false
+        type: string
+        default: all
 
-run-name: ${{ github.event_name == 'workflow_dispatch' && 'Build PyGeopack In Container' || 'Monthly Build' }}
-
-env:
-  CONTAINER_NAME: pygeopack-build-container
-  IMAGE_NAME: pygeopack-build-image
-  PYTHON_VERSION: ${{ inputs.python-version || '3.14' }}
+run-name: ${{ github.event_name == 'workflow_dispatch' && 'Build PyGeopack Matrix' || 'Monthly Build' }}
 
 jobs:
-  build:
-    timeout-minutes: 10
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+      run_linux: ${{ steps.resolve.outputs.run_linux }}
+      run_macos: ${{ steps.resolve.outputs.run_macos }}
+      run_windows: ${{ steps.resolve.outputs.run_windows }}
+      linux_matrix: ${{ steps.resolve.outputs.linux_matrix }}
+      macos_matrix: ${{ steps.resolve.outputs.macos_matrix }}
+      windows_matrix: ${{ steps.resolve.outputs.windows_matrix }}
+    steps:
+      - name: Resolve selected targets and matrix values
+        id: resolve
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TARGET_INPUT: ${{ inputs.target || 'all' }}
+          PYTHON_INPUT: ${{ inputs.python_version || 'all' }}
+        run: |
+          set -euo pipefail
+
+          target="$TARGET_INPUT"
+          python_version="$PYTHON_INPUT"
+
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            target="all"
+            python_version="all"
+          fi
+
+          case "$python_version" in
+            all)
+              py_versions=("3.10" "3.11" "3.12" "3.13" "3.14")
+              ;;
+            3.10|3.11|3.12|3.13|3.14)
+              py_versions=("$python_version")
+              ;;
+            *)
+              echo "Unsupported python_version: $python_version"
+              exit 1
+              ;;
+          esac
+
+          run_linux=false
+          run_macos=false
+          run_windows=false
+          linux_targets=()
+          macos_targets=()
+          windows_targets=()
+
+          case "$target" in
+            all)
+              run_linux=true
+              run_macos=true
+              run_windows=true
+              linux_targets+=("ubuntu-latest|x64")
+              linux_targets+=("ubuntu-24.04-arm|arm64")
+              macos_targets+=("macos-15|arm64")
+              macos_targets+=("macos-15-intel|x64")
+              windows_targets+=("windows-latest|x64")
+              windows_targets+=("windows-11-arm|arm64")
+              ;;
+            linux-x64)
+              run_linux=true
+              linux_targets+=("ubuntu-latest|x64")
+              ;;
+            linux-arm64)
+              run_linux=true
+              linux_targets+=("ubuntu-24.04-arm|arm64")
+              ;;
+            macos-arm64)
+              run_macos=true
+              macos_targets+=("macos-15|arm64")
+              ;;
+            macos-x64)
+              run_macos=true
+              macos_targets+=("macos-15-intel|x64")
+              ;;
+            windows-x64)
+              run_windows=true
+              windows_targets+=("windows-latest|x64")
+              ;;
+            windows-arm64)
+              run_windows=true
+              windows_targets+=("windows-11-arm|arm64")
+              ;;
+            *)
+              echo "Unsupported target: $target"
+              exit 1
+              ;;
+          esac
+
+          build_include_matrix() {
+            local -n target_ref=$1
+            local matrix='{"include":['
+            local first_item=true
+
+            for target_item in "${target_ref[@]}"; do
+              local runs_on="${target_item%%|*}"
+              local arch="${target_item##*|}"
+              local py_list=("${py_versions[@]}")
+
+              if [[ "$runs_on" == "windows-11-arm" && "$arch" == "arm64" ]]; then
+                py_list=()
+                for py in "${py_versions[@]}"; do
+                  if [[ "$py" != "3.10" ]]; then
+                    py_list+=("$py")
+                  fi
+                done
+              fi
+
+              for py in "${py_list[@]}"; do
+                if [[ "$first_item" == true ]]; then
+                  first_item=false
+                else
+                  matrix+=','
+                fi
+                matrix+="{\"runs-on\":\"$runs_on\",\"arch\":\"$arch\",\"python-version\":\"$py\"}"
+              done
+            done
+
+            matrix+=']}'
+            echo "$matrix"
+          }
+
+          if [[ "$run_linux" == "true" ]]; then
+            linux_matrix="$(build_include_matrix linux_targets)"
+          else
+            linux_matrix='{"include":[]}'
+          fi
+
+          if [[ "$run_macos" == "true" ]]; then
+            macos_matrix="$(build_include_matrix macos_targets)"
+          else
+            macos_matrix='{"include":[]}'
+          fi
+
+          if [[ "$run_windows" == "true" ]]; then
+            windows_matrix="$(build_include_matrix windows_targets)"
+          else
+            windows_matrix='{"include":[]}'
+          fi
+
+          {
+            echo "run_linux=$run_linux"
+            echo "run_macos=$run_macos"
+            echo "run_windows=$run_windows"
+            echo "linux_matrix=$linux_matrix"
+            echo "macos_matrix=$macos_matrix"
+            echo "windows_matrix=$windows_matrix"
+          } >> "$GITHUB_OUTPUT"
+
+  build-linux:
+    needs: setup
+    if: ${{ needs.setup.outputs.run_linux == 'true' }}
+    timeout-minutes: 20
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.linux_matrix) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -28,20 +210,276 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Build container image
-        run: |
-          cd tools
-          docker build -t $IMAGE_NAME --build-arg PYTHON_VERSION=$PYTHON_VERSION .
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
 
-      - name: Create and start container
+      - name: Select manylinux Python tag
         run: |
-          docker run -d --name $CONTAINER_NAME $IMAGE_NAME
+          case "${{ matrix.python-version }}" in
+            "3.10") echo "MANYLINUX_PYTAG=cp310-cp310" >> "$GITHUB_ENV" ;;
+            "3.11") echo "MANYLINUX_PYTAG=cp311-cp311" >> "$GITHUB_ENV" ;;
+            "3.12") echo "MANYLINUX_PYTAG=cp312-cp312" >> "$GITHUB_ENV" ;;
+            "3.13") echo "MANYLINUX_PYTAG=cp313-cp313" >> "$GITHUB_ENV" ;;
+            "3.14") echo "MANYLINUX_PYTAG=cp314-cp314" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unsupported python-version: ${{ matrix.python-version }}"
+              exit 1
+              ;;
+          esac
 
-      - name: Build PyGeopack in container
+      - name: Build and repair wheel in manylinux
         run: |
-          bash ./tools/container-build.sh $CONTAINER_NAME
+          rm -rf dist wheelhouse
+          mkdir -p dist wheelhouse
 
-      - name: Stop and remove container
-        if: always()
+          if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+            MANYLINUX_IMAGE="quay.io/pypa/manylinux_2_34_aarch64:latest"
+          else
+            MANYLINUX_IMAGE="quay.io/pypa/manylinux_2_34:latest"
+          fi
+
+          docker run --rm \
+            -e PYTAG="${MANYLINUX_PYTAG}" \
+            -v "${{ github.workspace }}:/io" \
+            -w /io \
+            "$MANYLINUX_IMAGE" \
+            /bin/bash -lc '
+              set -euo pipefail
+              if ! command -v cmake >/dev/null 2>&1; then
+                dnf install -y cmake gcc gcc-c++ gfortran make ninja-build
+              fi
+              "/opt/python/${PYTAG}/bin/python" -m pip install --upgrade pip setuptools wheel build auditwheel
+              "/opt/python/${PYTAG}/bin/python" -m build --wheel -o dist
+              auditwheel repair dist/*.whl -w wheelhouse
+            '
+
+      - name: Install wheel
         run: |
-          docker stop $CONTAINER_NAME || true
+          python3 -m venv env
+          source env/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install wheelhouse/*.whl
+
+      - name: Run pytest on installed module
+        run: |
+          source env/bin/activate
+          python -m pip install pytest
+          cd test
+          pytest -q
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-linux-${{ matrix.arch }}-py${{ matrix.python-version }}
+          path: wheelhouse/*.whl
+
+      - name: Build sdist (Linux x64 Python 3.14)
+        if: ${{ matrix.python-version == '3.14' && matrix.arch == 'x64' }}
+        run: |
+          source env/bin/activate
+          python -m pip install --upgrade build
+          python -m build --sdist -o dist
+
+      - name: Upload sdist artifact (Linux x64 Python 3.14)
+        if: ${{ matrix.python-version == '3.14' && matrix.arch == 'x64' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: sdist-linux-${{ matrix.arch }}-py${{ matrix.python-version }}
+          path: dist/*.tar.gz
+
+  build-macos:
+    needs: setup
+    if: ${{ needs.setup.outputs.run_macos == 'true' }}
+    timeout-minutes: 25
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.macos_matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set Fortran compiler
+        shell: bash
+        run: |
+          brew_prefix="$(brew --prefix)"
+          echo "$brew_prefix/bin" >> "$GITHUB_PATH"
+
+          if ! command -v gfortran-15 >/dev/null 2>&1 && \
+             ! command -v gfortran-14 >/dev/null 2>&1 && \
+             ! command -v gfortran-13 >/dev/null 2>&1 && \
+             ! command -v gfortran >/dev/null 2>&1; then
+            brew install gcc
+          fi
+
+          gfortran_path=""
+          for compiler in gfortran-15 gfortran-14 gfortran-13 gfortran; do
+            if command -v "$compiler" >/dev/null 2>&1; then
+              gfortran_path="$(command -v "$compiler")"
+              break
+            fi
+          done
+
+          if [ -z "$gfortran_path" ]; then
+            gcc_prefix="$(brew --prefix gcc)"
+            for compiler in "$gcc_prefix"/bin/gfortran-15 "$gcc_prefix"/bin/gfortran-14 "$gcc_prefix"/bin/gfortran-13 "$gcc_prefix"/bin/gfortran; do
+              if [ -x "$compiler" ]; then
+                gfortran_path="$compiler"
+                break
+              fi
+            done
+          fi
+
+          if [ -z "$gfortran_path" ]; then
+            echo "Could not find a Homebrew gfortran compiler" >&2
+            exit 1
+          fi
+
+          echo "FC=$gfortran_path" >> "$GITHUB_ENV"
+          "$gfortran_path" --version
+
+      - name: Build wheel
+        shell: bash
+        run: |
+          python3 -m venv env
+          source env/bin/activate
+          python -m pip install --upgrade pip setuptools wheel build
+
+          export CMAKE_GENERATOR="Ninja"
+          if [[ "${{ matrix.arch }}" == "x64" ]]; then
+            export CMAKE_OSX_ARCHITECTURES="x86_64"
+          else
+            export CMAKE_OSX_ARCHITECTURES="arm64"
+          fi
+          export CMAKE_OSX_DEPLOYMENT_TARGET="11.0"
+          export MACOSX_DEPLOYMENT_TARGET="11.0"
+
+          rm -rf dist
+          mkdir -p dist
+          python -m build --wheel -o dist
+          ls -1 dist
+          if ls dist/*universal2*.whl >/dev/null 2>&1; then
+            echo "Unexpected universal2 wheel produced"
+            exit 1
+          fi
+
+      - name: Install wheel
+        shell: bash
+        run: |
+          source env/bin/activate
+          python -m pip install --upgrade dist/*.whl
+
+      - name: Run pytest on installed module
+        shell: bash
+        run: |
+          source env/bin/activate
+          if [[ "${{ matrix.arch }}" == "x64" ]]; then
+            python -m pip install --force-reinstall --no-binary DateTimeTools DateTimeTools
+          fi
+          python -m pip install pytest
+          cd test
+          pytest -q
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-macos-${{ matrix.arch }}-py${{ matrix.python-version }}
+          path: dist/*.whl
+
+  build-windows:
+    needs: setup
+    if: ${{ needs.setup.outputs.run_windows == 'true' }}
+    timeout-minutes: 20
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.windows_matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Create venv
+        shell: pwsh
+        run: |
+          python -m venv env
+
+      - name: Build wheel
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          $pythonExe = Join-Path $env:VIRTUAL_ENV "Scripts\python.exe"
+          & $pythonExe -m pip install --upgrade pip build wheel
+
+          $env:CMAKE_GENERATOR = "Ninja"
+          Remove-Item Env:CMAKE_GENERATOR_PLATFORM -ErrorAction SilentlyContinue
+          Remove-Item Env:CMAKE_ARGS -ErrorAction SilentlyContinue
+
+          if (-not (Get-Command gfortran.exe -ErrorAction SilentlyContinue)) {
+            Write-Host "gfortran not found on PATH, installing MinGW fallback"
+            choco install mingw -y --no-progress
+          }
+
+          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) {
+            Write-Host "ninja not found on PATH, installing Ninja"
+            choco install ninja -y --no-progress
+          }
+
+          $mingwBinCandidates = @(
+            "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin",
+            "C:\tools\mingw64\bin"
+          )
+          $mingwBin = $mingwBinCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if ($mingwBin) {
+            "$mingwBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+            $env:Path = "$mingwBin;$env:Path"
+          }
+
+          $env:CC = "gcc"
+          $env:CXX = "g++"
+          $env:FC = "gfortran"
+
+          if (-not (Get-Command gcc.exe -ErrorAction SilentlyContinue)) { throw "gcc not found" }
+          if (-not (Get-Command gfortran.exe -ErrorAction SilentlyContinue)) { throw "gfortran not found" }
+          if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) { throw "ninja not found" }
+
+          & $pythonExe -m build --wheel -o dist
+
+      - name: Install wheel
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          $wheel = Get-ChildItem -Path dist -Filter *.whl | Select-Object -First 1
+          if (-not $wheel) { throw "No wheel found in dist/" }
+          python -m pip install --upgrade $wheel.FullName
+
+      - name: Run pytest on installed module
+        shell: pwsh
+        run: |
+          .\env\Scripts\Activate.ps1
+          python -m pip install pytest
+          Set-Location test
+          pytest -q
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: wheels-windows-${{ matrix.arch }}-py${{ matrix.python-version }}
+          path: dist/*.whl
