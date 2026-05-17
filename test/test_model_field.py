@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
-from cases import GOLDEN_VERSION, MODEL_FIELD_CASES
+from cases import COMMON_PARAMS, GOLDEN_VERSION, MODEL_FIELD_CASES
 from golden_utils import assert_close
 
 
@@ -21,3 +22,20 @@ def test_model_field_matches_v1_2_7(gp, golden_data, case):
     assert_close(params["Vx"], expected["params"]["Vx"], rtol=1e-7, atol=1e-8)
     assert_close(params["Vy"], expected["params"]["Vy"], rtol=1e-7, atol=1e-8)
     assert_close(params["Vz"], expected["params"]["Vz"], rtol=1e-7, atol=1e-8)
+
+
+def test_model_field_within_mp_only_filters_far_dayside_point(gp):
+    kwargs = {
+        "Date": 20200101,
+        "ut": 12.0,
+        "Model": "T96",
+        "CoordIn": "GSM",
+        "CoordOut": "GSM",
+        **COMMON_PARAMS,
+    }
+
+    filtered = gp.ModelField([50.0], [0.0], [0.0], WithinMPOnly=True, **kwargs)
+    unfiltered = gp.ModelField([50.0], [0.0], [0.0], WithinMPOnly=False, **kwargs)
+
+    assert all(np.isnan(component[0]) for component in filtered)
+    assert all(np.isfinite(component[0]) for component in unfiltered)

@@ -73,3 +73,26 @@ def test_trace_samples_match_v1_2_7(gp, golden_data, case):
                     rtol=1e-6,
                     atol=1e-6,
                 )
+
+
+def test_get_trace_unknown_coordinate_falls_back_to_gsm(gp, capsys):
+    trace = _run_trace(gp, TRACE_CASES[0])
+
+    gsm = trace.GetTrace(0, Coord="GSM")
+    fallback = trace.GetTrace(0, Coord="NOTACOORD")
+
+    captured = capsys.readouterr()
+    assert "Coordinate system NOTACOORD not recognised,returning GSM" in captured.out
+    for actual, expected in zip(fallback, gsm):
+        assert_close(actual, expected, rtol=1e-7, atol=1e-8)
+
+
+def test_trace_dict_without_nan_removal_preserves_full_array_shapes(gp):
+    trace = _run_trace(gp, TRACE_CASES[0])
+
+    trace_dict = trace.TraceDict(RemoveNAN=False)
+
+    assert trace_dict["xgsm"].shape == (trace.n, trace.MaxLen)
+    assert trace_dict["Bxgsm"].shape == (trace.n, trace.MaxLen)
+    assert trace_dict["halpha"].shape == (trace.n, trace.nalpha, trace.MaxLen)
+    assert trace_dict["FP"].shape == (trace.n, 15)
