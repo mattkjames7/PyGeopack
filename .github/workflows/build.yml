@@ -430,6 +430,7 @@ jobs:
             mingw-w64-clang-aarch64-toolchain
             mingw-w64-clang-aarch64-flang
           update: false
+          cache: true
 
       - name: Build wheel
         shell: pwsh
