@@ -14,9 +14,9 @@ dependencies = [
   "numpy",
   "PyFileIO",
   "RecarrayTools",
-  "DateTimeTools>=1.1.0",
-  "kpindex>=1.0.1",
-  "pyomnidata>=1.0.1",
+  "DateTimeTools>=1.3.3",
+  "kpindex>=2.1.0",
+  "pyomnidata>=1.0.2",
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
