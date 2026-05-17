@@ -1,0 +1,42 @@
+[build-system]
+requires = ["scikit-build-core>=0.12"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "PyGeopack"
+dynamic = ["version"]
+authors = [
+  { name = "Matthew Knight James", email = "mattkjames7@gmail.com" },
+]
+description = "Geopack08 wrapper for Python"
+readme = "README.md"
+dependencies = [
+  "numpy",
+  "PyFileIO",
+  "RecarrayTools",
+  "DateTimeTools>=1.1.0",
+  "kpindex>=1.0.1",
+  "pyomnidata>=1.0.1",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: POSIX",
+]
+
+[project.urls]
+Homepage = "https://github.com/mattkjames7/PyGeopack"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.build-type = "Release"
+wheel.packages = ["PyGeopack"]
+wheel.install-dir = "PyGeopack/__data/geopack/lib"
+install.components = ["python"]
+
+[tool.scikit-build.cmake.define]
+GEOPACK_BUILD_TESTS = false
+GEOPACK_BUILD_SHARED = true
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "PyGeopack/__init__.py"

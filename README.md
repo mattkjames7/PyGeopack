@@ -49,10 +49,17 @@ Then simply install using pip3:
 pip3 install PyGeopack --user
 ```
 
-or by downloading the latest release on GitHub and running:
+or from a source checkout/release archive with:
 
 ```
-pip3 install PyGeopack-1.2.2.tar.gz --user
+pip3 install . --user
+```
+
+If you specifically want to build a source distribution first, run:
+
+```bash
+python -m build --sdist
+pip3 install dist/PyGeopack-*.tar.gz --user
 ```
 
 NOTE: You should uninstall any previous versions before installing this. If you had a version installed before 0.0.12 - you will need to remove the old shared object files - they are likely to be contained somewhere like (depending on the Python version used):
