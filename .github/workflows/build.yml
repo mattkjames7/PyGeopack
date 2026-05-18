@@ -351,8 +351,10 @@ jobs:
       - name: Build wheel
         shell: bash
         run: |
-          python3 -m venv env
+          python --version
+          python -m venv env
           source env/bin/activate
+          python --version
           python -m pip install --upgrade pip setuptools wheel build
 
           export CMAKE_GENERATOR="Ninja"
