@@ -451,6 +451,9 @@ jobs:
                 Set-Item -Path ("Env:" + $matches[1]) -Value $matches[2]
               }
             }
+            if ($env:VCToolsInstallDir) {
+              "VCToolsInstallDir=$env:VCToolsInstallDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
 
             # Use the pre-installed arm64 LLVM toolchain with Ninja. The clang-cl
             # driver matches the MSVC-style flags emitted by dependency CMake files.
@@ -531,9 +534,24 @@ jobs:
           $dll = Get-ChildItem -Path $tmp -Recurse -Filter geopack.dll | Select-Object -First 1
           if (-not $dll) { throw "geopack.dll not found inside wheel" }
 
-          $dumpbin = Join-Path $env:VCToolsInstallDir "bin\HostARM64\arm64\dumpbin.exe"
+          $vcToolsInstallDir = $env:VCToolsInstallDir
+          if (-not $vcToolsInstallDir) {
+            $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+            if (-not (Test-Path $vswhere)) { throw "vswhere.exe not found" }
+            $vsInstallPath = & $vswhere -latest -products * `
+              -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+              -property installationPath
+            if (-not $vsInstallPath) { throw "Could not locate a Visual Studio installation" }
+            $vcToolsRoot = Join-Path $vsInstallPath "VC\Tools\MSVC"
+            $vcToolsInstallDir = Get-ChildItem -Path $vcToolsRoot -Directory |
+              Sort-Object Name -Descending |
+              Select-Object -First 1 -ExpandProperty FullName
+            if (-not $vcToolsInstallDir) { throw "Could not locate VC tools directory" }
+          }
+
+          $dumpbin = Join-Path $vcToolsInstallDir "bin\HostARM64\arm64\dumpbin.exe"
           if (-not (Test-Path $dumpbin)) {
-            $dumpbin = Join-Path $env:VCToolsInstallDir "bin\Hostx64\arm64\dumpbin.exe"
+            $dumpbin = Join-Path $vcToolsInstallDir "bin\Hostx64\arm64\dumpbin.exe"
           }
           if (-not (Test-Path $dumpbin)) { throw "dumpbin.exe not found" }
 
