@@ -452,12 +452,13 @@ jobs:
               }
             }
 
-            # Use the pre-installed arm64 LLVM toolchain (clang + flang) with Ninja.
+            # Use the pre-installed arm64 LLVM toolchain with Ninja. The clang-cl
+            # driver matches the MSVC-style flags emitted by dependency CMake files.
             # VsDevCmd may have set a VS generator; override back to Ninja.
             $env:CMAKE_GENERATOR = "Ninja"
             Remove-Item Env:CMAKE_GENERATOR_PLATFORM -ErrorAction SilentlyContinue
             $llvmArm64Bin = Join-Path $vsInstallPath "VC\Tools\Llvm\ARM64\bin"
-            if (-not (Test-Path "$llvmArm64Bin\clang.exe")) { throw "ARM64 clang not found at $llvmArm64Bin" }
+            if (-not (Test-Path "$llvmArm64Bin\clang-cl.exe")) { throw "ARM64 clang-cl not found at $llvmArm64Bin" }
 
             if (Test-Path "$llvmArm64Bin\flang.exe") {
               $fortranCompiler = Join-Path $llvmArm64Bin "flang.exe"
@@ -472,14 +473,14 @@ jobs:
             "$llvmArm64Bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
             $env:Path = "$llvmArm64Bin;$env:Path"
 
-            $env:CC  = (Join-Path $llvmArm64Bin "clang.exe")
-            $env:CXX = (Join-Path $llvmArm64Bin "clang++.exe")
+            $env:CC  = (Join-Path $llvmArm64Bin "clang-cl.exe")
+            $env:CXX = (Join-Path $llvmArm64Bin "clang-cl.exe")
             $env:FC  = $fortranCompiler
 
             # Disable OpenMP on Windows arm64 to avoid wrong-arch libomp runtime issues.
             $env:CMAKE_ARGS = "-DPYGEOPACK_GEOPACK_USE_OPENMP=OFF"
 
-            if (-not (Get-Command $env:CC -ErrorAction SilentlyContinue)) { throw "clang not found" }
+            if (-not (Get-Command $env:CC -ErrorAction SilentlyContinue)) { throw "clang-cl not found" }
             if (-not (Get-Command $env:FC -ErrorAction SilentlyContinue)) { throw "flang not found" }
             if (-not (Get-Command ninja.exe -ErrorAction SilentlyContinue)) { throw "ninja not found" }
           } else {
