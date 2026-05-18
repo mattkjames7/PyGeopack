@@ -22,21 +22,24 @@ def getLibFilename(isShort=False):
         Filename of the source library
 
     """
-    if(isShort):
-        libFilename = "libgeopack."
-    else:
-        libFilename = os.path.dirname(__file__) + "/__data/geopack/lib/libgeopack."
-
     systype = platform.system()
     if systype == 'Linux':
+        libName = "libgeopack"
         extension = "so"
     elif systype == 'Windows':
+        libName = "geopack"
         extension = "dll"
     elif systype == 'Darwin':
+        libName = "libgeopack"
         extension = 'dylib'
     else:
         raise Exception("The Operating System is not supported")
-    
+
+    if(isShort):
+        libFilename = libName + "."
+    else:
+        libFilename = os.path.dirname(__file__) + "/__data/geopack/lib/" + libName + "."
+
     return libFilename + extension
 
 

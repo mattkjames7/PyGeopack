@@ -33,10 +33,6 @@ wheel.packages = ["PyGeopack"]
 wheel.install-dir = "PyGeopack/__data/geopack/lib"
 install.components = ["python"]
 
-[tool.scikit-build.cmake.define]
-GEOPACK_BUILD_TESTS = false
-GEOPACK_BUILD_SHARED = true
-
 [tool.scikit-build.metadata.version]
 provider = "scikit_build_core.metadata.regex"
 input = "PyGeopack/__init__.py"

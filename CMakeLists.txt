@@ -19,9 +19,12 @@ elseif(UNIX)
   set(_pygeopack_library_glob "*.so*")
 endif()
 
+option(PYGEOPACK_GEOPACK_USE_OPENMP "Enable OpenMP in geopack dependency" ON)
+
 set(_pygeopack_cmake_args
   -DGEOPACK_BUILD_TESTS=OFF
   -DGEOPACK_BUILD_SHARED=ON
+  -DGEOPACK_USE_OPENMP=${PYGEOPACK_GEOPACK_USE_OPENMP}
   -DCMAKE_BUILD_TYPE=Release
 )
 
