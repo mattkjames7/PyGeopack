@@ -528,8 +528,8 @@ jobs:
           if (Test-Path $tmp) { Remove-Item -Path $tmp -Recurse -Force }
           New-Item -ItemType Directory -Path $tmp | Out-Null
           python -m zipfile -e $wheel.FullName $tmp
-          $dll = Get-ChildItem -Path $tmp -Recurse -Filter libgeopack.dll | Select-Object -First 1
-          if (-not $dll) { throw "libgeopack.dll not found inside wheel" }
+          $dll = Get-ChildItem -Path $tmp -Recurse -Filter geopack.dll | Select-Object -First 1
+          if (-not $dll) { throw "geopack.dll not found inside wheel" }
 
           $dumpbin = Join-Path $env:VCToolsInstallDir "bin\HostARM64\arm64\dumpbin.exe"
           if (-not (Test-Path $dumpbin)) {
@@ -540,7 +540,7 @@ jobs:
           $headers = & $dumpbin /headers $dll.FullName
           $headers | Out-String | Write-Host
           if (-not ($headers -match "machine \(ARM64\)")) {
-            throw "libgeopack.dll is not ARM64"
+            throw "geopack.dll is not ARM64"
           }
 
       - name: Install wheel
